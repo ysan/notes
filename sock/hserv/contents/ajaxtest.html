@@ -1,0 +1,44 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Ajaxtest</title>
+	<script language="JavaScript">
+	<!--
+	function req( scriptName ){
+		// 非同期通信を行うためのXMLHttpRequestオブジェクトを生成
+		try {
+			xmlReq = new ActiveXObject( "Microsoft.XMLHTTP" );
+		} catch(e){
+			xmlReq = new XMLHttpRequest();
+		}
+
+		// サーバーからの応答時の処理を定義（結果のページへの反映）
+		xmlReq.onreadystatechange = function(){
+			var msg = document.getElementById( "result" );
+			if( xmlReq.readyState == 4 ){
+				if( xmlReq.status == 200 ){
+					msg.innerHTML = xmlReq.responseText;
+				} else {
+					msg.innerHTML = "通信に失敗しました。";
+				}
+			} else {
+				msg.innerHTML = "通信中...";
+			}
+		}
+
+		// サーバーとの通信を開始
+		xmlReq.open( "post", scriptName, true );
+		xmlReq.send( null );
+	}
+	//-->
+	</script>
+</head>
+<body onLoad='setInterval( function(){ req( "ajaxtest.pl" ); }, 1000 )' >
+	<form name="test">
+		<input type="button" value="実行" onclick='req( "test0.pl" )'/>
+		<input type="button" value="失敗" onclick='req( "dummy.pl" )'/><br>
+		<div id="result"/>
+		</div>
+	</form>
+</body>
+</html>

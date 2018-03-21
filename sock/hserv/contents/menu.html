@@ -1,0 +1,62 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<title>MENU</title>
+	<style type="text/css">
+	<!--
+		a:link {color:#ff0000;}
+		a:visited {color:#008000;} 
+		a:hover {color:#ff00ff;} 
+		a:active {color:#ffff00;} 
+	-->
+	</style>
+	<script language="JavaScript">
+	<!--
+	function req( scriptName ){
+		// 非同期通信を行うためのXMLHttpRequestオブジェクトを生成
+		try {
+			xmlReq = new ActiveXObject( "Microsoft.XMLHTTP" );
+		} catch(e){
+			xmlReq = new XMLHttpRequest();
+		}
+
+		// サーバーからの応答時の処理(結果のページへの反映)
+		xmlReq.onreadystatechange = function(){
+			var msg = document.getElementById( "result" );
+			if( xmlReq.readyState == 4 ){
+				if( xmlReq.status == 200 ){
+					msg.innerHTML = xmlReq.responseText;
+				} else {
+					msg.innerHTML = "通信に失敗しました。";
+				}
+			} else {
+				msg.innerHTML = "通信中...";
+			}
+		}
+
+		// サーバーとの通信を開始
+		xmlReq.open( "get", scriptName, true );
+		xmlReq.send( null );
+	}
+	//-->
+	</script>
+</head>
+<body bgcolor="antiquewhite" onload='req( "counter.cgi" )'>
+	<div>
+		<a href="home.html" target="contents">HOMEへ</a><br>
+		<h3>contents</h3>
+		<a href="imgtest.html" target="contents">画像テスト</a><br>
+		<a href="cgitest.html" target="contents">CGIテスト</a><br>
+		<a href="ajaxtest.html" target="contents">AJAXテスト</a><br>
+		<h3>link</h3>
+		<a href="http://www.yahoo.co.jp/" target="_blank">Yahoo!JAPAN</a><br>
+		<a href="http://www.google.co.jp/" target="_blank">Google</a><br>
+		<a href="https://ed2-svr.edelta.co.jp/sns/ede_gw/" target="_blank">edelta_gw</a><br>
+		<br>
+		Today's access:<br> 
+		yesterday:<br> 
+		Total: <span id="result"></span><br>
+	</div>
+</body>
+</html>
