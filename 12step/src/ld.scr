@@ -1,0 +1,74 @@
+/* OUTPUT_FORMAT("elf32-h8300") */
+OUTPUT_ARCH(h8300h)
+ENTRY("_start")
+
+MEMORY
+{
+	rom_all(rx)		: o = 0x000000, l = 0x080000 /* 512KB */
+	vectors(r)		: o = 0x000000, l = 0x000100 /* top of ROM */
+	rom(rx)			: o = 0x000100, l = 0x07ff00
+
+	dram_all(rwx)	: o = 0x400000, l = 0x200000 /* 2MB */
+
+	ram_all(rwx)	: o = 0xffbf20, l = 0x004000 /* 16KB */
+	softvec(rw)		: o = 0xffbf20, l = 0x000100 /* top of RAM  256B */
+	ram_buff(rwx)	: o = 0xffc020, l = 0x001000 /* 4KB */
+	data(rwx)		: o = 0xffd020, l = 0x001000 /* 4KB */
+	stack(rw)		: o = 0xffff00, l = 0x000000 /* end of RAM */
+}
+
+SECTIONS
+{
+	.vectors : {
+		*vector.o(.data)
+	} > vectors
+
+	.text : {
+		_text_start = . ;
+		*(.text)
+		_text_end = . ;
+	} > rom
+
+	.rodata : {
+		_rodata_start = . ;
+		*(.strings)
+		*(.rodata)
+		*(.rodata.*)
+		_rodata_end = . ;
+	} > rom
+
+
+	.dram_all : {
+		_dram_start = .;
+	} > dram_all
+
+
+	.softvec : {
+		_softvec = .;
+	} > softvec
+
+	.ram_buff : {
+		_ram_buff = . ;
+	} > ram_buff
+
+	.data : {
+		_data_start = . ;
+		*(.data)
+		_data_end = . ;
+	} > data AT> rom
+
+	.bss : {
+		_bss_start = . ;
+		*(.bss)
+		*(COMMON)
+		_bss_end = . ;
+	} > data AT> rom
+
+
+	. = ALIGN(4);
+	_end = . ;
+
+	.stack : {
+		_stack = .;
+	} > stack
+}

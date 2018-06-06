@@ -1,0 +1,26 @@
+ホストPCのgccバージョン 4.8.3
+
+ビルド順は以下の通り。
+
+gccビルドに必要なライブラリ群。
+ gmp
+ mpfr
+ mpc
+ ppl
+ cloog-ppl
+
+gccビルド本番。
+ binutils
+ gcc
+ newlib
+
+各libディレクトリ以下の build_h8300/ 内で以下を実行。
+詳細は各build.sh を参照のこと。
+$ ./build.sh
+$ make
+$ make install
+
+
+
+kz_h8write-v0.2.1 はフラッシュライター。
+落としてmakeしてバイナリ(kz_h8write)は ../tools に配置すること。
