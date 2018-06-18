@@ -1,0 +1,106 @@
+これをもとに作業
+http://monoist.atmarkit.co.jp/mn/articles/0809/29/news123.html
+
+redbootがリンク切れだったので下のとこから落としてきた。
+http://monoist.atmarkit.co.jp/mn/articles/0809/29/news123.html
+redboot_std_2mb.srec
+
+redboot焼く
+$ sudo /home/yoshi/prog/12step/tools/kz_h8write -3069 -f20 redboot_std_2mb.srec /dev/ttyUSB0 
+
+minicomの設定
+38400 8N1
+ハードウェア流れ制御ON
+
+uclinuxソースバージョン
+uClinux-dist-sbcrbook20070218
+リンク切れ
+
+uclinux.orgのHPのリリース
+http://www.uclinux.org/pub/uClinux/dist/
+
+build参考
+http://www.aic-g.com/techlib/uClinux_5.pdf
+
+
+===== tftpの設定 =====
+tftp-server/clientは適宜インストールする
+
+tftp confファイル変更
+/etc/xinetd.d/tftp
+disable         = yes -> no
+公開ディレクトリはデフォルトのまま /var/lib/tftpboot
+ここにlinux.binを配置
+
+xinetd再起動
+$ sudo systemctl restart xinetd
+
+
+===== uclinuxカーネルのdownload =====
+基盤側 tftpで使うサーバ Default serverを変えておく 
+RedBoot> fconfig -i
+Initialize non-volatile configuration - continue (y/n)? y
+Run script at boot: false                                               
+Use BOOTP for network configuration: true
+Default server IP address: 192.168.0.101
+GDB connection port: 9000
+Force console for special debug messages: false
+linux boot command: 
+Network debug at boot time: false
+Default network device: dp83902a_eth0
+Update RedBoot non-volatile configuration - continue (y/n)? y
+
+カーネルをロードする
+RedBoot> load -v linux.bin
+
+
+===== nfsの設定 =====
+romfs.tar.gzを/opt/aki3069f に展開する
+
+$ sudo yum install nfs-utils
+
+/etc/exports に以下追記 (下の方で)
+/opt/aki3069f 192.168.0.0/255.255.255.0(rw,insecure,async,no_root_squash)
+/opt/aki3069f 192.168.0.0/255.255.255.0(rw,all_squash)
+
+/etc/hosts.allow に以下追記
+rpc.mountd: ALL
+portmap: ALL
+rquotad: ALL
+mountd: ALL
+statd: ALL
+
+NFS version 2 対応
+/etc/sysconfig/nfs に以下追記
+mountd_nfs_v2="yes"
+RPCNFSDARGS="-V 2"
+RPCMOUNTDOPTS="-V 2"
+
+nfs server起動
+$ sudo systemctl start nfs-server
+$ sudo systemctl restart nfs-server
+
+自動起動設定
+$ sudo systemctl enable nfs-server
+
+参考：
+https://blog.apar.jp/linux/2712/
+
+
+
+===== uclinux起動 =====
+RedBoot> exec -c "console=ttySC1,38400n81 nfsroot=192.168.0.101:/opt/aki3069f"
+
+この時点で以下 kernelパニックになる
+Kernel panic: No init found.  Try passing init= option to kernel.
+対策方法はmfillコマンドをloadの前に実行してメモリを0クリアする
+
+参考：
+http://d.hatena.ne.jp/hshinji/20090227
+
+まとめると以下のコマンドで起動できる
+RedBoot> mfill -b 0x400000 -l 0x1e1000 -p 0x00 -1
+RedBoot> load -v linux.bin
+RedBoot> exec -c "console=ttySC1,38400n81 nfsroot=192.168.0.101:/opt/aki3069f"
+
+

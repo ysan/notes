@@ -1,0 +1,52 @@
+uclinuxソースとtoolchainは本のサポートサイトから落としてくる。
+http://uclinux.quake4.jp/
+
+uClinux-dist-sbcrbook20070218.tar.gz
+
+
+＊m68k-uclinux-tools-base-gcc3.4.0-20040603.tar.bz2
+これそのまま/usr/local以下に展開する。(tar内で/usr/local/m68k-uclinux-toolsに展開)
+以下環境変数をセットしてkernelビルドする。
+$ export PATH=$PATH:/usr/local/m68k-uclinux-tools/bin
+
+＊h8tools_bin.tar.gz
+/usr/local/以下にh8300-linux-toolsを掘ってその下に展開。
+以下環境変数をセットしてkernelビルドする。
+$ export PATH=$PATH:/usr/local/h8300-linux-tools/bin
+
+
+curses libが64bitなのでkerenlビルドメニューが立ち上がらない。
+元々入ってるものは32bitのものと思われる。
+uClinux-dist/config/scripts/lxdialog/lxdialog これを今の環境でビルドする。
+uClinux-dist top dirから
+$ cd config/scripts/lxdialog
+$ make clean
+$ make lxdialog HOSTCC=gcc
+
+
+イメージは/tftpbootに置かれるのようなので
+ビルド通すためとりあえず権限777に。
+$ sudo mkdir /tftpboot
+$ chmod 777 /tftpboot
+
+------------------------------------------------------------------------
+kernelイメージはtftpでload
+rootfsはnfsでmount
+設定は以下参照
+../monoist_site_example/memo.txt
+
+kernel elf形式を/var/lib/tftpbootにコピー。
+uClinux-dist top dirから
+$ cp -p linux-2.4.x/linux /var/lib/tftpboot
+
+rootfsは/opt/aki3069fにコピーする。
+uClinux-dist top dirから
+$ cd romfs
+$ cp -pr * /opt/aki3069f
+デバイスノードを手動で作成する。
+
+bootloaderから起動コマンド
+RedBoot> mfill -b 0x400000 -l 0x1e1000 -p 0x00 -1
+RedBoot> load -v linux
+RedBoot> exec -c "console=ttySC1,38400n81 nfsroot=192.168.0.101:/opt/aki3069f"
+
