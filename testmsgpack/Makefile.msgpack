@@ -1,0 +1,49 @@
+#
+#   Defines
+#
+BASEDIR		:=	../
+
+INCLUDES	:= \
+	-I./include \
+	-I./include/msgpack \
+
+LIBS		:=
+
+LDFLAGS		:=
+
+APPEND_OBJS	:=
+
+SUBDIRS		:=
+
+USERDEFS	:=
+
+
+#
+#   Target object
+#
+TARGET_NAME	:=	msgpack
+
+#
+#   Target type
+#     (EXEC/SHARED/STATIC/OBJECT)
+#
+TARGET_TYPE	:=	STATIC
+
+#
+#   Compile sources
+#
+SRCS		:= \
+	src/zone.c \
+	src/vrefbuffer.c \
+	src/version.c \
+	src/unpack.c \
+	src/objectc.c \
+
+SRCS_CPP	:=
+
+
+#
+#   Configurations
+#
+include $(BASEDIR)/Config.make
+
