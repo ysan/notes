@@ -21,39 +21,86 @@ using namespace std;
 namespace ImmSocketService {
 
 template <typename T>
+class CAsyncProcProxy;
+
+template <typename T>
+class IAsyncHandler;
+
+
+template <typename T>
 struct ST_ASYNC_QUEUE {
 public:
-	ST_ASYNC_QUEUE (void) : isEmpty (true) {}
-	ST_ASYNC_QUEUE (T arg) {
+	ST_ASYNC_QUEUE (void)
+		:mpAsyncHandler (NULL)
+		,isUsed (false)
+	{}
+
+	explicit ST_ASYNC_QUEUE (T arg)
+		:mpAsyncHandler (NULL)
+		,isUsed (true)
+	{
 		msg = arg;
-		isEmpty = false;
 	}
-	ST_ASYNC_QUEUE (const ST_ASYNC_QUEUE& obj) :
-		msg (obj.msg),
-		isEmpty (obj.isEmpty) {}
+
+	ST_ASYNC_QUEUE (T arg, IAsyncHandler<T> *pHandler)
+		:mpAsyncHandler (NULL)
+		,isUsed (true)
+	{
+		msg = arg;
+		mpAsyncHandler = pHandler;
+	}
+
+	ST_ASYNC_QUEUE (const ST_ASYNC_QUEUE& obj)
+		:msg (obj.msg)
+		,mpAsyncHandler (obj.mpAsyncHandler)
+		,isUsed (obj.isUsed)
+	{}
+
 	~ST_ASYNC_QUEUE (void) {}
 
-	ST_ASYNC_QUEUE &operator=(const ST_ASYNC_QUEUE &obj) {
+
+	ST_ASYNC_QUEUE &operator=(const ST_ASYNC_QUEUE &obj)
+	{
 		msg = obj.msg;
-		isEmpty = obj.isEmpty;
+		mpAsyncHandler = obj.mpAsyncHandler;
+		isUsed = obj.isUsed;
 		return *this;
 	}
 
 	T msg;
-	bool isEmpty;
+	IAsyncHandler<T> *mpAsyncHandler;
+	bool isUsed;
 };
-
-
-template <typename T>
-class CAsyncProcProxy;
-
 
 template <typename T>
 class IAsyncHandler
 {
 public:
-	virtual ~IAsyncHandler (void) {};
+	IAsyncHandler (void)
+		:mIsDeletable (false)
+		,mIsDone (false)
+	{}
+	virtual ~IAsyncHandler (void) {}
+
 	virtual void onAsyncHandled (T arg) = 0;
+
+	bool isDeletable (void) {
+		return mIsDeletable;
+	}
+	void deletable (void) {
+		mIsDeletable = true;
+	}
+
+	bool isDone (void) {
+		return mIsDone;
+	}
+	void done (void) {
+		mIsDone = true;
+	}
+
+private:
+	bool mIsDeletable;
+	bool mIsDone;
 };
 
 template <typename T>
@@ -86,6 +133,7 @@ class CAsyncProcProxy
 public:
 	friend class CProxyThread<T>;
 
+	explicit CAsyncProcProxy (int nThreadPoolNum=1);
 	CAsyncProcProxy (IAsyncHandler<T> *pHandler, int nThreadPoolNum=1);
 	virtual ~CAsyncProcProxy (void);
 
@@ -94,20 +142,23 @@ public:
 	void syncStop (void);
 
 	void request (T arg);
+	void request (T arg, IAsyncHandler<T> *pHandler);
 
 
 private:
+	void init (IAsyncHandler<T> *pHandler, int nThreadPoolNum);
+	void finaliz (void);
 	void enQueue (ST_ASYNC_QUEUE<T> *eq);
 	ST_ASYNC_QUEUE<T> deQueue (bool isPeep=false); // friend access
 
 
 	int mThreadPoolNum;
 
-	CProxyThread<T> *mpProxyThread; // thread pool
+	CProxyThread<T> *mpThreadPool; // thread pool start address
 	IAsyncHandler<T> *mpAsyncHandler; // friend access
 
 	queue < ST_ASYNC_QUEUE<T> > mQueue;
-	pthread_mutex_t mMutexQue;
+	pthread_mutex_t mMutexQueue;
 
 	pthread_mutex_t mMutexCond; // friend access
 	pthread_cond_t mCondMulti;  // friend access

@@ -7,7 +7,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include "Utils.h"
 #include "AsyncProcProxy.h"
@@ -24,17 +23,13 @@ public:
 	CTest (void) {}
 	virtual ~CTest (void) {}
 
-	void onAsyncHandled (T arg);
+	void onAsyncHandled (T arg) {
+		printf ("%d\n", *arg);
+
+		// !!!
+		delete arg;
+	}
 };
-
-template <typename T>
-void CTest<T>::onAsyncHandled (T arg)
-{
-	printf ("%d\n", *arg);
-
-	// !!!
-	delete arg;
-}
 
 
 int main (void)
@@ -45,9 +40,11 @@ int main (void)
 	*p = 400; 
 
 	CTest<int*> *ptest = new CTest<int*> ();
-	CAsyncProcProxy<int*> *pproxy = new CAsyncProcProxy<int*> (ptest, 5);
+	ptest->deletable();
+
+	CAsyncProcProxy<int*> *pproxy = new CAsyncProcProxy<int*> (5);
 	pproxy->start ();
-	pproxy->request (p);
+	pproxy->request (p, ptest);
 
 
 	pause ();

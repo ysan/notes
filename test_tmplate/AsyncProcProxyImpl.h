@@ -106,7 +106,7 @@ void CProxyThread<T>::onThreadMainRoutine (void)
 		pthread_mutex_lock (pMutexCond);
 
 		ST_ASYNC_QUEUE<T> q = mpAsyncProcProxy->deQueue();
-		if (q.isEmpty) {
+		if (!q.isUsed) {
 
 			memset (&stTimeout, 0x00, sizeof(stTimeout));
 			memset (&stNowTimeval, 0x00, sizeof(stNowTimeval));
@@ -132,8 +132,30 @@ void CProxyThread<T>::onThreadMainRoutine (void)
 			// unlock
 			pthread_mutex_unlock (pMutexCond);
 
-			mpAsyncProcProxy->mpAsyncHandler->onAsyncHandled (q.msg);
+			if (q.mpAsyncHandler) {
 
+				q.mpAsyncHandler->onAsyncHandled (q.msg);
+
+				q.mpAsyncHandler->done();
+
+				if (q.mpAsyncHandler->isDeletable()) {
+					delete q.mpAsyncHandler;
+				}
+
+			} else {
+				if (mpAsyncProcProxy->mpAsyncHandler) {
+
+					mpAsyncProcProxy->mpAsyncHandler->onAsyncHandled (q.msg);
+
+					//TODO
+					//mpAsyncProcProxy->mpAsyncHandler->done();
+
+					//TODO
+					//if (mpAsyncProcProxy->mpAsyncHandler->isDeletable()) {
+					//	delete mpAsyncProcProxy->mpAsyncHandler;
+					//}
+				}
+			}
 		}
 	}
 
@@ -144,36 +166,57 @@ void CProxyThread<T>::onThreadMainRoutine (void)
 }
 
 template <typename T>
+CAsyncProcProxy<T> ::CAsyncProcProxy (int nThreadPoolNum)
+	:mThreadPoolNum (1)
+	,mpThreadPool (NULL)
+	,mpAsyncHandler (NULL)
+{
+	init (NULL, nThreadPoolNum);
+}
+
+template <typename T>
 CAsyncProcProxy<T> ::CAsyncProcProxy (IAsyncHandler<T> *pHandler, int nThreadPoolNum)
 	:mThreadPoolNum (1)
-	,mpProxyThread (NULL)
+	,mpThreadPool (NULL)
 	,mpAsyncHandler (NULL)
+{
+	init (pHandler, nThreadPoolNum);
+}
+
+template <typename T>
+CAsyncProcProxy<T> ::~CAsyncProcProxy (void)
+{
+	finaliz ();
+}
+
+template <typename T>
+void CAsyncProcProxy<T> ::init (IAsyncHandler<T> *pHandler, int nThreadPoolNum)
 {
 	if (nThreadPoolNum < 1) {
 		nThreadPoolNum = 1;
 	}
 	mThreadPoolNum = nThreadPoolNum;
 
-	mpProxyThread = new CProxyThread<T> [mThreadPoolNum];
+	mpThreadPool = new CProxyThread<T> [mThreadPoolNum];
 
 	if (pHandler) {
 		mpAsyncHandler = pHandler;
 	}
 
-	pthread_mutex_init (&mMutexQue, NULL);
+	pthread_mutex_init (&mMutexQueue, NULL);
 	pthread_mutex_init (&mMutexCond, NULL);
 	pthread_cond_init (&mCondMulti, NULL);
 }
 
 template <typename T>
-CAsyncProcProxy<T> ::~CAsyncProcProxy (void)
+void CAsyncProcProxy<T> ::finaliz (void)
 {
-	if (mpProxyThread) {
-		delete [] mpProxyThread;
-		mpProxyThread = NULL;
+	if (mpThreadPool) {
+		delete [] mpThreadPool;
+		mpThreadPool = NULL;
 	}
 
-	pthread_mutex_destroy (&mMutexQue);
+	pthread_mutex_destroy (&mMutexQueue);
 	pthread_mutex_destroy (&mMutexCond);
 	pthread_cond_destroy (&mCondMulti);
 }
@@ -185,10 +228,10 @@ bool CAsyncProcProxy<T> ::start (void)
 
 	for (int i = 0; i < mThreadPoolNum; ++ i) {
 
-		(mpProxyThread + i)->setAsyncProcProxy (this);
+		(mpThreadPool + i)->setAsyncProcProxy (this);
 
-		if (!((mpProxyThread + i)->start())) {
-			_ISS_LOG_E ("mpProxyThread %d ->start() is failure\n", i);
+		if (!((mpThreadPool + i)->start())) {
+			_ISS_LOG_E ("mpThreadPool %d ->start() is failure\n", i);
 		}
 	}
 
@@ -199,7 +242,7 @@ template <typename T>
 void CAsyncProcProxy<T> ::stop (void)
 {
 	for (int i = 0; i < mThreadPoolNum; ++ i) {
-		(mpProxyThread + i)->stop();
+		(mpThreadPool + i)->stop();
 	}
 }
 
@@ -207,7 +250,7 @@ template <typename T>
 void CAsyncProcProxy<T> ::syncStop (void)
 {
 	for (int i = 0; i < mThreadPoolNum; ++ i) {
-		(mpProxyThread + i)->syncStop();
+		(mpThreadPool + i)->syncStop();
 	}
 }
 
@@ -222,13 +265,23 @@ void CAsyncProcProxy<T> ::request (T arg)
 }
 
 template <typename T>
+void CAsyncProcProxy<T> ::request (T arg, IAsyncHandler<T> *pHandler)
+{
+	CUtils::CScopedMutex scopedMutex (&mMutexCond);
+
+	ST_ASYNC_QUEUE<T> eq (arg, pHandler);
+	enQueue (&eq);
+	pthread_cond_broadcast (&mCondMulti); // thread pool start
+}
+
+template <typename T>
 void CAsyncProcProxy<T> ::enQueue (ST_ASYNC_QUEUE<T> *eq)
 {
 	if (!eq) {
 		return ;
 	}
 
-	CUtils::CScopedMutex scopedMutex (&mMutexQue);
+	CUtils::CScopedMutex scopedMutex (&mMutexQueue);
 
 	mQueue.push (*eq);
 }
@@ -236,7 +289,7 @@ void CAsyncProcProxy<T> ::enQueue (ST_ASYNC_QUEUE<T> *eq)
 template <typename T>
 ST_ASYNC_QUEUE<T> CAsyncProcProxy<T> ::deQueue (bool isPeep)
 {
-	CUtils::CScopedMutex scopedMutex (&mMutexQue);
+	CUtils::CScopedMutex scopedMutex (&mMutexQueue);
 
 
 	ST_ASYNC_QUEUE<T> dq;
