@@ -34,13 +34,13 @@ public:
 	virtual ~CProgramAssociationTable (void);
 
 
-	uint16_t getElementNum (void) const;
-	bool getElement (CElement outArr[], uint16_t outArrSize) const;
-	void dumpElement (const CElement inArr[], uint16_t arrSize) const;
+	int getElementNum (void) const;
+	bool getElement (CElement outArr[], int outArrSize) const;
+	void dumpElement (const CElement inArr[], int arrSize) const;
 
 
 private:
-	uint16_t getElementNum (const CSectionInfo *pSectInfo) const;
+	int getElementNum (const CSectionInfo *pSectInfo) const;
 
 };
 

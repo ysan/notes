@@ -38,71 +38,83 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
 		return false;
 	}
 
-	CElement* pElem = new CElement ();
 	uint8_t *p = NULL; // work
+
+	CElement* pElem = new CElement ();
 
 	p = pCompSection->getDataPartAddr();
 	pElem->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
 	pElem->program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
 
-	p = p + PMT_FIX_LEN;
-	uint16_t n = pElem->program_info_length;
+	p += PMT_FIX_LEN;
+	int n = (int)pElem->program_info_length;
 	while (n > 0) {
 		CDescriptor desc (p);
+		if (!desc.isValid) {
+			puts ("invalid desc");
+			return false;
+		}
 		pElem->descriptors.push_back (desc);
 		n -= (2 + *(p + 1));
 		p += (2 + *(p + 1));
 	}
 
-	p = p + PMT_FIX_LEN + pElem->program_info_length;
-	uint16_t remainVarDataLen = const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pElem->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN;
-	EN_PMT_VARDATA_PARSE_SATGE enVar = EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE;
-	uint16_t esInfoLen = 0;
+	p += PMT_FIX_LEN + pElem->program_info_length;
+	int streamLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pElem->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
+	if (streamLen <= PMT_STREAM_FIX_LEN) {
+		puts ("invalid PMTstream");
+		return false;
+	}
 
-	while (remainVarDataLen > 0) {
+	while (streamLen > 0) {
+
 		CElement::CStream strm ;
 
-		if (enVar == EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE) {
-			strm.stream_type = *p;
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID;
+		strm.stream_type = *p;
+		strm.elementary_PID = (*(p+1) & 0x1f) << 8 | *(p+2);
+		strm.ES_info_length = (*(p+3) & 0xf) << 8 | *(p+4);
 
-		} else if (enVar == EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID) {
-			strm.elementary_PID = (*p & 0x1f) << 8 | *(p+1);
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID_d;
-
-		} else if (enVar == EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID_d) {
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN;
-
-		} else if (enVar == EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN) {
-			strm.ES_info_length = (*p & 0xf) << 8 | *(p+1);
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN_d;
-
-		} else if (enVar == EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN_d) {
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__DESC;
-
-		} else {
-			// EN_PMT_VARDATA_PARSE_SATGE__DESC
-			n = strm.ES_info_length ;
-			while (n > 0) {
-				CDescriptor desc (p);
-				pElem->descriptors.push_back (desc);
-				n -= (2 + *(p + 1));
-				p += (2 + *(p + 1));
+		p += PMT_STREAM_FIX_LEN;
+		int n = (int)strm.ES_info_length ;
+		while (n > 0) {
+			CDescriptor desc (p);
+			if (!desc.isValid) {
+				puts ("invalid desc");
+				return false;
 			}
-
-			remainVarDataLen -= strm.ES_info_length ;
-			enVar = EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE;
-			continue;
+			strm.descriptors.push_back (desc);
+			n -= (2 + *(p + 1));
+			p += (2 + *(p + 1));
 		}
 
 		pElem->streams.push_back (strm);
-		-- remainVarDataLen;
-		++ p;
+
+		streamLen -= (PMT_STREAM_FIX_LEN + strm.ES_info_length) ;
+		if (streamLen < 0) {
+			puts ("invalid PMTstream");
+			return false;
+		}
 	}
 
 	mElements.push_back (pElem);
 
 	return true;
+}
+
+void CProgramMapTable::dumpElements (void) const
+{
+	if (mElements.size() == 0) {
+		return;
+	}
+
+	std::vector<CElement*>::const_iterator iter = mElements.begin(); 
+	for (; iter != mElements.end(); ++ iter) {
+
+		std::vector<CDescriptor>::const_iterator iter_desc = (*iter)->descriptors.begin();
+		std::vector<CElement::CStream>::const_iterator iter_strm = (*iter)->streams.begin();
+
+	}
+
 }
 
 void CProgramMapTable::dump (void) const
@@ -117,25 +129,20 @@ void CProgramMapTable::dump (void) const
 
 void CProgramMapTable::dump (const CSectionInfo *pSectionInfo) const
 {
-	CSectionInfo *pLatest = getLatestCompleteSection ();
-	if (!pLatest) {
+	if (!pSectionInfo) {
 		return ;
 	}
 
 	uint8_t *p = NULL; // work
 
-	// reserved             3  bslbf
-	// PCR_PID             13  uimsbf
-	// reserved             4  bslbf
-	// program_info_length 12 uimsbf
-	p = pLatest->getDataPartAddr();
+	p = pSectionInfo->getDataPartAddr();
 	uint16_t PCR_PID = (*p & 0x1f) << 8 | *(p+1);
 	printf ("PCR_PID 0x%04x\n", PCR_PID);
 	uint16_t program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
 	printf ("program_info_length %d\n", program_info_length);
 
 
-	p = pLatest->getDataPartAddr() + PMT_FIX_LEN;
+	p = pSectionInfo->getDataPartAddr() + PMT_FIX_LEN;
 	uint16_t n = program_info_length;
 	EN_DESCRIPTOR_PARSE_SATGE enDesc = EN_DESCRIPTOR_PARSE_SATGE__TAG;
 	uint16_t descDataLen = 0;
@@ -164,8 +171,8 @@ void CProgramMapTable::dump (const CSectionInfo *pSectionInfo) const
 		++ p;
 	}
 
-	p = pLatest->getDataPartAddr() + PMT_FIX_LEN + program_info_length;
-	uint16_t remainVarDataLen = pLatest->getHeader()->section_length - program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN;
+	p = pSectionInfo->getDataPartAddr() + PMT_FIX_LEN + program_info_length;
+	uint16_t remainVarDataLen = const_cast<CSectionInfo*>(pSectionInfo)->getHeader()->section_length - program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN;
 	EN_PMT_VARDATA_PARSE_SATGE enVar = EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE;
 	uint16_t esInfoLen = 0;
 

@@ -15,10 +15,16 @@
 #include "Descriptor.h"
 
 
-#define PMT_FIX_LEN		(4) // reserved             3  bslbf
-							// PCR_PID             13  uimsbf
-							// reserved             4  bslbf
-							// program_info_length 12 uimsbf
+#define PMT_FIX_LEN				(4) // reserved             3  bslbf
+									// PCR_PID             13  uimsbf
+									// reserved             4  bslbf
+									// program_info_length 12  uimsbf
+
+#define PMT_STREAM_FIX_LEN		(5) // stream_type          8  uimsbf
+									// reserved             3  bslbf
+									// elementary_PID      13  uimsbf
+									// reserved             4  bslbf
+									// ES_info_length      12  uimsbf
 
 
 class CProgramMapTable : public CSectionParser
@@ -66,6 +72,7 @@ public:
 
 
 	void onSectionComplete (const CSectionInfo *pCompSection) override;
+	void dumpElements (void) const;
 	void dump (void) const;
 
 

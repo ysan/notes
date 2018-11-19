@@ -17,13 +17,13 @@ CProgramAssociationTable::~CProgramAssociationTable (void)
 {
 }
 
-uint16_t CProgramAssociationTable::getElementNum (const CSectionInfo *pSectInfo) const
+int CProgramAssociationTable::getElementNum (const CSectionInfo *pSectInfo) const
 {
 	if (!pSectInfo) {
 		return 0;
 	}
 
-	uint16_t nDataPartLen = pSectInfo->getDataPartLen ();
+	int nDataPartLen = (int)pSectInfo->getDataPartLen ();
 	if (nDataPartLen < 4) {
 		printf ("invalid ProgramAssociationTable data\n");
 		return 0;
@@ -38,7 +38,7 @@ uint16_t CProgramAssociationTable::getElementNum (const CSectionInfo *pSectInfo)
 	return nDataPartLen / 4;
 }
 
-uint16_t CProgramAssociationTable::getElementNum (void) const
+int CProgramAssociationTable::getElementNum (void) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
 	if (!pLatest) {
@@ -48,7 +48,7 @@ uint16_t CProgramAssociationTable::getElementNum (void) const
 	return getElementNum (pLatest);
 }
 
-bool CProgramAssociationTable::getElement (CElement outArr[], uint16_t outArrSize) const
+bool CProgramAssociationTable::getElement (CElement outArr[], int outArrSize) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
 	if (!pLatest) {
@@ -60,7 +60,7 @@ bool CProgramAssociationTable::getElement (CElement outArr[], uint16_t outArrSiz
 	}
 
 	uint8_t *p = pLatest->getDataPartAddr();
-	uint16_t n = getElementNum (pLatest);
+	int n = (int) getElementNum (pLatest);
 	if (n <= 0) {
 		return false;
 	}
@@ -91,7 +91,7 @@ bool CProgramAssociationTable::getElement (CElement outArr[], uint16_t outArrSiz
 	return true;
 }
 
-void CProgramAssociationTable::dumpElement (const CElement inArr[], uint16_t arrSize) const
+void CProgramAssociationTable::dumpElement (const CElement inArr[], int arrSize) const
 {
 	if ((!inArr) || (arrSize == 0)) {
 		return ;
