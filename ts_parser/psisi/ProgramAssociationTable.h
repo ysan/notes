@@ -7,37 +7,36 @@
 #include "ProgramMapTable.h"
 
 
-typedef struct _pat_element {
-public:
-	_pat_element (void)
-		:program_number (0)
-		,network_PID (0)
-		,program_map_PID (0)
-		,mpPMT (NULL)
-		,isUsed (false)
-	{}
-	~_pat_element (void) {}
-
-public:
-	uint16_t program_number;
-	uint16_t network_PID; // if program_number == 0 then network_PID
-	uint16_t program_map_PID;
-	CProgramMapTable *mpPMT; // section parser for PMT
-	bool isUsed;
-
-} ST_PAT_ELEMENT;
-
 
 class CProgramAssociationTable : public CSectionParser
 {
+public:
+	class CElement {
+	public:
+		CElement (void)
+			:program_number (0)
+			,network_PID (0)
+			,program_map_PID (0)
+			,mpPMT (NULL)
+			,isUsed (false)
+		{}
+		virtual ~CElement (void) {}
+
+		uint16_t program_number;
+		uint16_t network_PID; // if program_number == 0 then network_PID
+		uint16_t program_map_PID;
+		CProgramMapTable *mpPMT; // section parser for PMT
+		bool isUsed;
+	};
+
 public:
 	CProgramAssociationTable (void);
 	virtual ~CProgramAssociationTable (void);
 
 
-	uint16_t getElementNum () const;
-	bool getElement (ST_PAT_ELEMENT *pstOut, uint16_t nOutSetNum) const;
-	void dumpElement (const ST_PAT_ELEMENT *pstIn, uint16_t nInSetNum) const;
+	uint16_t getElementNum (void) const;
+	bool getElement (CElement outArr[], uint16_t outArrSize) const;
+	void dumpElement (const CElement inArr[], uint16_t arrSize) const;
 
 
 private:

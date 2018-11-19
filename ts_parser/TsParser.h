@@ -1,6 +1,12 @@
 #ifndef _TS_PARSER_H_
 #define _TS_PARSER_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "ProgramAssociationTable.h"
@@ -36,9 +42,10 @@ private:
 
 
 	CProgramAssociationTable mPAT;
-	ST_PAT_ELEMENT mCurPatElement [32];
+	CProgramAssociationTable::CElement mPatElement [4 * 8];
 	CTimeOffsetTable mTOT;
 	CEventInformationTable mEIT;
+
 };
 
 #endif

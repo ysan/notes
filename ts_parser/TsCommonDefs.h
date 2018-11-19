@@ -10,11 +10,6 @@
 #define SECTION_SHORT_HEADER_LEN		(3) // section_length include, before
 #define SECTION_CRC32_LEN				(4)
 
-#define PMT_FIX_LEN						(4) // reserved             3  bslbf
-											// PCR_PID             13  uimsbf
-											// reserved             4  bslbf
-											// program_info_length 12 uimsbf
-
 typedef enum {
 	EN_DESCRIPTOR_PARSE_SATGE__TAG,
 	EN_DESCRIPTOR_PARSE_SATGE__LEN,

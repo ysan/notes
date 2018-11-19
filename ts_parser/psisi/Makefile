@@ -8,6 +8,7 @@ CFLAGS		:=	-std=c++11
 INCLUDES	:= \
 	-I./ \
 	-I../ \
+	-I./descriptor/ \
 	-I/usr/include/PCSC/ \
 
 LIBS		:= \
@@ -35,6 +36,7 @@ SRCS_CPP	:= \
 	ProgramMapTable.cpp \
 	TimeOffsetTable.cpp \
 	EventInformationTable.cpp \
+	descriptor/Descriptor.cpp \
 
 
 #

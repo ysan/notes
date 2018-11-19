@@ -48,14 +48,14 @@ uint16_t CProgramAssociationTable::getElementNum (void) const
 	return getElementNum (pLatest);
 }
 
-bool CProgramAssociationTable::getElement (ST_PAT_ELEMENT *pstOut, uint16_t nOutSetNum) const
+bool CProgramAssociationTable::getElement (CElement outArr[], uint16_t outArrSize) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
 	if (!pLatest) {
 		return false;
 	}
 
-	if ((!pstOut) || (nOutSetNum == 0)) {
+	if ((!outArr) || (outArrSize == 0)) {
 		return false;
 	}
 
@@ -65,50 +65,47 @@ bool CProgramAssociationTable::getElement (ST_PAT_ELEMENT *pstOut, uint16_t nOut
 		return false;
 	}
 
-	while (n != 0 && nOutSetNum != 0) {
-		pstOut->program_number = ((*p << 8) | *(p+1)) & 0xffff;
+	while (n != 0 && outArrSize != 0) {
+		outArr[n].program_number = ((*p << 8) | *(p+1)) & 0xffff;
 
-		if (pstOut->program_number == 0) {
-			pstOut->network_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
+		if (outArr[n].program_number == 0) {
+			outArr[n].network_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
 		} else {
-			pstOut->program_map_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
-			if (!pstOut->mpPMT) {
-				pstOut->mpPMT = new CProgramMapTable();
+			outArr[n].program_map_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
+			if (!outArr[n].mpPMT) {
+				outArr[n].mpPMT = new CProgramMapTable();
 			}
 		}
 
-		pstOut->isUsed = true;
+		outArr[n].isUsed = true;
 
 		p += 4;
 		-- n;
-		++ pstOut;
-		-- nOutSetNum;
+		-- outArrSize;
 	}
 
-	if ((n > 0) || (nOutSetNum == 0)) {
+	if (n > 0 && outArrSize == 0) {
 		printf ("warn:  ProgramAssociationTable is not get all.\n");
 	}
 
 	return true;
 }
 
-void CProgramAssociationTable::dumpElement (const ST_PAT_ELEMENT *pstIn, uint16_t nInSetNum) const
+void CProgramAssociationTable::dumpElement (const CElement inArr[], uint16_t arrSize) const
 {
-	if ((!pstIn) || (nInSetNum == 0)) {
+	if ((!inArr) || (arrSize == 0)) {
 		return ;
 	}
 
-	for (int i = 0; i < nInSetNum; ++ i) {
-		printf ("program_number 0x%04x  ", pstIn->program_number);
-		if (pstIn->program_number == 0) {
-			printf ("network_PID     0x%04x  ", pstIn->network_PID);
+	for (int i = 0; i < arrSize; ++ i) {
+		printf ("program_number 0x%04x  ", inArr[i].program_number);
+		if (inArr[i].program_number == 0) {
+			printf ("network_PID     0x%04x  ", inArr[i].network_PID);
 		} else {
-			printf ("program_map_PID 0x%04x  ", pstIn->program_map_PID);
+			printf ("program_map_PID 0x%04x  ", inArr[i].program_map_PID);
 		}
-		printf ("PMT parser:%p ", pstIn->mpPMT);
-		printf ("%s", pstIn->isUsed ? "used " : "noused");
+		printf ("PMT parser:%p ", inArr[i].mpPMT);
+		printf ("%s", inArr[i].isUsed ? "used " : "noused");
 		printf ("\n");
-
-		++ pstIn;
 	}
 }

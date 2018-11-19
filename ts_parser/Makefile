@@ -8,6 +8,7 @@ CFLAGS		:=	-std=c++11
 INCLUDES	:= \
 	-I./ \
 	-I./psisi/ \
+	-I./psisi/descriptor/ \
 	-I/usr/include/PCSC/ \
 
 LIBS		:= \

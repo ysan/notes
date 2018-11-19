@@ -15,5 +15,6 @@ if [ ! -e $1 -o ! -f $1 ]; then
 	exit 1
 fi
 
-cat $1 | ${BASE_DIR}/ts_parser
+#cat $1 | ${BASE_DIR}/ts_parser
+${BASE_DIR}/ts_parser -f $1
 
