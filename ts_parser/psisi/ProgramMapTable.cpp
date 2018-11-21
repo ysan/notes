@@ -23,32 +23,32 @@ void CProgramMapTable::onSectionComplete (const CSectionInfo *pCompSection)
 		return;
 	}
 
-	CElement *pElem = new CElement ();
-	if (!parse (pCompSection, pElem)) {
-		delete pElem;
-		pElem = NULL;
+	CTable *pTable = new CTable ();
+	if (!parse (pCompSection, pTable)) {
+		delete pTable;
+		pTable = NULL;
 	}
 
-	mElements.push_back (pElem);
-	dumpElement (pElem);
+	mTables.push_back (pTable);
+	dumpTable (pTable);
 
 }
 
-bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CElement* pOutElem)
+bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTable)
 {
-	if (!pCompSection || !pOutElem) {
+	if (!pCompSection || !pOutTable) {
 		return false;
 	}
 
 	uint8_t *p = NULL; // work
-	CElement* pElem = pOutElem;
+	CTable* pTable = pOutTable;
 
 	p = pCompSection->getDataPartAddr();
-	pElem->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
-	pElem->program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
+	pTable->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
+	pTable->program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
 
 	p += PMT_FIX_LEN;
-	int n = (int)pElem->program_info_length;
+	int n = (int)pTable->program_info_length;
 	while (n > 0) {
 		CDescriptor desc (p);
 //desc.dump();
@@ -56,12 +56,12 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CElement* pOutEl
 			puts ("invalid desc 1");
 			return false;
 		}
-		pElem->descriptors.push_back (desc);
+		pTable->descriptors.push_back (desc);
 		n -= (2 + *(p + 1));
 		p += (2 + *(p + 1));
 	}
 
-	int streamLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pElem->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
+	int streamLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pTable->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
 	if (streamLen <= PMT_STREAM_FIX_LEN) {
 		puts ("invalid PMT stream");
 		return false;
@@ -69,7 +69,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CElement* pOutEl
 
 	while (streamLen > 0) {
 
-		CElement::CStream strm ;
+		CTable::CStream strm ;
 
 		strm.stream_type = *p;
 		strm.elementary_PID = (*(p+1) & 0x1f) << 8 | *(p+2);
@@ -94,59 +94,59 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CElement* pOutEl
 			return false;
 		}
 
-		pElem->streams.push_back (strm);
+		pTable->streams.push_back (strm);
 	}
 
 	return true;
 }
 
-void CProgramMapTable::releaseElements (void)
+void CProgramMapTable::releaseTables (void)
 {
-	if (mElements.size() == 0) {
+	if (mTables.size() == 0) {
 		return;
 	}
 
-	std::vector<CElement*>::iterator iter = mElements.begin(); 
-	for (; iter != mElements.end(); ++ iter) {
+	std::vector<CTable*>::iterator iter = mTables.begin(); 
+	for (; iter != mTables.end(); ++ iter) {
 		delete (*iter);
 		(*iter) = NULL;
 	}
 
-	mElements.clear();
+	mTables.clear();
 }
 
-void CProgramMapTable::dumpElements (void) const
+void CProgramMapTable::dumpTables (void) const
 {
-	if (mElements.size() == 0) {
+	if (mTables.size() == 0) {
 		return;
 	}
 
-	std::vector<CElement*>::const_iterator iter = mElements.begin(); 
-	for (; iter != mElements.end(); ++ iter) {
-		CElement *pElem = *iter;
-		dumpElement (pElem);
+	std::vector<CTable*>::const_iterator iter = mTables.begin(); 
+	for (; iter != mTables.end(); ++ iter) {
+		CTable *pTable = *iter;
+		dumpTable (pTable);
 	}
 }
 
-void CProgramMapTable::dumpElement (const CElement* pElem) const
+void CProgramMapTable::dumpTable (const CTable* pTable) const
 {
-	if (!pElem) {
+	if (!pTable) {
 		return;
 	}
 
 	printf ("========================================\n");
 
-	printf ("PCR_PID             0x%04x\n", pElem->PCR_PID);
-	printf ("program_info_length 0x%04x\n", pElem->program_info_length);
+	printf ("PCR_PID             0x%04x\n", pTable->PCR_PID);
+	printf ("program_info_length 0x%04x\n", pTable->program_info_length);
 
 	printf ("\n-- descriptors --\n");
-	std::vector<CDescriptor>::const_iterator iter_desc = pElem->descriptors.begin();
-	for (; iter_desc != pElem->descriptors.end(); ++ iter_desc) {
+	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
+	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
 		iter_desc->dump();
 	}
 
-	std::vector<CElement::CStream>::const_iterator iter_strm = pElem->streams.begin();
-	for (; iter_strm != pElem->streams.end(); ++ iter_strm) {
+	std::vector<CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
+	for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
 		printf ("\n--  stream  --\n");
 		printf ("stream_type    0x%02x\n", iter_strm->stream_type);
 		printf ("elementary_PID 0x%04x\n", iter_strm->elementary_PID);
@@ -164,7 +164,7 @@ void CProgramMapTable::dumpElement (const CElement* pElem) const
 
 void CProgramMapTable:: clear (void)
 {
-	releaseElements ();
+	releaseTables ();
 	detachAllSection ();
 }
 

@@ -1,6 +1,12 @@
 #ifndef _DESCRIPTOR_H_
 #define _DESCRIPTOR_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "Defs.h"
 #include "TsCommonDefs.h"
 

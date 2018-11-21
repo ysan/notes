@@ -30,7 +30,7 @@
 class CProgramMapTable : public CSectionParser
 {
 public:
-	class CElement {
+	class CTable {
 	public:
 		class CStream {
 		public:
@@ -50,14 +50,14 @@ public:
 		};
 
 	public:
-		CElement (void)
+		CTable (void)
 			:PCR_PID (0)
 			,program_info_length (0)
 		{
 			descriptors.clear();
 			streams.clear();
 		}
-		virtual ~CElement (void) {}
+		virtual ~CTable (void) {}
 
 		uint16_t PCR_PID;
 		uint16_t program_info_length;
@@ -72,20 +72,20 @@ public:
 
 	void onSectionComplete (const CSectionInfo *pCompSection) override;
 
-	void dumpElements (void) const;
-	void dumpElement (const CElement* pElem) const;
+	void dumpTables (void) const;
+	void dumpTable (const CTable* pTable) const;
 	void clear (void);
 
 
 private:
-	bool parse (const CSectionInfo *pCompSection, CElement* pOutElem);
-	void releaseElements (void);
+	bool parse (const CSectionInfo *pCompSection, CTable* pOutTable);
+	void releaseTables (void);
 
 //	void dump (void) const;
 //	void dump (const CSectionInfo *pCompSection) const;
 
 
-	std::vector <CElement*> mElements;
+	std::vector <CTable*> mTables;
 
 };
 

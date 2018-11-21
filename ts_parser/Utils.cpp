@@ -67,7 +67,7 @@ void CUtils::dumper (const uint8_t *pSrc, int nSrcLen, bool isAddAscii)
 
 		// ascii文字表示
 		if (isAddAscii) {
-			fprintf (stdout, "  ");
+			fprintf (stdout, "  |");
 			k = 0;
 			while (k < 16) {
 				// 制御コード系は'.'で代替
@@ -76,11 +76,11 @@ void CUtils::dumper (const uint8_t *pSrc, int nSrcLen, bool isAddAscii)
 					"%c",
 					(*(pSrc+k)>0x1f) && (*(pSrc+k)<0x7f) ? *(pSrc+k) : '.'
 				);
-				k ++;
+				++ k;
 			}
 		}
 
-		fprintf (stdout, "\n");
+		fprintf (stdout, "|\n");
 
 		pSrc += 16;
 		i += 16;
@@ -95,35 +95,43 @@ void CUtils::dumper (const uint8_t *pSrc, int nSrcLen, bool isAddAscii)
 		while (j < 16) {
 			if (j < nSrcLen) {
 				fprintf (stdout, "%02x", *(pSrc+j));
-				if (j != 7) {
-					fprintf (stdout, " ");
-				} else {
+				if (j == 7) {
 					fprintf (stdout, "  ");
+				} else if (j == 15) {
+
+				} else {
+					fprintf (stdout, " ");
 				}
 
 			} else {
 				fprintf (stdout, "  ");
-				if (j != 15) {
+				if (j == 7) {
+					fprintf (stdout, "  ");
+				} else if (j == 15) {
+
+				} else {
 					fprintf (stdout, " ");
 				}
 			}
 
-			j ++;
+			++ j;
 		}
 
 		// ascii文字表示
 		if (isAddAscii) {
-			fprintf (stdout, "  ");
+			fprintf (stdout, "  |");
 			k = 0;
 			while (k < nSrcLen) {
 				// 制御コード系は'.'で代替
-				fprintf (stdout, "%c",
-							(*(pSrc+k)>0x20) && (*(pSrc+k)<0x7f) ? *(pSrc+k) : '.');
-				k ++;
+				fprintf (stdout, "%c", (*(pSrc+k)>0x20) && (*(pSrc+k)<0x7f) ? *(pSrc+k) : '.');
+				++ k;
+			}
+			for (int i = 0; i < (16 - nSrcLen); ++ i) {
+				fprintf (stdout, " ");
 			}
 		}
 
-		fprintf (stdout, "\n");
+		fprintf (stdout, "|\n");
 	}
 }
 

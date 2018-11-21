@@ -31,7 +31,7 @@
 class CEventInformationTable : public CSectionParser
 {
 public:
-	class CElement {
+	class CTable {
 	public:
 		class CEvent {
 		public:
@@ -57,7 +57,7 @@ public:
 		};
 
 	public:
-		CElement (void)
+		CTable (void)
 			:transport_stream_id (0)
 			,original_network_id (0)
 			,segment_last_section_number (0)
@@ -65,7 +65,7 @@ public:
 		{
 			events.clear();
 		}
-		virtual ~CElement (void) {}
+		virtual ~CTable (void) {}
 
 		uint16_t transport_stream_id;
 		uint16_t original_network_id;
@@ -79,15 +79,15 @@ public:
 
 	void onSectionComplete (const CSectionInfo *pCompSection) override;
 
-	void dumpElements (void) const;
-	void dumpElement (const CElement* pElem) const;
+	void dumpTables (void) const;
+	void dumpTable (const CTable* pTable) const;
 	void clear (void);
 
 private:
-	bool parse (const CSectionInfo *pCompSection, CElement* pOutElem);
-	void releaseElements (void);
+	bool parse (const CSectionInfo *pCompSection, CTable* pOutTable);
+	void releaseTables (void);
 
-	std::vector <CElement*> mElements;
+	std::vector <CTable*> mTables;
 
 };
 

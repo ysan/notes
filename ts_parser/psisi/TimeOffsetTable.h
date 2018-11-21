@@ -1,10 +1,15 @@
 #ifndef _TIME_OFFSET_TABLE_H_
 #define _TIME_OFFSET_TABLE_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-
 
 
 class CTimeOffsetTable : public CSectionParser

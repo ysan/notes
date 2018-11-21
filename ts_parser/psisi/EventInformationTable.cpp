@@ -23,31 +23,31 @@ void CEventInformationTable::onSectionComplete (const CSectionInfo *pCompSection
 		return ;
 	}
 
-	CElement *pElem = new CElement ();
-	if (!parse (pCompSection, pElem)) {
-		delete pElem;
-		pElem = NULL;
+	CTable *pTable = new CTable ();
+	if (!parse (pCompSection, pTable)) {
+		delete pTable;
+		pTable = NULL;
 	}
 
-	mElements.push_back (pElem);
-	dumpElement (pElem);
+	mTables.push_back (pTable);
+	dumpTable (pTable);
 
 }
 
-bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CElement* pOutElem)
+bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pOutTable)
 {
-	if (!pCompSection || !pOutElem) {
+	if (!pCompSection || !pOutTable) {
 		return false;
 	}
 
 	uint8_t *p = NULL; // work
-	CElement* pElem = pOutElem;
+	CTable* pTable = pOutTable;
 
 	p = pCompSection->getDataPartAddr();
-	pElem->transport_stream_id = *p << 8 | *(p+1);
-	pElem->original_network_id = *(p+2) << 8 | *(p+3);
-	pElem->segment_last_section_number = *(p+4);
-	pElem->last_table_id = *(p+5);
+	pTable->transport_stream_id = *p << 8 | *(p+1);
+	pTable->original_network_id = *(p+2) << 8 | *(p+3);
+	pTable->segment_last_section_number = *(p+4);
+	pTable->last_table_id = *(p+5);
 
 	p += EIT_FIX_LEN;
 
@@ -59,7 +59,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CElement* 
 
 	while (eventLen > 0) {
 
-		CElement::CEvent ev ;
+		CTable::CEvent ev ;
 
 		ev.event_id = *p << 8 | *(p+1);
 		ev.start_time = ((uint64_t)(*(p+2)) << 32) | *(p+3) << 24 | *(p+4) << 16 | *(p+5) << 8 | *(p+6);
@@ -87,55 +87,55 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CElement* 
 			return false;
 		}
 
-		pElem->events.push_back (ev);
+		pTable->events.push_back (ev);
 	}
 
 	return true;
 }
 
-void CEventInformationTable::releaseElements (void)
+void CEventInformationTable::releaseTables (void)
 {
-	if (mElements.size() == 0) {
+	if (mTables.size() == 0) {
 		return;
 	}
 
-	std::vector<CElement*>::iterator iter = mElements.begin(); 
-	for (; iter != mElements.end(); ++ iter) {
+	std::vector<CTable*>::iterator iter = mTables.begin(); 
+	for (; iter != mTables.end(); ++ iter) {
 		delete (*iter);
 		(*iter) = NULL;
 	}
 
-	mElements.clear();
+	mTables.clear();
 }
 
-void CEventInformationTable::dumpElements (void) const
+void CEventInformationTable::dumpTables (void) const
 {
-	if (mElements.size() == 0) {
+	if (mTables.size() == 0) {
 		return;
 	}
 
-	std::vector<CElement*>::const_iterator iter = mElements.begin(); 
-	for (; iter != mElements.end(); ++ iter) {
-		CElement *pElem = *iter;
-		dumpElement (pElem);
+	std::vector<CTable*>::const_iterator iter = mTables.begin(); 
+	for (; iter != mTables.end(); ++ iter) {
+		CTable *pTable = *iter;
+		dumpTable (pTable);
 	}
 }
 
-void CEventInformationTable::dumpElement (const CElement* pElem) const
+void CEventInformationTable::dumpTable (const CTable* pTable) const
 {
-	if (!pElem) {
+	if (!pTable) {
 		return;
 	}
 	
 	printf ("========================================\n");
 
-	printf ("transport_stream_id         0x%04x\n", pElem->transport_stream_id);
-	printf ("original_network_id         0x%04x\n", pElem->original_network_id);
-	printf ("segment_last_section_number 0x%02x\n", pElem->segment_last_section_number);
-	printf ("original_network_id         0x%02x\n", pElem->last_table_id);
+	printf ("transport_stream_id         0x%04x\n", pTable->transport_stream_id);
+	printf ("original_network_id         0x%04x\n", pTable->original_network_id);
+	printf ("segment_last_section_number 0x%02x\n", pTable->segment_last_section_number);
+	printf ("original_network_id         0x%02x\n", pTable->last_table_id);
 
-	std::vector<CElement::CEvent>::const_iterator iter_event = pElem->events.begin();
-	for (; iter_event != pElem->events.end(); ++ iter_event) {
+	std::vector<CTable::CEvent>::const_iterator iter_event = pTable->events.begin();
+	for (; iter_event != pTable->events.end(); ++ iter_event) {
 		printf ("\n--  events  --\n");
 		printf ("event_id                0x%04x\n", iter_event->event_id);
 		printf ("start_time              0x%02x%08x\n", (uint32_t)(iter_event->start_time >> 32) & 0xff, (uint32_t)iter_event->start_time & 0xffffffff);
@@ -156,6 +156,6 @@ void CEventInformationTable::dumpElement (const CElement* pElem) const
 
 void CEventInformationTable::clear (void)
 {
-//	releaseElements ();
+//	releaseTables ();
 	detachAllSection ();
 }

@@ -1,6 +1,12 @@
 #ifndef _SECTION_PARSER_H_
 #define _SECTION_PARSER_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "Defs.h"
 #include "TsCommonDefs.h"
 

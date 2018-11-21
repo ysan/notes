@@ -232,7 +232,7 @@ bool CTsParser::searchPAT (void)
 	size_t unitSize = mUnitSize;
 	size_t payloadSize = 0;
 	bool isCheck = false;
-	CProgramAssociationTable::CElement *pPatElem = NULL;
+	CProgramAssociationTable::CTable *pPatTable = NULL;
 
 
 	while ((pCur+unitSize) < pBtm) {
@@ -287,15 +287,15 @@ dumpTsHeader (&stTsHdr);
 
 		default:
 //puts ("1111");
-//mPAT.dumpElement (mPatElement, 32);
+//mPAT.dumpTable (mPatTable, 32);
 			// check PMT
-			pPatElem = &mPatElement [0];
+			pPatTable = &mPatTable [0];
 			for (int i = 0; i < 32; ++ i) {
-				if (!pPatElem->isUsed) {
+				if (!pPatTable->isUsed) {
 					continue;
 				}
-				if (pPatElem->program_number != 0) {
-					if (stTsHdr.pid == pPatElem->program_map_PID) {
+				if (pPatTable->program_number != 0) {
+					if (stTsHdr.pid == pPatTable->program_map_PID) {
 puts ("###############  PMT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
@@ -304,7 +304,7 @@ dumpTsHeader (&stTsHdr);
 					}
 				}
 
-				++ pPatElem ;
+				++ pPatTable ;
 			}
 
 			break;
@@ -334,11 +334,11 @@ dumpTsHeader (&stTsHdr);
 
 				mPAT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-				memset (mPatElement, 0x00, sizeof(mPatElement));
+				memset (mPatTable, 0x00, sizeof(mPatTable));
 
-				int n = mPAT.getElementNum ();
-				mPAT.getElement (mPatElement, 32);
-				mPAT.dumpElement (mPatElement, n);
+				int n = mPAT.getTableNum ();
+				mPAT.getTable (mPatTable, 32);
+				mPAT.dumpTable (mPatTable, n);
 
 			} else if (stTsHdr.pid == 0x0014) {
 
@@ -356,10 +356,10 @@ dumpTsHeader (&stTsHdr);
 
 				mEIT_0x27.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == pPatElem->program_map_PID) {
+			} else if (stTsHdr.pid == pPatTable->program_map_PID) {
 
-				if (pPatElem->mpPMT) {
-					pPatElem->mpPMT->checkSection (&stTsHdr, pPayload, payloadSize);
+				if (pPatTable->mpPMT) {
+					pPatTable->mpPMT->checkSection (&stTsHdr, pPayload, payloadSize);
 				}
 				
 			}

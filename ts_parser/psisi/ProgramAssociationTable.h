@@ -1,26 +1,31 @@
 #ifndef _PROGRAM_ASSOCIATION_TABLE_H_
 #define _PROGRAM_ASSOCIATION_TABLE_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
 #include "ProgramMapTable.h"
 
 
-
 class CProgramAssociationTable : public CSectionParser
 {
 public:
-	class CElement {
+	class CTable {
 	public:
-		CElement (void)
+		CTable (void)
 			:program_number (0)
 			,network_PID (0)
 			,program_map_PID (0)
 			,mpPMT (NULL)
 			,isUsed (false)
 		{}
-		virtual ~CElement (void) {}
+		virtual ~CTable (void) {}
 
 		uint16_t program_number;
 		uint16_t network_PID; // if program_number == 0 then network_PID
@@ -34,13 +39,13 @@ public:
 	virtual ~CProgramAssociationTable (void);
 
 
-	int getElementNum (void) const;
-	bool getElement (CElement outArr[], int outArrSize) const;
-	void dumpElement (const CElement inArr[], int arrSize) const;
+	int getTableNum (void) const;
+	bool getTable (CTable outArr[], int outArrSize) const;
+	void dumpTable (const CTable inArr[], int arrSize) const;
 
 
 private:
-	int getElementNum (const CSectionInfo *pSectInfo) const;
+	int getTableNum (const CSectionInfo *pSectInfo) const;
 
 };
 

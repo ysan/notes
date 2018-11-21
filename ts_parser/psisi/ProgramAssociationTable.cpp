@@ -17,7 +17,7 @@ CProgramAssociationTable::~CProgramAssociationTable (void)
 {
 }
 
-int CProgramAssociationTable::getElementNum (const CSectionInfo *pSectInfo) const
+int CProgramAssociationTable::getTableNum (const CSectionInfo *pSectInfo) const
 {
 	if (!pSectInfo) {
 		return 0;
@@ -38,17 +38,17 @@ int CProgramAssociationTable::getElementNum (const CSectionInfo *pSectInfo) cons
 	return nDataPartLen / 4;
 }
 
-int CProgramAssociationTable::getElementNum (void) const
+int CProgramAssociationTable::getTableNum (void) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
 	if (!pLatest) {
 		return 0;
 	}
 
-	return getElementNum (pLatest);
+	return getTableNum (pLatest);
 }
 
-bool CProgramAssociationTable::getElement (CElement outArr[], int outArrSize) const
+bool CProgramAssociationTable::getTable (CTable outArr[], int outArrSize) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
 	if (!pLatest) {
@@ -60,7 +60,7 @@ bool CProgramAssociationTable::getElement (CElement outArr[], int outArrSize) co
 	}
 
 	uint8_t *p = pLatest->getDataPartAddr();
-	int n = (int) getElementNum (pLatest);
+	int n = (int) getTableNum (pLatest);
 	if (n <= 0) {
 		return false;
 	}
@@ -92,7 +92,7 @@ bool CProgramAssociationTable::getElement (CElement outArr[], int outArrSize) co
 	return true;
 }
 
-void CProgramAssociationTable::dumpElement (const CElement inArr[], int arrSize) const
+void CProgramAssociationTable::dumpTable (const CTable inArr[], int arrSize) const
 {
 	if ((!inArr) || (arrSize == 0)) {
 		return ;

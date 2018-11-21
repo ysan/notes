@@ -42,7 +42,7 @@ private:
 
 
 	CProgramAssociationTable mPAT;
-	CProgramAssociationTable::CElement mPatElement [4 * 8];
+	CProgramAssociationTable::CTable mPatTable [4 * 8];
 	CTimeOffsetTable mTOT;
 	CEventInformationTable mEIT_0x12;
 	CEventInformationTable mEIT_0x26;
