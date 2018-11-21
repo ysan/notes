@@ -65,22 +65,23 @@ bool CProgramAssociationTable::getElement (CElement outArr[], int outArrSize) co
 		return false;
 	}
 
-	while (n != 0 && outArrSize != 0) {
-		outArr[n].program_number = ((*p << 8) | *(p+1)) & 0xffff;
+	int i = 0;
+	while (i != n && outArrSize != 0) {
+		outArr[i].program_number = ((*p << 8) | *(p+1)) & 0xffff;
 
-		if (outArr[n].program_number == 0) {
-			outArr[n].network_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
+		if (outArr[i].program_number == 0) {
+			outArr[i].network_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
 		} else {
-			outArr[n].program_map_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
-			if (!outArr[n].mpPMT) {
-				outArr[n].mpPMT = new CProgramMapTable();
+			outArr[i].program_map_PID = (((*(p+2) & 0x01f) << 8) | *(p+3)) & 0xffff;
+			if (!outArr[i].mpPMT) {
+				outArr[i].mpPMT = new CProgramMapTable();
 			}
 		}
 
-		outArr[n].isUsed = true;
+		outArr[i].isUsed = true;
 
 		p += 4;
-		-- n;
+		++ i;
 		-- outArrSize;
 	}
 
@@ -104,7 +105,7 @@ void CProgramAssociationTable::dumpElement (const CElement inArr[], int arrSize)
 		} else {
 			printf ("program_map_PID 0x%04x  ", inArr[i].program_map_PID);
 		}
-		printf ("PMT parser:%p ", inArr[i].mpPMT);
+		printf ("PMTparser: %p ", inArr[i].mpPMT);
 		printf ("%s", inArr[i].isUsed ? "used " : "noused");
 		printf ("\n");
 	}

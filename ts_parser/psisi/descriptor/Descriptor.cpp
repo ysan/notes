@@ -18,7 +18,7 @@ CDescriptor::CDescriptor (const uint8_t *pStart)
 		return ;
 	}
 	uint8_t len = *(pStart + 1);
-	if (len > 0xff || len <= 2) {
+	if (len == 0) {
 		isValid = false;
 		return;
 	}
@@ -31,4 +31,16 @@ CDescriptor::CDescriptor (const uint8_t *pStart)
 
 CDescriptor::~CDescriptor (void)
 {
+}
+
+void CDescriptor::dump (void) const
+{
+	printf ("descriptor tag    0x%02x\n", tag);
+	printf ("descriptor length 0x%02x\n", length);
+	CUtils::dumper (data, length);
+
+if (tag == 0x4d) {
+ printf ("%s\n", (char*)(data+4));
+}
+
 }

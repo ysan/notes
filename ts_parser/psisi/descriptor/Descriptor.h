@@ -10,6 +10,7 @@ public:
 	CDescriptor (const uint8_t *pStart);
 	~CDescriptor (void);
 
+	void dump (void) const;
 
 	uint8_t tag;
 	uint8_t length;

@@ -16,31 +16,32 @@ CProgramMapTable::~CProgramMapTable (void)
 {
 }
 
-typedef enum {
-	EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE,		// stream_type
-	EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID,			// elementary_PID
-	EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID_d,
-	EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN,		// ES_info_length
-	EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN_d,
-	EN_PMT_VARDATA_PARSE_SATGE__DESC,				// descriptor
-} EN_PMT_VARDATA_PARSE_SATGE;
-
 
 void CProgramMapTable::onSectionComplete (const CSectionInfo *pCompSection)
 {
-	dump ();
-	parse (pCompSection);
+	if (!pCompSection) {
+		return;
+	}
+
+	CElement *pElem = new CElement ();
+	if (!parse (pCompSection, pElem)) {
+		delete pElem;
+		pElem = NULL;
+	}
+
+	mElements.push_back (pElem);
+	dumpElement (pElem);
+
 }
 
-bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
+bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CElement* pOutElem)
 {
-	if (!pCompSection) {
+	if (!pCompSection || !pOutElem) {
 		return false;
 	}
 
 	uint8_t *p = NULL; // work
-
-	CElement* pElem = new CElement ();
+	CElement* pElem = pOutElem;
 
 	p = pCompSection->getDataPartAddr();
 	pElem->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
@@ -50,8 +51,9 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
 	int n = (int)pElem->program_info_length;
 	while (n > 0) {
 		CDescriptor desc (p);
+//desc.dump();
 		if (!desc.isValid) {
-			puts ("invalid desc");
+			puts ("invalid desc 1");
 			return false;
 		}
 		pElem->descriptors.push_back (desc);
@@ -59,10 +61,9 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
 		p += (2 + *(p + 1));
 	}
 
-	p += PMT_FIX_LEN + pElem->program_info_length;
 	int streamLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pElem->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
 	if (streamLen <= PMT_STREAM_FIX_LEN) {
-		puts ("invalid PMTstream");
+		puts ("invalid PMT stream");
 		return false;
 	}
 
@@ -79,7 +80,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
 		while (n > 0) {
 			CDescriptor desc (p);
 			if (!desc.isValid) {
-				puts ("invalid desc");
+				puts ("invalid desc 2");
 				return false;
 			}
 			strm.descriptors.push_back (desc);
@@ -87,18 +88,31 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection)
 			p += (2 + *(p + 1));
 		}
 
-		pElem->streams.push_back (strm);
-
 		streamLen -= (PMT_STREAM_FIX_LEN + strm.ES_info_length) ;
 		if (streamLen < 0) {
-			puts ("invalid PMTstream");
+			puts ("invalid PMT stream");
 			return false;
 		}
+
+		pElem->streams.push_back (strm);
 	}
 
-	mElements.push_back (pElem);
-
 	return true;
+}
+
+void CProgramMapTable::releaseElements (void)
+{
+	if (mElements.size() == 0) {
+		return;
+	}
+
+	std::vector<CElement*>::iterator iter = mElements.begin(); 
+	for (; iter != mElements.end(); ++ iter) {
+		delete (*iter);
+		(*iter) = NULL;
+	}
+
+	mElements.clear();
 }
 
 void CProgramMapTable::dumpElements (void) const
@@ -109,14 +123,53 @@ void CProgramMapTable::dumpElements (void) const
 
 	std::vector<CElement*>::const_iterator iter = mElements.begin(); 
 	for (; iter != mElements.end(); ++ iter) {
-
-		std::vector<CDescriptor>::const_iterator iter_desc = (*iter)->descriptors.begin();
-		std::vector<CElement::CStream>::const_iterator iter_strm = (*iter)->streams.begin();
-
+		CElement *pElem = *iter;
+		dumpElement (pElem);
 	}
-
 }
 
+void CProgramMapTable::dumpElement (const CElement* pElem) const
+{
+	if (!pElem) {
+		return;
+	}
+
+	printf ("========================================\n");
+
+	printf ("PCR_PID             0x%04x\n", pElem->PCR_PID);
+	printf ("program_info_length 0x%04x\n", pElem->program_info_length);
+
+	printf ("\n-- descriptors --\n");
+	std::vector<CDescriptor>::const_iterator iter_desc = pElem->descriptors.begin();
+	for (; iter_desc != pElem->descriptors.end(); ++ iter_desc) {
+		iter_desc->dump();
+	}
+
+	std::vector<CElement::CStream>::const_iterator iter_strm = pElem->streams.begin();
+	for (; iter_strm != pElem->streams.end(); ++ iter_strm) {
+		printf ("\n--  stream  --\n");
+		printf ("stream_type    0x%02x\n", iter_strm->stream_type);
+		printf ("elementary_PID 0x%04x\n", iter_strm->elementary_PID);
+		printf ("ES_info_length 0x%04x\n", iter_strm->ES_info_length);
+
+		printf ("\n-- descriptors --\n");
+		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
+		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
+			iter_desc->dump();
+		}
+	}
+
+	printf ("========================================\n");
+}
+
+void CProgramMapTable:: clear (void)
+{
+	releaseElements ();
+	detachAllSection ();
+}
+
+
+#if 0
 void CProgramMapTable::dump (void) const
 {
 	CSectionInfo *pLatest = getLatestCompleteSection ();
@@ -126,6 +179,15 @@ void CProgramMapTable::dump (void) const
 
 	dump (pLatest);
 }
+
+typedef enum {
+	EN_PMT_VARDATA_PARSE_SATGE__STREAM_TYPE,		// stream_type
+	EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID,			// elementary_PID
+	EN_PMT_VARDATA_PARSE_SATGE__ELEM_PID_d,
+	EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN,		// ES_info_length
+	EN_PMT_VARDATA_PARSE_SATGE__ES_INFO_LEN_d,
+	EN_PMT_VARDATA_PARSE_SATGE__DESC,				// descriptor
+} EN_PMT_VARDATA_PARSE_SATGE;
 
 void CProgramMapTable::dump (const CSectionInfo *pSectionInfo) const
 {
@@ -235,3 +297,4 @@ puts ("----");
 	}
 
 }
+#endif

@@ -33,7 +33,7 @@ public:
 	class CElement {
 	public:
 		class CStream {
-			public:
+		public:
 			CStream (void)
 				:stream_type (0)
 				,elementary_PID (0)
@@ -42,7 +42,6 @@ public:
 				descriptors.clear();
 			}
 			virtual ~CStream (void) {}
-
 
 			uint8_t stream_type;
 			uint16_t elementary_PID;
@@ -56,9 +55,9 @@ public:
 			,program_info_length (0)
 		{
 			descriptors.clear();
+			streams.clear();
 		}
 		virtual ~CElement (void) {}
-
 
 		uint16_t PCR_PID;
 		uint16_t program_info_length;
@@ -72,13 +71,18 @@ public:
 
 
 	void onSectionComplete (const CSectionInfo *pCompSection) override;
+
 	void dumpElements (void) const;
-	void dump (void) const;
+	void dumpElement (const CElement* pElem) const;
+	void clear (void);
 
 
 private:
-	bool parse (const CSectionInfo *pCompSection);
-	void dump (const CSectionInfo *pCompSection) const;
+	bool parse (const CSectionInfo *pCompSection, CElement* pOutElem);
+	void releaseElements (void);
+
+//	void dump (void) const;
+//	void dump (const CSectionInfo *pCompSection) const;
 
 
 	std::vector <CElement*> mElements;

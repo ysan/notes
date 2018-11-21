@@ -15,7 +15,9 @@ CTsParser::CTsParser (void)
 	,mBuffSize (0)
 	,mUnitSize (0)
 	,mTOT (5)
-	,mEIT (65535)
+	,mEIT_0x12 (65535)
+	,mEIT_0x26 (65535)
+	,mEIT_0x27 (65535)
 {
 }
 
@@ -276,7 +278,7 @@ dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0027: //EIT
+		case 0x0027: // EIT
 puts ("###############  EIT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
@@ -284,7 +286,9 @@ dumpTsHeader (&stTsHdr);
 			break;
 
 		default:
-			// PMT
+//puts ("1111");
+//mPAT.dumpElement (mPatElement, 32);
+			// check PMT
 			pPatElem = &mPatElement [0];
 			for (int i = 0; i < 32; ++ i) {
 				if (!pPatElem->isUsed) {
@@ -332,7 +336,7 @@ dumpTsHeader (&stTsHdr);
 
 				memset (mPatElement, 0x00, sizeof(mPatElement));
 
-				uint16_t n = mPAT.getElementNum ();
+				int n = mPAT.getElementNum ();
 				mPAT.getElement (mPatElement, 32);
 				mPAT.dumpElement (mPatElement, n);
 
@@ -340,13 +344,17 @@ dumpTsHeader (&stTsHdr);
 
 				mTOT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (
-				(stTsHdr.pid == 0x0012) ||
-				(stTsHdr.pid == 0x0026) ||
-				(stTsHdr.pid == 0x0027)
-			) {
+			} else if (stTsHdr.pid == 0x0012) {
 
-				mEIT.checkSection (&stTsHdr, pPayload, payloadSize);
+				mEIT_0x12.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == 0x0026) {
+
+				mEIT_0x26.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == 0x0027) {
+
+				mEIT_0x27.checkSection (&stTsHdr, pPayload, payloadSize);
 
 			} else if (stTsHdr.pid == pPatElem->program_map_PID) {
 
