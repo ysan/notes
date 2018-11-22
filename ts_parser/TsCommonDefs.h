@@ -10,6 +10,9 @@
 #define SECTION_SHORT_HEADER_LEN		(3) // section_length include, before
 #define SECTION_CRC32_LEN				(4)
 
+#define MAXSECLEN						(4096)
+
+
 typedef enum {
 	EN_DESCRIPTOR_PARSE_SATGE__TAG,
 	EN_DESCRIPTOR_PARSE_SATGE__LEN,

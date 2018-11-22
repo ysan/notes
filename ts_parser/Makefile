@@ -13,7 +13,8 @@ INCLUDES	:= \
 
 LIBS		:= \
 	-lpcsclite \
-	-L$(BASEDIR)/psisi -lpsisi
+	-L$(BASEDIR)/psisi -lpsisi \
+	-L$(BASEDIR)/psisi/aribstr -laribstr \
 
 SUBDIRS		:= \
 	psisi \

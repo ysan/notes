@@ -6,6 +6,7 @@
 
 #include "ShortEventDescriptor.h"
 #include "Utils.h"
+#include "aribstr.h"
 
 
 const uint8_t CShortEventDescriptor::TAG = 0x4d;
@@ -47,10 +48,15 @@ CShortEventDescriptor::~CShortEventDescriptor (void)
 
 void CShortEventDescriptor::dump (void) const
 {
+	char aribstr [MAXSECLEN];
 	CDescriptor::dump (true);
 	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);
 	printf ("event_name_length     [%d]\n", event_name_length);
-	printf ("event_name_char       [%s]\n", event_name_char);
+	memset (aribstr, 0x00, MAXSECLEN);
+	AribToString (aribstr, (const char*)event_name_char, (int)event_name_length);
+	printf ("event_name_char       [%s]\n", aribstr);
 	printf ("text_length           [%d]\n", text_length);
-	printf ("text_char             [%s]\n", text_char);
+	memset (aribstr, 0x00, MAXSECLEN);
+	AribToString (aribstr, (const char*)text_char, (int)text_length);
+	printf ("text_char             [%s]\n", aribstr);
 }

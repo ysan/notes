@@ -9,10 +9,16 @@ INCLUDES	:= \
 	-I./ \
 	-I../ \
 	-I./descriptor/ \
-	-I/usr/include/PCSC/ \
 
 LIBS		:= \
-	-lpcsclite
+	-L./aribstr -laribstr
+
+APPEND_OBJS := \
+	./descriptor/descriptor.o \
+
+SUBDIRS		:= \
+	aribstr \
+	descriptor \
 
 #
 #   Target object
@@ -36,8 +42,6 @@ SRCS_CPP	:= \
 	ProgramMapTable.cpp \
 	TimeOffsetTable.cpp \
 	EventInformationTable.cpp \
-	descriptor/Descriptor.cpp \
-	descriptor/ShortEventDescriptor.cpp \
 
 
 #
