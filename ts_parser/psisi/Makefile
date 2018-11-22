@@ -37,6 +37,7 @@ SRCS_CPP	:= \
 	TimeOffsetTable.cpp \
 	EventInformationTable.cpp \
 	descriptor/Descriptor.cpp \
+	descriptor/ShortEventDescriptor.cpp \
 
 
 #

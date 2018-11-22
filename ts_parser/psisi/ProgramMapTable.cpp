@@ -136,10 +136,10 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 
 	printf ("========================================\n");
 
-	printf ("PCR_PID             0x%04x\n", pTable->PCR_PID);
-	printf ("program_info_length 0x%04x\n", pTable->program_info_length);
+	printf ("PCR_PID             [0x%04x]\n", pTable->PCR_PID);
+	printf ("program_info_length [0x%04x]\n", pTable->program_info_length);
 
-	printf ("\n-- descriptors --\n");
+	printf ("\n--  descriptors  --\n");
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
 		iter_desc->dump();
@@ -148,11 +148,11 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 	std::vector<CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
 	for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
 		printf ("\n--  stream  --\n");
-		printf ("stream_type    0x%02x\n", iter_strm->stream_type);
-		printf ("elementary_PID 0x%04x\n", iter_strm->elementary_PID);
-		printf ("ES_info_length 0x%04x\n", iter_strm->ES_info_length);
+		printf ("stream_type    [0x%02x]\n", iter_strm->stream_type);
+		printf ("elementary_PID [0x%04x]\n", iter_strm->elementary_PID);
+		printf ("ES_info_length [0x%04x]\n", iter_strm->ES_info_length);
 
-		printf ("\n-- descriptors --\n");
+		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
 			iter_desc->dump();

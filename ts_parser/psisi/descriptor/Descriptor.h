@@ -13,16 +13,21 @@
 
 class CDescriptor {
 public:
-	CDescriptor (const uint8_t *pStart);
+	explicit CDescriptor (const uint8_t *pStart);
+	CDescriptor (const CDescriptor &obj);
 	~CDescriptor (void);
 
-	void dump (void) const;
+	virtual void dump (void) const;
 
 	uint8_t tag;
 	uint8_t length;
 	uint8_t data [0xff];
 
 	bool isValid;
+
+protected:
+	void dump (bool isDataDump) const;
+
 };
 
 #endif

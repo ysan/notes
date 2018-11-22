@@ -29,18 +29,31 @@ CDescriptor::CDescriptor (const uint8_t *pStart)
 	memcpy (data, (pStart + 2), length);
 }
 
+CDescriptor::CDescriptor (const CDescriptor &obj)
+	:tag (0)
+	,length (0)
+	,isValid (true)
+{
+	tag = obj.tag;
+	length = obj.length;
+	memset (data, 0x00, sizeof(data));
+	memcpy (data, obj.data, length);
+}
+
 CDescriptor::~CDescriptor (void)
 {
 }
 
 void CDescriptor::dump (void) const
 {
-	printf ("descriptor tag    0x%02x\n", tag);
-	printf ("descriptor length 0x%02x\n", length);
-	CUtils::dumper (data, length);
-
-if (tag == 0x4d) {
- printf ("%s\n", (char*)(data+4));
+	dump (true);
 }
 
+void CDescriptor::dump (bool isDataDump) const
+{
+	printf ("tag    [0x%02x]\n", tag);
+	printf ("length [0x%02x]\n", length);
+	if (isDataDump) {
+		CUtils::dumper (data, length);
+	}
 }

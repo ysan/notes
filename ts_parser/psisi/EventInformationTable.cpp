@@ -129,25 +129,35 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 	
 	printf ("========================================\n");
 
-	printf ("transport_stream_id         0x%04x\n", pTable->transport_stream_id);
-	printf ("original_network_id         0x%04x\n", pTable->original_network_id);
-	printf ("segment_last_section_number 0x%02x\n", pTable->segment_last_section_number);
-	printf ("original_network_id         0x%02x\n", pTable->last_table_id);
+	printf ("transport_stream_id         [0x%04x]\n", pTable->transport_stream_id);
+	printf ("original_network_id         [0x%04x]\n", pTable->original_network_id);
+	printf ("segment_last_section_number [0x%02x]\n", pTable->segment_last_section_number);
+	printf ("original_network_id         [0x%02x]\n", pTable->last_table_id);
 
 	std::vector<CTable::CEvent>::const_iterator iter_event = pTable->events.begin();
 	for (; iter_event != pTable->events.end(); ++ iter_event) {
 		printf ("\n--  events  --\n");
-		printf ("event_id                0x%04x\n", iter_event->event_id);
-		printf ("start_time              0x%02x%08x\n", (uint32_t)(iter_event->start_time >> 32) & 0xff, (uint32_t)iter_event->start_time & 0xffffffff);
-		printf ("duration                0x%06x\n", iter_event->duration);
-		printf ("running_status          0x%02x\n", iter_event->running_status);
-		printf ("free_CA_mode            0x%02x\n", iter_event->free_CA_mode);
-		printf ("descriptors_loop_length 0x%04x\n", iter_event->descriptors_loop_length);
+		printf ("event_id                [0x%04x]\n", iter_event->event_id);
+		printf ("start_time              [0x%02x%08x]\n", (uint32_t)(iter_event->start_time >> 32) & 0xff, (uint32_t)iter_event->start_time & 0xffffffff);
+		printf ("duration                [0x%06x]\n", iter_event->duration);
+		printf ("running_status          [0x%02x]\n", iter_event->running_status);
+		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
+		printf ("descriptors_loop_length [0x%04x]\n", iter_event->descriptors_loop_length);
 
-		printf ("\n-- descriptors --\n");
+		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
-			iter_desc->dump();
+			if (iter_desc->tag == CShortEventDescriptor::TAG) {
+				CShortEventDescriptor sed = *iter_desc;
+				if (sed.isValid) {
+					sed.dump();
+				} else {
+					printf ("invalid CShortEventDescriptor\n");
+				}
+			} else {
+				iter_desc->dump();
+			}
+
 		}
 	}
 

@@ -99,13 +99,13 @@ void CProgramAssociationTable::dumpTable (const CTable inArr[], int arrSize) con
 	}
 
 	for (int i = 0; i < arrSize; ++ i) {
-		printf ("program_number 0x%04x  ", inArr[i].program_number);
+		printf ("program_number [0x%04x]  ", inArr[i].program_number);
 		if (inArr[i].program_number == 0) {
-			printf ("network_PID     0x%04x  ", inArr[i].network_PID);
+			printf ("network_PID     [0x%04x]  ", inArr[i].network_PID);
 		} else {
-			printf ("program_map_PID 0x%04x  ", inArr[i].program_map_PID);
+			printf ("program_map_PID [0x%04x]  ", inArr[i].program_map_PID);
 		}
-		printf ("PMTparser: %p ", inArr[i].mpPMT);
+		printf ("PMTparser: [%p] ", inArr[i].mpPMT);
 		printf ("%s", inArr[i].isUsed ? "used " : "noused");
 		printf ("\n");
 	}
