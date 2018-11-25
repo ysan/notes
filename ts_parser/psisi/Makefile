@@ -7,17 +7,17 @@ CFLAGS		:=	-std=c++11
 
 INCLUDES	:= \
 	-I./ \
-	-I../ \
-	-I./descriptor/ \
+	-I$(BASEDIR) \
+	-I$(BASEDIR)/psisi/ \
+	-I$(BASEDIR)/psisi/descriptor/ \
 
 LIBS		:= \
-	-L./aribstr -laribstr
+	-L$(BASEDIR)/aribstr -laribstr
 
 APPEND_OBJS := \
 	./descriptor/descriptor.o \
 
 SUBDIRS		:= \
-	aribstr \
 	descriptor \
 
 #

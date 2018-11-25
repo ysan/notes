@@ -137,7 +137,105 @@ void CUtils::dumper (const uint8_t *pSrc, int nSrcLen, bool isAddAscii)
 
 void CUtils::byte2bitString (uint8_t nByte, char *pszDst, size_t nDstSize)
 {
-
-
-
 }
+
+char * CUtils::getStrEpoch (time_t tx, const char *format)
+{
+	static char tstr[32];
+	struct tm *tl;
+
+	memset(tstr,0,sizeof(tstr));
+	tl = localtime(&tx);
+	strftime(tstr, (sizeof(tstr) - 1), format, tl);
+	return tstr;
+}
+
+char * CUtils::getStrSecond (int sec)
+{
+	static char tstr[32];
+
+	memset(tstr,0,sizeof(tstr));
+	int hh = sec / 3600;
+	int mm = (sec % 3600) / 60;
+	int ss = (sec % 3600) % 60;
+	snprintf (tstr, 32, "%02d:%02d:%02d", hh, mm, ss);
+	return tstr;
+}
+
+time_t CUtils::getEpochFromMJD (const uint8_t *mjd)
+{
+	if (!mjd) {
+		return 0;
+	}
+
+	int tnum,yy,mm,dd;
+	char buf[10];
+	time_t l_time ;
+	time_t end_time ;
+	struct tm tl ;
+	struct tm *endtl ;
+	char cendtime[32];
+	char cmjd[32];
+
+	tnum = (mjd[0] & 0xFF) << 8 | (mjd[1] & 0xFF);
+
+	yy = (tnum - 15078.2) / 365.25;
+	mm = ((tnum - 14956.1) - (int)(yy * 365.25)) / 30.6001;
+	dd = (tnum - 14956) - (int)(yy * 365.25) - (int)(mm * 30.6001);
+
+	if(mm == 14 || mm == 15) {
+		yy += 1;
+		mm = mm - 1 - (1 * 12);
+	} else {
+		mm = mm - 1;
+	}
+
+	tl.tm_year = yy;
+	tl.tm_mon = mm - 1;
+	tl.tm_mday = dd;
+	memset(buf, '\0', sizeof(buf));
+	sprintf(buf, "%x", mjd[2]);
+	tl.tm_hour = atoi(buf);
+	memset(buf, '\0', sizeof(buf));
+	sprintf(buf, "%x", mjd[3]);
+	tl.tm_min = atoi(buf);
+	memset(buf, '\0', sizeof(buf));
+	sprintf(buf, "%x", mjd[4]);
+	tl.tm_sec = atoi(buf);
+
+	tl.tm_wday = 0;
+	tl.tm_isdst = 0;
+	tl.tm_yday = 0;
+
+	l_time = mktime(&tl);
+	return l_time;
+}
+
+int CUtils::getSecFromBCD (const uint8_t *bcd)
+{
+	if (!bcd) {
+		return -1;
+	}
+
+	int hh,mm,ss;
+	char buf[24];
+
+	if((bcd[0] == 0xFF) && (bcd[1] == 0xFF) && (bcd[2] == 0xFF)){
+		// 終了未定
+		hh = mm = ss = 0;
+		ss = -1;
+	}else{
+		memset(buf, '\0', sizeof(buf));
+		sprintf(buf, "%x", bcd[0]);
+		hh = atoi(buf)*3600;
+		memset(buf, '\0', sizeof(buf));
+		sprintf(buf, "%x", bcd[1]);
+		mm = atoi(buf)*60;
+		memset(buf, '\0', sizeof(buf));
+		sprintf(buf, "%x", bcd[2]);
+		ss = atoi(buf);
+	}
+
+	return hh+mm+ss;
+}
+

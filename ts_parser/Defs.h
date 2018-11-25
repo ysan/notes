@@ -9,7 +9,7 @@
 
 
 //TODO
-//#define _NO_TYPEDEF_uint64_t
+#define _NO_TYPEDEF_uint64_t
 
 
 #if !defined (_NO_TYPEDEF_uint8_t)

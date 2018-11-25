@@ -7,16 +7,17 @@ CFLAGS		:=	-std=c++11
 
 INCLUDES	:= \
 	-I./ \
-	-I./psisi/ \
-	-I./psisi/descriptor/ \
+	-I$(BASEDIR)/psisi/ \
+	-I$(BASEDIR)/psisi/descriptor/ \
 	-I/usr/include/PCSC/ \
 
 LIBS		:= \
 	-lpcsclite \
 	-L$(BASEDIR)/psisi -lpsisi \
-	-L$(BASEDIR)/psisi/aribstr -laribstr \
+	-L$(BASEDIR)/aribstr -laribstr \
 
 SUBDIRS		:= \
+	aribstr \
 	psisi \
 
 #

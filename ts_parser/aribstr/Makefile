@@ -1,7 +1,7 @@
 #
 #   Defines
 #
-BASEDIR		:=	../../
+BASEDIR		:=	../
 CFLAGS		:=
 INCLUDES	:=
 LIBS		:=

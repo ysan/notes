@@ -61,21 +61,24 @@ CSectionInfo::~CSectionInfo (void)
 /**
  *
  */
-uint8_t *CSectionInfo::getHeaderAddr (void) const {
+uint8_t *CSectionInfo::getHeaderAddr (void) const
+{
 	return mpRaw;
 }
 
 /**
  *
  */
-ST_SECTION_HEADER *CSectionInfo::getHeader (void) {
+ST_SECTION_HEADER *CSectionInfo::getHeader (void)
+{
 	return &mSectHdr;
 }
 
 /**
  *
  */
-uint8_t *CSectionInfo::getDataPartAddr (void) const {
+uint8_t *CSectionInfo::getDataPartAddr (void) const
+{
 	return mpData;
 }
 
@@ -175,7 +178,7 @@ void CSectionInfo::dumpHeader (const ST_SECTION_HEADER *pHdr, bool isShortFormat
 
 	if (isShortFormat) {
 		printf (
-			"SectHeader: tbl_id:0x%02x syntax:0x%02x priv:0x%02x len:%d\n",
+			"SectHeader: tbl_id:[0x%02x] syntax:[0x%02x] priv:[0x%02x] len:[%d]\n",
 			pHdr->table_id,
 			pHdr->section_syntax_indicator,
 			pHdr->private_indicator,
@@ -183,7 +186,7 @@ void CSectionInfo::dumpHeader (const ST_SECTION_HEADER *pHdr, bool isShortFormat
 		);
 	} else {
 		printf (
-			"SectHeader: tbl_id:0x%02x syntax:0x%02x priv:0x%02x len:%d tbl_ext:0x%04x ver:0x%02x next:0x%02x num:0x%02x last:0x%02x\n",
+			"SectHeader: tbl_id:[0x%02x] syntax:[0x%02x] priv:[0x%02x] len:[%d] tbl_ext:[0x%04x] ver:[0x%02x] next:[0x%02x] num:[0x%02x] last:[0x%02x]\n",
 			pHdr->table_id,
 			pHdr->section_syntax_indicator,
 			pHdr->private_indicator,
@@ -512,7 +515,7 @@ void CSectionParser::detachSectionList (CSectionInfo *pSectInfo)
 /**
  * deleteSectionList
  * インスタンスの一致で削除
- * 重複していないことこと前提
+ * 重複していないこと前提
  */
 void CSectionParser::deleteSectionList (CSectionInfo &sectInfo)
 {
@@ -652,7 +655,7 @@ puts ("delete");
 /**
  *
  */
-void CSectionParser::detachAllSectionList ()
+void CSectionParser::detachAllSectionList (void)
 {
 	deleteAllSectionList ();
 
@@ -1066,22 +1069,6 @@ CSectionInfo *CSectionParser::getLatestCompleteSection (void) const
 	}
 
 	return pLatest;
-}
-
-/**
- *
- */
-int CSectionParser::getTotalSectionNum (void) const
-{
-	return getSectionListNum ();
-}
-
-/**
- *
- */
-void CSectionParser::detachAllSection (void)
-{
-	detachAllSectionList ();
 }
 
 /**

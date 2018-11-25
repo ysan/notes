@@ -17,6 +17,7 @@ CProgramAssociationTable::~CProgramAssociationTable (void)
 {
 }
 
+
 int CProgramAssociationTable::getTableNum (const CSectionInfo *pSectInfo) const
 {
 	if (!pSectInfo) {

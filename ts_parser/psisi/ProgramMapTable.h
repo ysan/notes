@@ -59,6 +59,7 @@ public:
 		}
 		virtual ~CTable (void) {}
 
+		ST_SECTION_HEADER header;
 		uint16_t PCR_PID;
 		uint16_t program_info_length;
 		std::vector <CDescriptor> descriptors;

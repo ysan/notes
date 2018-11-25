@@ -5,9 +5,9 @@ BASEDIR		:=	../../
 CFLAGS		:=	-std=c++11 -fPIC
 INCLUDES	:= \
 	-I./ \
-	-I../ \
-	-I../../ \
-	-I../aribstr \
+	-I$(BASEDIR) \
+	-I$(BASEDIR)/psisi \
+	-I$(BASEDIR)/aribstr \
 
 LIBS		:=
 

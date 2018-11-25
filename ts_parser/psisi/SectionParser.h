@@ -54,7 +54,7 @@ public:
 
 
 	uint8_t *getHeaderAddr (void) const;
-	ST_SECTION_HEADER *getHeader (void);
+	ST_SECTION_HEADER *getHeader (void) ;
 	uint8_t *getDataPartAddr (void) const;
 	uint16_t getDataPartLen (void) const;
 
@@ -102,26 +102,29 @@ public:
 
 protected:
 	CSectionInfo *getLatestCompleteSection (void) const;
-	int getTotalSectionNum (void) const;
-	void detachAllSection (void);
+	void detachSectionList (CSectionInfo *pSectInfo);
+	void detachAllSectionList (void);
+	CSectionInfo *searchSectionList (const CSectionInfo &sectInfo) const;
+	int getSectionListNum (void) const;
 
 	virtual void onSectionComplete (const CSectionInfo *pCompSection);
 
 
 private:
 //	void convertRaw2SectionInfo (CSectionInfo *pOut, uint8_t *pBuff, size_t size);
+
 	CSectionInfo* attachSectionList (uint8_t *pBuff, size_t size);
 	CSectionInfo* addSectionList (CSectionInfo *pSectInfo);
-	void detachSectionList (CSectionInfo *pSectInfo);
+
 	void deleteSectionList (CSectionInfo &sectInfo);
 	void deleteSectionList (CSectionInfo *pSectInfo);
-	void detachAllSectionList (void);
 	void deleteAllSectionList (void);
-	CSectionInfo *searchSectionList (const CSectionInfo &sectInfo) const;
+
 	void checkDetachFifoSectionList (void);
 	CSectionInfo* checkDeleteFifoSectionList (void);
-	int getSectionListNum (void) const;
+
 	void dumpSectionList (void) const;
+
 	bool checkSectionFirst (uint8_t *pPayload, size_t payloadSize);
 	bool checkSectionFollow (uint8_t *pPayload, size_t payloadSize);
 

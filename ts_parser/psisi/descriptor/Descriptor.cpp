@@ -38,6 +38,7 @@ CDescriptor::CDescriptor (const CDescriptor &obj)
 	length = obj.length;
 	memset (data, 0x00, sizeof(data));
 	memcpy (data, obj.data, length);
+	isValid = obj.isValid;
 }
 
 CDescriptor::~CDescriptor (void)

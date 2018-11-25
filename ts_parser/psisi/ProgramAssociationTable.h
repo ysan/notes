@@ -30,6 +30,7 @@ public:
 		uint16_t program_number;
 		uint16_t network_PID; // if program_number == 0 then network_PID
 		uint16_t program_map_PID;
+
 		CProgramMapTable *mpPMT; // section parser for PMT
 		bool isUsed;
 	};

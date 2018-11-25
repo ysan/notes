@@ -43,6 +43,8 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 	uint8_t *p = NULL; // work
 	CTable* pTable = pOutTable;
 
+	pTable->header = *(const_cast<CSectionInfo*>(pCompSection)->getHeader());
+
 	p = pCompSection->getDataPartAddr();
 	pTable->transport_stream_id = *p << 8 | *(p+1);
 	pTable->original_network_id = *(p+2) << 8 | *(p+3);
@@ -62,8 +64,8 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 		CTable::CEvent ev ;
 
 		ev.event_id = *p << 8 | *(p+1);
-		ev.start_time = ((uint64_t)(*(p+2)) << 32) | *(p+3) << 24 | *(p+4) << 16 | *(p+5) << 8 | *(p+6);
-		ev.duration = *(p+7) << 16 | *(p+8) << 8 | *(p+9);
+		memcpy (ev.start_time, p+2, 5);
+		memcpy (ev.duration, p+7, 3);
 		ev.running_status = (*(p+10) >> 5) & 0x07;
 		ev.free_CA_mode = (*(p+10) >> 4) & 0x01;
 		ev.descriptors_loop_length = (*(p+10) & 0x0f) << 8 | *(p+11);
@@ -138,8 +140,8 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 	for (; iter_event != pTable->events.end(); ++ iter_event) {
 		printf ("\n--  events  --\n");
 		printf ("event_id                [0x%04x]\n", iter_event->event_id);
-		printf ("start_time              [0x%02x%08x]\n", (uint32_t)(iter_event->start_time >> 32) & 0xff, (uint32_t)iter_event->start_time & 0xffffffff);
-		printf ("duration                [0x%06x]\n", iter_event->duration);
+		printf ("start_time              [%s]\n", CUtils::getStrEpoch (CUtils::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S"));
+		printf ("duration                [%s]\n", CUtils::getStrSecond (CUtils::getSecFromBCD (iter_event->duration)));
 		printf ("running_status          [0x%02x]\n", iter_event->running_status);
 		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
 		printf ("descriptors_loop_length [0x%04x]\n", iter_event->descriptors_loop_length);
@@ -166,6 +168,6 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 
 void CEventInformationTable::clear (void)
 {
-//	releaseTables ();
-	detachAllSection ();
+	releaseTables ();
+	detachAllSectionList ();
 }

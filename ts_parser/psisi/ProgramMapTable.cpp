@@ -43,6 +43,8 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 	uint8_t *p = NULL; // work
 	CTable* pTable = pOutTable;
 
+	pTable->header = *(const_cast<CSectionInfo*>(pCompSection)->getHeader());
+
 	p = pCompSection->getDataPartAddr();
 	pTable->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
 	pTable->program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
@@ -165,7 +167,7 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 void CProgramMapTable:: clear (void)
 {
 	releaseTables ();
-	detachAllSection ();
+	detachAllSectionList ();
 }
 
 

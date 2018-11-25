@@ -3,7 +3,7 @@
 BASE_DIR=${HOME}/prog/ts_parser
 
 
-export LD_LIBRARY_PATH=${BASE_DIR}/psisi:${BASE_DIR}/psisi/aribstr
+export LD_LIBRARY_PATH=${BASE_DIR}/psisi:${BASE_DIR}/aribstr
 
 if [ $# -ne 1 ]; then
 	echo "specify 1 argument."

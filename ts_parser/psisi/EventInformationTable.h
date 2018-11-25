@@ -38,19 +38,19 @@ public:
 		public:
 			CEvent (void)
 				:event_id (0)
-				,start_time (0)
-				,duration (0)
 				,running_status (0)
 				,free_CA_mode (0)
 				,descriptors_loop_length (0)
 			{
+				memset (start_time, 0x00, sizeof(start_time));
+				memset (duration, 0x00, sizeof(duration));
 				descriptors.clear();
 			}
 			virtual ~CEvent (void) {}
 
 			uint16_t event_id;
-			uint64_t start_time;
-			uint32_t duration;
+			uint8_t start_time [8];
+			uint8_t duration [3];
 			uint8_t running_status;
 			uint8_t free_CA_mode;
 			uint16_t descriptors_loop_length;
@@ -68,6 +68,7 @@ public:
 		}
 		virtual ~CTable (void) {}
 
+		ST_SECTION_HEADER header;
 		uint16_t transport_stream_id;
 		uint16_t original_network_id;
 		uint8_t segment_last_section_number;
