@@ -140,8 +140,14 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 	for (; iter_event != pTable->events.end(); ++ iter_event) {
 		printf ("\n--  events  --\n");
 		printf ("event_id                [0x%04x]\n", iter_event->event_id);
-		printf ("start_time              [%s]\n", CUtils::getStrEpoch (CUtils::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S"));
-		printf ("duration                [%s]\n", CUtils::getStrSecond (CUtils::getSecFromBCD (iter_event->duration)));
+		char szStime [32];
+		memset (szStime, 0x00, sizeof(szStime));
+		CUtils::getStrEpoch (CUtils::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S", szStime, sizeof(szStime));
+		printf ("start_time              [%s]\n", szStime);
+		char szDuration [32];
+		memset (szDuration, 0x00, sizeof(szDuration));
+		CUtils::getStrSecond (CUtils::getSecFromBCD (iter_event->duration), szDuration, sizeof(szDuration));
+		printf ("duration                [%s]\n", szDuration);
 		printf ("running_status          [0x%02x]\n", iter_event->running_status);
 		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
 		printf ("descriptors_loop_length [0x%04x]\n", iter_event->descriptors_loop_length);

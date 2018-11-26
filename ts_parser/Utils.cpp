@@ -139,27 +139,20 @@ void CUtils::byte2bitString (uint8_t nByte, char *pszDst, size_t nDstSize)
 {
 }
 
-char * CUtils::getStrEpoch (time_t tx, const char *format)
+void CUtils::getStrEpoch (time_t tx, const char *format, char *pszout, int outsize)
 {
-	static char tstr[32];
 	struct tm *tl;
-
-	memset(tstr,0,sizeof(tstr));
-	tl = localtime(&tx);
-	strftime(tstr, (sizeof(tstr) - 1), format, tl);
-	return tstr;
+	struct tm stm;
+	tl = localtime_r (&tx, &stm);
+	strftime(pszout, outsize - 1, format, tl);
 }
 
-char * CUtils::getStrSecond (int sec)
+void CUtils::getStrSecond (int second, char *pszout, int outsize)
 {
-	static char tstr[32];
-
-	memset(tstr,0,sizeof(tstr));
-	int hh = sec / 3600;
-	int mm = (sec % 3600) / 60;
-	int ss = (sec % 3600) % 60;
-	snprintf (tstr, 32, "%02d:%02d:%02d", hh, mm, ss);
-	return tstr;
+	int hh = second / 3600;
+	int mm = (second % 3600) / 60;
+	int ss = (second % 3600) % 60;
+	snprintf (pszout, outsize, "%02d:%02d:%02d", hh, mm, ss);
 }
 
 time_t CUtils::getEpochFromMJD (const uint8_t *mjd)
