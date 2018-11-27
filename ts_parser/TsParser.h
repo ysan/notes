@@ -13,6 +13,7 @@
 #include "ProgramMapTable.h"
 #include "TimeOffsetTable.h"
 #include "EventInformationTable.h"
+#include "NetworkInformationTable.h"
 
 
 class CTsParser
@@ -47,6 +48,7 @@ private:
 	CEventInformationTable mEIT_0x12;
 	CEventInformationTable mEIT_0x26;
 	CEventInformationTable mEIT_0x27;
+	CNetworkInformationTable mNIT;
 
 };
 

@@ -285,6 +285,13 @@ dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
+		case 0x0010: // NIT
+puts ("###############  NIT  ###############");
+CUtils::dumper (pCur, 188);
+dumpTsHeader (&stTsHdr);
+			isCheck = true;
+			break;
+
 		default:
 //puts ("1111");
 //mPAT.dumpTable (mPatTable, 32);
@@ -355,6 +362,10 @@ dumpTsHeader (&stTsHdr);
 			} else if (stTsHdr.pid == 0x0027) {
 
 				mEIT_0x27.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == 0x0010) {
+
+				mNIT.checkSection (&stTsHdr, pPayload, payloadSize);
 
 			} else if (stTsHdr.pid == pPatTable->program_map_PID) {
 

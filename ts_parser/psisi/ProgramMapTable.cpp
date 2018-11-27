@@ -63,7 +63,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 		p += (2 + *(p + 1));
 	}
 
-	int streamLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - pTable->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
+	int streamLen = (int) (pTable->header.section_length - pTable->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
 	if (streamLen <= PMT_STREAM_FIX_LEN) {
 		puts ("invalid PMT stream");
 		return false;

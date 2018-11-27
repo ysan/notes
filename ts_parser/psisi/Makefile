@@ -42,6 +42,7 @@ SRCS_CPP	:= \
 	ProgramMapTable.cpp \
 	TimeOffsetTable.cpp \
 	EventInformationTable.cpp \
+	NetworkInformationTable.cpp \
 
 
 #

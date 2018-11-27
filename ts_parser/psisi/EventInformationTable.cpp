@@ -53,7 +53,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 
 	p += EIT_FIX_LEN;
 
-	int eventLen = (int) (const_cast<CSectionInfo*>(pCompSection)->getHeader()->section_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - EIT_FIX_LEN);
+	int eventLen = (int) (pTable->header.section_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - EIT_FIX_LEN);
 	if (eventLen <= EIT_EVENT_FIX_LEN) {
 		puts ("invalid EIT event");
 		return false;
