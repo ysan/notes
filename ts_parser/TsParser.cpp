@@ -292,9 +292,21 @@ dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
+		case 0x0011: // SDT
+puts ("###############  SDT  ###############");
+CUtils::dumper (pCur, 188);
+dumpTsHeader (&stTsHdr);
+			isCheck = true;
+			break;
+
+		case 0x0013: // RST
+puts ("###############  RST  ###############");
+CUtils::dumper (pCur, 188);
+dumpTsHeader (&stTsHdr);
+			isCheck = true;
+			break;
+
 		default:
-//puts ("1111");
-//mPAT.dumpTable (mPatTable, 32);
 			// check PMT
 			pPatTable = &mPatTable [0];
 			for (int i = 0; i < 32; ++ i) {
@@ -366,6 +378,14 @@ dumpTsHeader (&stTsHdr);
 			} else if (stTsHdr.pid == 0x0010) {
 
 				mNIT.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == 0x0011) {
+
+				mSDT.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == 0x0013) {
+
+				mRST.checkSection (&stTsHdr, pPayload, payloadSize);
 
 			} else if (stTsHdr.pid == pPatTable->program_map_PID) {
 

@@ -14,6 +14,8 @@
 #include "TimeOffsetTable.h"
 #include "EventInformationTable.h"
 #include "NetworkInformationTable.h"
+#include "ServiceDescriptionTable.h"
+#include "RunningStatusTable.h"
 
 
 class CTsParser
@@ -49,6 +51,8 @@ private:
 	CEventInformationTable mEIT_0x26;
 	CEventInformationTable mEIT_0x27;
 	CNetworkInformationTable mNIT;
+	CServiceDescriptionTable mSDT;
+	CRunningStatusTable mRST;
 
 };
 
