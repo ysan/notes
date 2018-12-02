@@ -8,25 +8,19 @@
 #include "Utils.h"
 
 
-CDescriptor::CDescriptor (const uint8_t *pStart)
+CDescriptor::CDescriptor (const uint8_t *pDesc)
 	:tag (0)
 	,length (0)
 	,isValid (true)
 {
-	if (!pStart) {
+	if (!pDesc) {
 		isValid = false;
 		return ;
 	}
-	uint8_t len = *(pStart + 1);
-	if (len == 0) {
-		isValid = false;
-		return;
-	}
 
-	tag = *(pStart + 0);
-	length = len;
-	memset (data, 0x00, sizeof(data));
-	memcpy (data, (pStart + 2), length);
+	if (!parse (pDesc)) {
+		isValid = false;
+	}
 }
 
 CDescriptor::CDescriptor (const CDescriptor &obj)
@@ -43,6 +37,24 @@ CDescriptor::CDescriptor (const CDescriptor &obj)
 
 CDescriptor::~CDescriptor (void)
 {
+}
+
+bool CDescriptor::parse (const uint8_t *pDesc)
+{
+	if (!pDesc) {
+		return false;
+	}
+
+	uint8_t len = *(pDesc + 1);
+	if (len == 0) {
+		return false;
+	}
+
+	tag = *(pDesc + 0);
+	length = len;
+	memset (data, 0x00, sizeof(data));
+	memcpy (data, (pDesc + 2), length);
+	return true;
 }
 
 void CDescriptor::dump (void) const

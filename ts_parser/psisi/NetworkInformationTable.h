@@ -12,8 +12,7 @@
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-#include "Descriptor.h"
-#include "ShortEventDescriptor.h"
+#include "DescriptorDefs.h"
 
 
 #define NIT_FIX_LEN			(2) // reserved_future_use_2        4  bslbf

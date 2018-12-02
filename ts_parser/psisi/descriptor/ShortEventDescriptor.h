@@ -15,10 +15,8 @@
 class CShortEventDescriptor : public CDescriptor
 {
 public:
-	static const uint8_t TAG;
-	CShortEventDescriptor (const CDescriptor &obj); // not explicit
+	explicit CShortEventDescriptor (const CDescriptor &obj);
 	virtual ~CShortEventDescriptor (void);
-
 
 	void dump (void) const override;
 
@@ -27,6 +25,10 @@ public:
 	uint8_t event_name_char [0xff];
 	uint8_t text_length; 
 	uint8_t text_char [0xff];
+
+private:
+	bool parse (void);
+
 };
 
 #endif

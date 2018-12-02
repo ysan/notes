@@ -12,8 +12,7 @@
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-#include "Descriptor.h"
-#include "ShortEventDescriptor.h"
+#include "DescriptorDefs.h"
 
 
 #define EIT_FIX_LEN			(6) // transport_stream_id         16  uimsbf

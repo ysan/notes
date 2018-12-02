@@ -9,8 +9,6 @@
 #include "aribstr.h"
 
 
-const uint8_t CShortEventDescriptor::TAG = 0x4d;
-
 CShortEventDescriptor::CShortEventDescriptor (const CDescriptor &obj)
 	:CDescriptor (obj)
 	,event_name_length (0)
@@ -20,6 +18,21 @@ CShortEventDescriptor::CShortEventDescriptor (const CDescriptor &obj)
 		return;
 	}
 
+	memset (ISO_639_language_code, 0x00, sizeof(ISO_639_language_code));
+	memset (event_name_char, 0x00, sizeof(event_name_char));
+	memset (text_char, 0x00, sizeof(text_char));
+
+	if (!parse()) {
+		isValid = false;
+	}
+}
+
+CShortEventDescriptor::~CShortEventDescriptor (void)
+{
+}
+
+bool CShortEventDescriptor::parse (void)
+{
 	memset (ISO_639_language_code, 0x00, sizeof(ISO_639_language_code));
 	memset (event_name_char, 0x00, sizeof(event_name_char));
 	memset (text_char, 0x00, sizeof(text_char));
@@ -37,13 +50,10 @@ CShortEventDescriptor::CShortEventDescriptor (const CDescriptor &obj)
 	p += text_length;
 
 	if (length != (p - data)) {
-		isValid = false;
-		return ;
+		return false;
 	}
-}
 
-CShortEventDescriptor::~CShortEventDescriptor (void)
-{
+	return true;
 }
 
 void CShortEventDescriptor::dump (void) const

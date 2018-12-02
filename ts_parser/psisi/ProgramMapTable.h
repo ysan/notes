@@ -12,7 +12,7 @@
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-#include "Descriptor.h"
+#include "DescriptorDefs.h"
 
 
 #define PMT_FIX_LEN				(4) // reserved             3  bslbf

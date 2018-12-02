@@ -12,7 +12,7 @@
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-#include "Descriptor.h"
+#include "DescriptorDefs.h"
 
 
 #define SDT_FIX_LEN			(3) // original_etwork_id     16  uimsbf

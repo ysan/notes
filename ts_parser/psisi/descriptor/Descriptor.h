@@ -13,11 +13,12 @@
 
 class CDescriptor {
 public:
-	explicit CDescriptor (const uint8_t *pStart);
+	explicit CDescriptor (const uint8_t *pDesc);
 	CDescriptor (const CDescriptor &obj);
 	~CDescriptor (void);
 
 	virtual void dump (void) const;
+
 
 	uint8_t tag;
 	uint8_t length;
@@ -26,6 +27,7 @@ public:
 	bool isValid;
 
 protected:
+	bool parse (const uint8_t *pDesc);
 	void dump (bool isDataDump) const;
 
 };

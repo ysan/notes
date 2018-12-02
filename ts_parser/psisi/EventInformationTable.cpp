@@ -155,8 +155,8 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
-			if (iter_desc->tag == CShortEventDescriptor::TAG) {
-				CShortEventDescriptor sed = *iter_desc;
+			if (iter_desc->tag == DESC_TAG__SHORT_EVENT) {
+				CShortEventDescriptor sed (*iter_desc);
 				if (sed.isValid) {
 					sed.dump();
 				} else {

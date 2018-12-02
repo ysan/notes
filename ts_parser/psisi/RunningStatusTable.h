@@ -12,7 +12,7 @@
 #include "Defs.h"
 #include "TsCommonDefs.h"
 #include "SectionParser.h"
-#include "Descriptor.h"
+#include "DescriptorDefs.h"
 
 
 #define RST_STATUS_FIX_LEN	(9) // transport_stream_id   16  uimsbf
