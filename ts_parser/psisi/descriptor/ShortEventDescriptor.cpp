@@ -38,12 +38,15 @@ bool CShortEventDescriptor::parse (void)
 	memset (text_char, 0x00, sizeof(text_char));
 
 	uint8_t *p = data;
+
 	memcpy (ISO_639_language_code, p, 3);
 	p += 3 ;
+
 	event_name_length = *p;
 	p += 1;
 	memcpy (event_name_char, p, event_name_length);
 	p += event_name_length;
+
 	text_length = *p;
 	p += 1;
 	memcpy (text_char, p, text_length);
@@ -59,12 +62,16 @@ bool CShortEventDescriptor::parse (void)
 void CShortEventDescriptor::dump (void) const
 {
 	char aribstr [MAXSECLEN];
+
 	CDescriptor::dump (true);
+
 	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);
+
 	printf ("event_name_length     [%d]\n", event_name_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)event_name_char, (int)event_name_length);
 	printf ("event_name_char       [%s]\n", aribstr);
+
 	printf ("text_length           [%d]\n", text_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)text_char, (int)text_length);

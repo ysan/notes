@@ -156,7 +156,7 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 
 	std::vector<CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
 	for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
-		printf ("\n--  streams  --\n");
+		printf ("\n--  stream  --\n");
 		printf ("transport_stream_id          [0x%04x]\n", iter_strm->transport_stream_id);
 		printf ("original_network_id          [0x%04x]\n", iter_strm->original_network_id);
 		printf ("transport_descriptors_length [0x%04x]\n", iter_strm->transport_descriptors_length);

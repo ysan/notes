@@ -132,7 +132,7 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 
 	std::vector<CTable::CService>::const_iterator iter_svc = pTable->services.begin();
 	for (; iter_svc != pTable->services.end(); ++ iter_svc) {
-		printf ("\n--  services  --\n");
+		printf ("\n--  service  --\n");
 		printf ("service_id                 [0x%04x]\n", iter_svc->service_id);
 		printf ("EIT_user_defined_flags     [0x%01x]\n", iter_svc->EIT_user_defined_flags);
 		printf ("EIT_schedule_flag          [0x%01x]\n", iter_svc->EIT_schedule_flag);

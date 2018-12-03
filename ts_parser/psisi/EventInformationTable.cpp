@@ -138,7 +138,7 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 
 	std::vector<CTable::CEvent>::const_iterator iter_event = pTable->events.begin();
 	for (; iter_event != pTable->events.end(); ++ iter_event) {
-		printf ("\n--  events  --\n");
+		printf ("\n--  event  --\n");
 		printf ("event_id                [0x%04x]\n", iter_event->event_id);
 		char szStime [32];
 		memset (szStime, 0x00, sizeof(szStime));
@@ -155,17 +155,33 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
-			if (iter_desc->tag == DESC_TAG__SHORT_EVENT) {
-				CShortEventDescriptor sed (*iter_desc);
-				if (sed.isValid) {
-					sed.dump();
-				} else {
-					printf ("invalid CShortEventDescriptor\n");
+			switch (iter_desc->tag) {
+			case DESC_TAG__SHORT_EVENT:
+				{
+					CShortEventDescriptor sed (*iter_desc);
+					if (sed.isValid) {
+						sed.dump();
+					} else {
+						printf ("invalid ShortEventDescriptor\n");
+					}
 				}
-			} else {
-				iter_desc->dump();
-			}
+				break;
 
+			case DESC_TAG__EXTENDED_EVENT:
+				{
+					CExtendedEventDescriptor eed (*iter_desc);
+					if (eed.isValid) {
+						eed.dump();
+					} else {
+						printf ("invalid ExtendedEventDescriptor\n");
+					}
+				}
+				break;
+
+			default:
+				iter_desc->dump();
+				break;
+			}
 		}
 	}
 

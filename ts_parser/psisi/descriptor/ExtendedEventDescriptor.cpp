@@ -40,8 +40,8 @@ bool CExtendedEventDescriptor::parse (void)
 
 	uint8_t *p = data;
 
-	descriptor_number = (*p << 4) & 0xf;
-	last_descriptor_number = *p & 0xf;
+	descriptor_number = (*p >> 4) & 0x0f;
+	last_descriptor_number = *p & 0x0f;
 	p += 1;
 
 	memcpy (ISO_639_language_code, p, 3);
@@ -63,7 +63,7 @@ bool CExtendedEventDescriptor::parse (void)
 		itm.item_length = *p;
 		p += 1;
 		memcpy (itm.item_char, p, itm.item_length);
-		p += itm.item_description_length;
+		p += itm.item_length;
 
 		itemLen -= (1 + itm.item_description_length + 1 + itm.item_length) ;
 		if (itemLen < 0) {
@@ -77,6 +77,7 @@ bool CExtendedEventDescriptor::parse (void)
 	text_length = *p;
 	p += 1;
 	memcpy (text_char, p, text_length);
+	p += text_length;
 
 	if (length != (p - data)) {
 		return false;
@@ -87,17 +88,29 @@ bool CExtendedEventDescriptor::parse (void)
 
 void CExtendedEventDescriptor::dump (void) const
 {
-/*
 	char aribstr [MAXSECLEN];
+
 	CDescriptor::dump (true);
-	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);
-	printf ("event_name_length     [%d]\n", event_name_length);
-	memset (aribstr, 0x00, MAXSECLEN);
-	AribToString (aribstr, (const char*)event_name_char, (int)event_name_length);
-	printf ("event_name_char       [%s]\n", aribstr);
-	printf ("text_length           [%d]\n", text_length);
+	printf ("descriptor_number       [0x%x]\n", descriptor_number);
+	printf ("last_descriptor_number  [0x%x]\n", last_descriptor_number);
+	printf ("ISO_639_language_code   [%s]\n", ISO_639_language_code);
+	printf ("length_of_items         [%d]\n", length_of_items);
+
+	std::vector<CItem>::const_iterator iter_item = items.begin();
+    for (; iter_item != items.end(); ++ iter_item) {
+		printf ("\n--  item  --\n");
+		printf ("item_description_length [%d]\n", iter_item->item_description_length);
+		memset (aribstr, 0x00, MAXSECLEN);
+		AribToString (aribstr, (const char*)iter_item->item_description_char, (int)iter_item->item_description_length);
+		printf ("item_description_char   [%s]\n", aribstr);
+		printf ("item_length             [%d]\n", iter_item->item_length);
+		memset (aribstr, 0x00, MAXSECLEN);
+		AribToString (aribstr, (const char*)iter_item->item_char, (int)iter_item->item_length);
+		printf ("item_char               [%s]\n", aribstr);
+	}
+
+	printf ("text_length             [%d]\n", text_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)text_char, (int)text_length);
-	printf ("text_char             [%s]\n", aribstr);
-*/
+	printf ("text_char               [%s]\n", aribstr);
 }

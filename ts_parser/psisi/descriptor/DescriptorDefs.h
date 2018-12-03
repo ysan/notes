@@ -3,6 +3,7 @@
 
 
 #include "ShortEventDescriptor.h"
+#include "ExtendedEventDescriptor.h"
 
 
 
