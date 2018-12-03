@@ -31,6 +31,7 @@ SRCS		:=
 SRCS_CPP	:= \
 	Descriptor.cpp \
 	ShortEventDescriptor.cpp \
+	ExtendedEventDescriptor.cpp \
 
 
 #
