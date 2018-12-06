@@ -4,7 +4,7 @@
 
 #include "ShortEventDescriptor.h"
 #include "ExtendedEventDescriptor.h"
-
+#include "ComponentDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME					(0x40)  // ネットワーク名記述子

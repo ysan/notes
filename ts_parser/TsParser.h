@@ -47,9 +47,9 @@ private:
 	CProgramAssociationTable mPAT;
 	CProgramAssociationTable::CTable mPatTable [4 * 8];
 	CTimeOffsetTable mTOT;
-	CEventInformationTable mEIT_0x12;
-	CEventInformationTable mEIT_0x26;
-	CEventInformationTable mEIT_0x27;
+	CEventInformationTable mEIT_H;
+	CEventInformationTable mEIT_M;
+	CEventInformationTable mEIT_L;
 	CNetworkInformationTable mNIT;
 	CServiceDescriptionTable mSDT;
 	CRunningStatusTable mRST;

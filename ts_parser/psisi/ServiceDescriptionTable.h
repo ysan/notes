@@ -37,6 +37,7 @@ public:
 		public:
 			CService (void)
 				:service_id (0)
+				,reserved_future_use (0)
 				,EIT_user_defined_flags (0)
 				,EIT_schedule_flag (0)
 				,EIT_present_following_flag (0)
@@ -49,6 +50,7 @@ public:
 			virtual ~CService (void) {}
 
 			uint16_t service_id;
+			uint8_t reserved_future_use;
 			uint8_t EIT_user_defined_flags;
 			uint8_t EIT_schedule_flag;
 			uint8_t EIT_present_following_flag;
@@ -61,6 +63,7 @@ public:
 	public:
 		CTable (void)
 			:original_network_id (0)
+			,reserved_future_use_2 (0)
 		{
 			services.clear();
 		}
@@ -68,6 +71,7 @@ public:
 
 		ST_SECTION_HEADER header;
 		uint16_t original_network_id;
+		uint8_t reserved_future_use_2;
 		std::vector <CService> services;
 	};
 public:

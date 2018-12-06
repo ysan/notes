@@ -46,6 +46,7 @@ bool CServiceDescriptionTable::parse (const CSectionInfo *pCompSection, CTable* 
 
 	p = pCompSection->getDataPartAddr();
 	pTable->original_network_id = *p << 8 | *(p+1);
+	pTable->reserved_future_use_2 = *(p+2);
 
 	p += SDT_FIX_LEN;
 
@@ -60,12 +61,13 @@ bool CServiceDescriptionTable::parse (const CSectionInfo *pCompSection, CTable* 
 		CTable::CService svc ;
 
 		svc.service_id = *p << 8 | *(p+1);
-		svc.EIT_user_defined_flags = (*(p+2) >> 2) & 0x7;
-		svc.EIT_schedule_flag = (*(p+2) >> 1) & 0x1;
-		svc.EIT_present_following_flag = *(p+2) & 0x1;
-		svc.running_status = (*(p+3) >> 5) & 0x7;
-		svc.free_CA_mode = (*(p+3) >> 4) & 0x1;
-		svc.descriptors_loop_length = (*(p+3) & 0xf) << 8 | *(p+4);
+		svc.reserved_future_use = *(p+2) & 0x07;
+		svc.EIT_user_defined_flags = (*(p+2) >> 2) & 0x07;
+		svc.EIT_schedule_flag = (*(p+2) >> 1) & 0x01;
+		svc.EIT_present_following_flag = *(p+2) & 0x01;
+		svc.running_status = (*(p+3) >> 5) & 0x07;
+		svc.free_CA_mode = (*(p+3) >> 4) & 0x01;
+		svc.descriptors_loop_length = (*(p+3) & 0x0f) << 8 | *(p+4);
 
 		p += SDT_SERVICE_FIX_LEN;
 		int n = (int)svc.descriptors_loop_length;

@@ -45,6 +45,7 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 	pTable->header = *(const_cast<CSectionInfo*>(pCompSection)->getHeader());
 
 	p = pCompSection->getDataPartAddr();
+	pTable->reserved_future_use_2 = (*p >> 4) & 0xf;
 	pTable->network_descriptors_length = (*p & 0xf) << 8 | *(p+1);
 
 	p += NIT_FIX_LEN;
@@ -60,6 +61,7 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 		p += (2 + *(p + 1));
 	}
 
+	pTable->reserved_future_use_3 = (*p >> 4) & 0xf;
 	pTable->transport_stream_loop_length = (*p & 0xf) << 8 | *(p+1);
 
 	p += NIT_FIX2_LEN;
@@ -81,6 +83,7 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 
 		strm.transport_stream_id = *p << 8 | *(p+1);
 		strm.original_network_id = (*(p+2) << 8) | *(p+3);
+		strm.reserved_future_use = (*(p+4) >> 4) & 0x0f;
 		strm.transport_descriptors_length = (*(p+4) & 0xf) << 8 | *(p+5);
 
 		p += NIT_STREAM_FIX_LEN;

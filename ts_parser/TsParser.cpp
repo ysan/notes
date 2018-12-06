@@ -15,9 +15,9 @@ CTsParser::CTsParser (void)
 	,mBuffSize (0)
 	,mUnitSize (0)
 	,mTOT (5)
-	,mEIT_0x12 (65535)
-	,mEIT_0x26 (65535)
-	,mEIT_0x27 (65535)
+	,mEIT_H (65535)
+	,mEIT_M (65535)
+	,mEIT_L (65535)
 {
 }
 
@@ -249,14 +249,14 @@ bool CTsParser::searchPAT (void)
 		getTsHeader (&stTsHdr, pCur);
 
 		switch (stTsHdr.pid) {
-		case 0x0000: // PAT
+		case PID_PAT:
 puts ("###############  PAT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0014: // TOT
+		case PID_TOT:
 puts ("###############  TOT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
@@ -264,42 +264,42 @@ dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0012: // EIT
-puts ("###############  EIT  ###############");
+		case PID_EIT_H:
+puts ("###############  EIT_H  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0026: // EIT
-puts ("###############  EIT  ###############");
+		case PID_EIT_M:
+puts ("###############  EIT_M  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0027: // EIT
-puts ("###############  EIT  ###############");
+		case PID_EIT_L:
+puts ("###############  EIT_L  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0010: // NIT
+		case PID_NIT:
 puts ("###############  NIT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0011: // SDT
+		case PID_SDT:
 puts ("###############  SDT  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
-		case 0x0013: // RST
+		case PID_RST:
 puts ("###############  RST  ###############");
 CUtils::dumper (pCur, 188);
 dumpTsHeader (&stTsHdr);
@@ -349,7 +349,7 @@ dumpTsHeader (&stTsHdr);
 
 
 
-			if (stTsHdr.pid == 0x0000) {
+			if (stTsHdr.pid == PID_PAT) {
 
 				mPAT.checkSection (&stTsHdr, pPayload, payloadSize);
 
@@ -359,31 +359,31 @@ dumpTsHeader (&stTsHdr);
 				mPAT.getTable (mPatTable, 32);
 				mPAT.dumpTable (mPatTable, n);
 
-			} else if (stTsHdr.pid == 0x0014) {
+			} else if (stTsHdr.pid == PID_TOT) {
 
 				mTOT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0012) {
+			} else if (stTsHdr.pid == PID_EIT_H) {
 
-				mEIT_0x12.checkSection (&stTsHdr, pPayload, payloadSize);
+				mEIT_H.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0026) {
+			} else if (stTsHdr.pid == PID_EIT_M) {
 
-				mEIT_0x26.checkSection (&stTsHdr, pPayload, payloadSize);
+				mEIT_M.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0027) {
+			} else if (stTsHdr.pid == PID_EIT_L) {
 
-				mEIT_0x27.checkSection (&stTsHdr, pPayload, payloadSize);
+				mEIT_L.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0010) {
+			} else if (stTsHdr.pid == PID_NIT) {
 
 				mNIT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0011) {
+			} else if (stTsHdr.pid == PID_SDT) {
 
 				mSDT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == 0x0013) {
+			} else if (stTsHdr.pid == PID_RST) {
 
 				mRST.checkSection (&stTsHdr, pPayload, payloadSize);
 

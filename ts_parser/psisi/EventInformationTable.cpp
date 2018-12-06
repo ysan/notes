@@ -178,6 +178,17 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 				}
 				break;
 
+			case DESC_TAG__COMPONENT:
+				{
+					CComponentDescriptor cd (*iter_desc);
+					if (cd.isValid) {
+						cd.dump();
+					} else {
+						printf ("invalid ComponentDescriptor\n");
+					}
+				}
+				break;
+
 			default:
 				iter_desc->dump();
 				break;

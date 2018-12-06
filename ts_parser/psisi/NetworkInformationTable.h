@@ -37,6 +37,7 @@ public:
 			CStream (void)
 				:transport_stream_id (0)
 				,original_network_id (0)
+				,reserved_future_use (0)
 				,transport_descriptors_length (0)
 			{
 				descriptors.clear();
@@ -45,13 +46,16 @@ public:
 
 			uint16_t transport_stream_id;
 			uint16_t original_network_id;
+			uint8_t reserved_future_use;
 			uint16_t transport_descriptors_length;
 			std::vector <CDescriptor> descriptors;
 		};
 
 	public:
 		CTable (void)
-			:network_descriptors_length (0)
+			:reserved_future_use_2 (0)
+			,network_descriptors_length (0)
+			,reserved_future_use_3 (0)
 			,transport_stream_loop_length (0)
 		{
 			descriptors.clear();
@@ -60,8 +64,10 @@ public:
 		virtual ~CTable (void) {}
 
 		ST_SECTION_HEADER header;
+		uint8_t reserved_future_use_2;
 		uint16_t network_descriptors_length;
 		std::vector <CDescriptor> descriptors;
+		uint8_t reserved_future_use_3;
 		uint16_t transport_stream_loop_length;
 		std::vector <CStream> streams;
 	};

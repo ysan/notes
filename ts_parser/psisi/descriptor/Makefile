@@ -32,6 +32,8 @@ SRCS_CPP	:= \
 	Descriptor.cpp \
 	ShortEventDescriptor.cpp \
 	ExtendedEventDescriptor.cpp \
+	ComponentDescriptor.cpp \
+	AudioComponentDescriptor.cpp \
 
 
 #

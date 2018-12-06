@@ -36,7 +36,9 @@ public:
 		public:
 			CStream (void)
 				:stream_type (0)
+				,reserved_1 (0)
 				,elementary_PID (0)
+				,reserved_2 (0)
 				,ES_info_length (0)
 			{
 				descriptors.clear();
@@ -44,14 +46,18 @@ public:
 			virtual ~CStream (void) {}
 
 			uint8_t stream_type;
+			uint8_t reserved_1;
 			uint16_t elementary_PID;
+			uint8_t reserved_2;
 			uint16_t ES_info_length;
 			std::vector <CDescriptor> descriptors;
 		};
 
 	public:
 		CTable (void)
-			:PCR_PID (0)
+			:reserved_3 (0)
+			,PCR_PID (0)
+			,reserved_4 (0)
 			,program_info_length (0)
 		{
 			descriptors.clear();
@@ -60,7 +66,9 @@ public:
 		virtual ~CTable (void) {}
 
 		ST_SECTION_HEADER header;
+		uint8_t reserved_3;
 		uint16_t PCR_PID;
+		uint8_t reserved_4;
 		uint16_t program_info_length;
 		std::vector <CDescriptor> descriptors;
 		std::vector <CStream> streams;

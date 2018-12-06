@@ -46,8 +46,10 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 	pTable->header = *(const_cast<CSectionInfo*>(pCompSection)->getHeader());
 
 	p = pCompSection->getDataPartAddr();
+	pTable->reserved_3 = (*p >> 5) & 0x07;
 	pTable->PCR_PID = (*p & 0x1f) << 8 | *(p+1);
-	pTable->program_info_length = (*(p+2) & 0xf) << 8 | *(p+3);
+	pTable->reserved_4 = (*(p+2) >> 4) & 0x0f;
+	pTable->program_info_length = (*(p+2) & 0x0f) << 8 | *(p+3);
 
 	p += PMT_FIX_LEN;
 	int n = (int)pTable->program_info_length;
@@ -74,8 +76,10 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 		CTable::CStream strm ;
 
 		strm.stream_type = *p;
+		strm.reserved_1 = (*(p+1) >> 5) & 0x07;
 		strm.elementary_PID = (*(p+1) & 0x1f) << 8 | *(p+2);
-		strm.ES_info_length = (*(p+3) & 0xf) << 8 | *(p+4);
+		strm.reserved_2 = (*(p+3) >> 4) & 0x0f;
+		strm.ES_info_length = (*(p+3) & 0x0f) << 8 | *(p+4);
 
 		p += PMT_STREAM_FIX_LEN;
 		int n = (int)strm.ES_info_length ;
