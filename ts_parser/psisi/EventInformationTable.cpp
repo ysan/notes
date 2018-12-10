@@ -131,6 +131,7 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 	
 	printf ("========================================\n");
 
+	printf ("table_id                    [0x%02x]\n", pTable->header.table_id);
 	printf ("transport_stream_id         [0x%04x]\n", pTable->transport_stream_id);
 	printf ("original_network_id         [0x%04x]\n", pTable->original_network_id);
 	printf ("segment_last_section_number [0x%02x]\n", pTable->segment_last_section_number);
@@ -142,19 +143,19 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		printf ("event_id                [0x%04x]\n", iter_event->event_id);
 		char szStime [32];
 		memset (szStime, 0x00, sizeof(szStime));
-		CUtils::getStrEpoch (CUtils::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S", szStime, sizeof(szStime));
+		CTsCommon::getStrEpoch (CTsCommon::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S", szStime, sizeof(szStime));
 		printf ("start_time              [%s]\n", szStime);
 		char szDuration [32];
 		memset (szDuration, 0x00, sizeof(szDuration));
-		CUtils::getStrSecond (CUtils::getSecFromBCD (iter_event->duration), szDuration, sizeof(szDuration));
+		CTsCommon::getStrSecond (CTsCommon::getSecFromBCD (iter_event->duration), szDuration, sizeof(szDuration));
 		printf ("duration                [%s]\n", szDuration);
 		printf ("running_status          [0x%02x]\n", iter_event->running_status);
 		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
 		printf ("descriptors_loop_length [0x%04x]\n", iter_event->descriptors_loop_length);
 
-		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
+			printf ("\n--  descriptor  --\n");
 			switch (iter_desc->tag) {
 			case DESC_TAG__SHORT_EVENT_DESCRIPTOR:
 				{
@@ -207,6 +208,17 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 						sd.dump();
 					} else {
 						printf ("invalid SeriesDescriptor\n");
+					}
+				}
+				break;
+
+			case DESC_TAG__CONTENT_DESCRIPTOR:
+				{
+					CContentDescriptor cd (*iter_desc);
+					if (cd.isValid) {
+						cd.dump();
+					} else {
+						printf ("invalid ContentDescriptor\n");
 					}
 				}
 				break;

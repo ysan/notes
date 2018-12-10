@@ -53,6 +53,7 @@ bool CComponentDescriptor::parse (void)
 	memcpy (component_text, p, length - 6);
 	p += length - 6;
 
+	// length check
 	if (length != (p - data)) {
 		return false;
 	}
@@ -67,7 +68,8 @@ void CComponentDescriptor::dump (void) const
 	CDescriptor::dump (true);
 
 	printf ("stream_content        [0x%02x]\n", stream_content);
-	printf ("component_type        [0x%02x]\n", component_type);
+	printf ("component_type        [0x%02x][%s][%s]\n",
+		component_type, CTsCommon::getVideoComponentType(component_type), CTsCommon::getVideoRatio(component_type));
 	printf ("component_tag         [0x%02x]\n", component_tag);
 
 	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);

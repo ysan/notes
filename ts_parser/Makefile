@@ -40,6 +40,7 @@ SRCS_CPP	:= \
 	main.cpp \
 	TsParser.cpp \
 	Utils.cpp \
+	TsCommon.cpp \
 
 
 #

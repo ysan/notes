@@ -130,6 +130,7 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 	
 	printf ("========================================\n");
 
+	printf ("table_id                  [0x%02x]\n", pTable->header.table_id);
 	printf ("original_network_id       [0x%04x]\n", pTable->original_network_id);
 
 	std::vector<CTable::CService>::const_iterator iter_svc = pTable->services.begin();
@@ -143,9 +144,9 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 		printf ("free_CA_mode               [0x%01x]\n", iter_svc->free_CA_mode);
 		printf ("descriptors_loop_length    [0x%04x]\n", iter_svc->descriptors_loop_length);
 
-		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_svc->descriptors.begin();
 		for (; iter_desc != iter_svc->descriptors.end(); ++ iter_desc) {
+			printf ("\n--  descriptor  --\n");
 			iter_desc->dump();
 		}
 	}

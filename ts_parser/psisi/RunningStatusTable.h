@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Defs.h"
-#include "TsCommonDefs.h"
+#include "TsCommon.h"
 #include "SectionParser.h"
 #include "DescriptorDefs.h"
 

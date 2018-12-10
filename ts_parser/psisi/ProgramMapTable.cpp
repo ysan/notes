@@ -145,9 +145,9 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 	printf ("PCR_PID             [0x%04x]\n", pTable->PCR_PID);
 	printf ("program_info_length [0x%04x]\n", pTable->program_info_length);
 
-	printf ("\n--  descriptors  --\n");
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
+		printf ("\n--  descriptor  --\n");
 		iter_desc->dump();
 	}
 
@@ -158,9 +158,9 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 		printf ("elementary_PID [0x%04x]\n", iter_strm->elementary_PID);
 		printf ("ES_info_length [0x%04x]\n", iter_strm->ES_info_length);
 
-		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
+			printf ("\n--  descriptor  --\n");
 			iter_desc->dump();
 		}
 	}

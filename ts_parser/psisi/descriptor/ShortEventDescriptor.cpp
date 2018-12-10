@@ -52,6 +52,7 @@ bool CShortEventDescriptor::parse (void)
 	memcpy (text_char, p, text_length);
 	p += text_length;
 
+	// length check
 	if (length != (p - data)) {
 		return false;
 	}

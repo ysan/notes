@@ -35,6 +35,7 @@ SRCS_CPP	:= \
 	ComponentDescriptor.cpp \
 	AudioComponentDescriptor.cpp \
 	SeriesDescriptor.cpp \
+	ContentDescriptor.cpp \
 
 
 #

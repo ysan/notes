@@ -147,11 +147,12 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 	
 	printf ("========================================\n");
 
+	printf ("table_id                         [0x%02x]\n", pTable->header.table_id);
 	printf ("network_descriptors_length       [0x%04x]\n", pTable->network_descriptors_length);
 
-	printf ("\n--  descriptors  --\n");
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
+		printf ("\n--  descriptor  --\n");
 		iter_desc->dump();
 	}
 
@@ -164,9 +165,9 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 		printf ("original_network_id          [0x%04x]\n", iter_strm->original_network_id);
 		printf ("transport_descriptors_length [0x%04x]\n", iter_strm->transport_descriptors_length);
 
-		printf ("\n--  descriptors  --\n");
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
+			printf ("\n--  descriptor  --\n");
 			iter_desc->dump();
 		}
 	}

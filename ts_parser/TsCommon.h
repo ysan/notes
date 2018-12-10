@@ -1,5 +1,15 @@
-#ifndef _TS_COMMON_DEF_H_
-#define _TS_COMMON_DEF_H_
+#ifndef _TS_COMMON_H_
+#define _TS_COMMON_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/time.h>
+
+#include "Defs.h"
 
 
 #define TS_PACKET_LEN					(188)
@@ -41,7 +51,7 @@
 #define PID_SLDT						(0x0036)
 #define PID_NULL						(0x1fff)
 
-// table id
+// table_id
 #define TBL_ID__PAT						(0x00)
 #define TBL_ID__CAT						(0x01)
 #define TBL_ID__PMT						(0x02)
@@ -114,15 +124,37 @@ typedef struct {
 	uint8_t table_id;						//  0- 7 :  8 bits
 	uint8_t section_syntax_indicator;		//  8- 8 :  1 bit
 	uint8_t private_indicator;				//  9- 9 :  1 bit
-	// reserved								// 10-11 :  2 bits
+	uint8_t reserved_1;						// 10-11 :  2 bits
 	uint16_t section_length;				// 12-23 : 12 bits
 	uint16_t table_id_extension;			// 24-39 : 16 bits
-	// reserved								// 40-41 :  2 bits
+	uint8_t reserved_2;						// 40-41 :  2 bits
 	uint8_t version_number;					// 42-46 :  5 bits
 	uint8_t current_next_indicator;			// 47-47 :  1 bit
 	uint8_t section_number;					// 48-55 :  8 bits
 	uint8_t last_section_number;			// 56-63 :  8 bits
 } ST_SECTION_HEADER;
+
+
+class CTsCommon {
+public:
+    static void getStrEpoch (time_t tx, const char *format, char *pszout, int outsize);
+    static void getStrSecond (int second, char *pszout, int outsize);
+
+
+    // ARIB specific
+    static time_t getEpochFromMJD (const uint8_t *mjd);
+    static int getSecFromBCD (const uint8_t *bcd);
+	static const char* getGenre_lvl1 (uint8_t genre);
+	static const char* getGenre_lvl2 (uint8_t genre);
+	static const char* getVideoComponentType (uint8_t type);
+	static const char* getVideoRatio (uint8_t type);
+	static const char* getAudioComponentType (uint8_t type);
+	static const char* getAudioSamplingRate (uint8_t samplingRate);
+	static const char* getAudioQuality (uint8_t quality);
+
+
+
+};
 
 
 #endif

@@ -60,9 +60,9 @@ bool CAudioComponentDescriptor::parse (void)
 	simulcast_group_tag = *p;
 	p += 1;
 	ES_multi_lingual_flag = (*p >> 7) & 0x01;
-	main_component_flag = (*p << 6) & 0x01;
-	quality_indicator = (*p << 4) & 0x03;
-	sampling_rate = (*p << 1) & 0x07;
+	main_component_flag = (*p >> 6) & 0x01;
+	quality_indicator = (*p >> 5) & 0x03;
+	sampling_rate = *p & 0x07;
 	reserved_future_use2 = *p & 0x01;
 	p += 1;
 
@@ -77,6 +77,7 @@ bool CAudioComponentDescriptor::parse (void)
 	memcpy (text_char, p, length - (p - data));
 	p += length - (p - data);
 
+	// length check
 	if (length != (p - data)) {
 		return false;
 	}
@@ -91,14 +92,19 @@ void CAudioComponentDescriptor::dump (void) const
 	CDescriptor::dump (true);
 
 	printf ("stream_content              [0x%02x]\n", stream_content);
-	printf ("component_type              [0x%02x]\n", component_type);
+	printf ("component_type              [0x%02x][%s]\n",
+		component_type, CTsCommon::getAudioComponentType(component_type));
 	printf ("component_tag               [0x%02x]\n", component_tag);
 	printf ("stream_type                 [0x%02x]\n", stream_type);
 	printf ("simulcast_group_tag         [0x%02x]\n", simulcast_group_tag);
-	printf ("ES_multi_lingual_flag       [0x%02x]\n", ES_multi_lingual_flag);
-	printf ("main_component_flag         [0x%02x]\n", main_component_flag);
-	printf ("quality_indicator           [0x%02x]\n", quality_indicator);
-	printf ("sampling_rate               [0x%02x]\n", sampling_rate);
+	printf ("ES_multi_lingual_flag       [0x%02x][%s]\n",
+		ES_multi_lingual_flag, ES_multi_lingual_flag ? "二ヶ国語" : "-");
+	printf ("main_component_flag         [0x%02x][%s]\n",
+		main_component_flag, main_component_flag ? "主" : "副");
+	printf ("quality_indicator           [0x%02x][%s]\n",
+		quality_indicator, CTsCommon::getAudioQuality(quality_indicator));
+	printf ("sampling_rate               [0x%02x][%s]\n",
+		sampling_rate, CTsCommon::getAudioSamplingRate(sampling_rate));
 
 	printf ("ISO_639_language_code       [%s]\n", (char*)ISO_639_language_code);
 

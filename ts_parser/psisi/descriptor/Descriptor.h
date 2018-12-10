@@ -8,7 +8,7 @@
 #include <errno.h>
 
 #include "Defs.h"
-#include "TsCommonDefs.h"
+#include "TsCommon.h"
 
 
 class CDescriptor {

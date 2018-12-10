@@ -55,6 +55,7 @@ bool CSeriesDescriptor::parse (void)
 	memcpy (series_name_char, p, length - (p - data));
 	p += length - (p - data);
 
+	// length check
 	if (length != (p - data)) {
 		return false;
 	}

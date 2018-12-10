@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Defs.h"
-#include "TsCommonDefs.h"
+#include "TsCommon.h"
 #include "Descriptor.h"
 
 
@@ -26,7 +26,7 @@ public:
 			memset (item_description_char, 0x00, sizeof(item_description_char));
 			memset (item_char, 0x00, sizeof(item_char));
 		}
-		virtual ~CItem (void) {};
+		virtual ~CItem (void) {}
 
 		uint8_t item_description_length;
 		uint8_t item_description_char [0xff];
