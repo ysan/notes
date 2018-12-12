@@ -89,6 +89,8 @@ bool CExtendedEventDescriptor::parse (void)
 
 void CExtendedEventDescriptor::dump (void) const
 {
+	printf ("%s\n", __PRETTY_FUNCTION__);
+
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);

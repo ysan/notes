@@ -62,6 +62,8 @@ bool CShortEventDescriptor::parse (void)
 
 void CShortEventDescriptor::dump (void) const
 {
+	printf ("%s\n", __PRETTY_FUNCTION__);
+
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);

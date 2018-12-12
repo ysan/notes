@@ -32,6 +32,7 @@ public:
 private:
 	bool parse (void);
 
+	int m_series_name_char_len;
 };
 
 #endif

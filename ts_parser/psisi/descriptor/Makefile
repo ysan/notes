@@ -36,7 +36,11 @@ SRCS_CPP	:= \
 	AudioComponentDescriptor.cpp \
 	SeriesDescriptor.cpp \
 	ContentDescriptor.cpp \
-
+	ServiceListDescriptor.cpp \
+	SatelliteDeliverySystemDescriptor.cpp \
+	TerrestrialDeliverySystemDescriptor.cpp \
+	TSInformationDescriptor.cpp \
+	PartialReceptionDescriptor.cpp \
 
 #
 #   Configurations

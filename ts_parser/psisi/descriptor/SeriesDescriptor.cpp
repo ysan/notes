@@ -18,6 +18,7 @@ CSeriesDescriptor::CSeriesDescriptor (const CDescriptor &obj)
 	,expire_date (0)
 	,episode_number (0)
 	,last_episode_number (0)
+	,m_series_name_char_len (0)
 {
 	if (!isValid) {
 		return;
@@ -52,8 +53,9 @@ bool CSeriesDescriptor::parse (void)
 	last_episode_number = (*(p+1) & 0x0f) << 8 | *(p+2);
 	p += 3;
 
-	memcpy (series_name_char, p, length - (p - data));
-	p += length - (p - data);
+	m_series_name_char_len = length - (p - data);
+	memcpy (series_name_char, p, m_series_name_char_len);
+	p += m_series_name_char_len;
 
 	// length check
 	if (length != (p - data)) {
@@ -65,6 +67,8 @@ bool CSeriesDescriptor::parse (void)
 
 void CSeriesDescriptor::dump (void) const
 {
+	printf ("%s\n", __PRETTY_FUNCTION__);
+
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
@@ -78,6 +82,6 @@ void CSeriesDescriptor::dump (void) const
 	printf ("last_episode_number    [0x%04x]\n", last_episode_number);
 
 	memset (aribstr, 0x00, MAXSECLEN);
-	AribToString (aribstr, (const char*)series_name_char, (int)(strlen((char*)series_name_char)));
+	AribToString (aribstr, (const char*)series_name_char, m_series_name_char_len);
 	printf ("series_name_char       [%s]\n", aribstr);
 }

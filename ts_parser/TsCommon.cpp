@@ -521,3 +521,7 @@ const char* CTsCommon::getAudioQuality (uint8_t quality)
 	}
 }
 
+uint16_t CTsCommon::freq2ch (uint16_t frequency)
+{
+	return ((frequency/7) - 473) / 6 + 13;
+}

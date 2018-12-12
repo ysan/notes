@@ -22,6 +22,7 @@ CAudioComponentDescriptor::CAudioComponentDescriptor (const CDescriptor &obj)
 	,quality_indicator (0)
 	,sampling_rate (0)
 	,reserved_future_use2 (0)
+	,m_text_char_len (0)
 {
 	if (!isValid) {
 		return;
@@ -74,8 +75,9 @@ bool CAudioComponentDescriptor::parse (void)
 		p += 3 ;
 	}
 
-	memcpy (text_char, p, length - (p - data));
-	p += length - (p - data);
+	m_text_char_len = length - (p - data);
+	memcpy (text_char, p, m_text_char_len);
+	p += m_text_char_len;
 
 	// length check
 	if (length != (p - data)) {
@@ -87,6 +89,8 @@ bool CAudioComponentDescriptor::parse (void)
 
 void CAudioComponentDescriptor::dump (void) const
 {
+	printf ("%s\n", __PRETTY_FUNCTION__);
+
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
@@ -113,6 +117,6 @@ void CAudioComponentDescriptor::dump (void) const
 	}
 
 	memset (aribstr, 0x00, MAXSECLEN);
-	AribToString (aribstr, (const char*)text_char, (int)(strlen((char*)text_char)));
+	AribToString (aribstr, (const char*)text_char, m_text_char_len);
 	printf ("text_char                   [%s]\n", aribstr);
 }

@@ -38,6 +38,7 @@ public:
 private:
 	bool parse (void);
 
+	int m_text_char_len;
 };
 
 #endif

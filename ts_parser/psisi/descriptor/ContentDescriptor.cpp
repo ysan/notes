@@ -46,9 +46,9 @@ bool CContentDescriptor::parse (void)
 		if (contentLen < 0) {
 			puts ("invalid ContentDescriptor content");
 			return false;
-        }
+		}
 
-        contents.push_back (con);
+		contents.push_back (con);
 	}
 
 	// length check
@@ -61,10 +61,12 @@ bool CContentDescriptor::parse (void)
 
 void CContentDescriptor::dump (void) const
 {
+	printf ("%s\n", __PRETTY_FUNCTION__);
+
 	CDescriptor::dump (true);
 
-    std::vector<CContent>::const_iterator iter_con = contents.begin();
-    for (; iter_con != contents.end(); ++ iter_con) {
+	std::vector<CContent>::const_iterator iter_con = contents.begin();
+	for (; iter_con != contents.end(); ++ iter_con) {
 		printf ("\n--  content  --\n");
 		printf (
 			"content_nibble_level_1 [0x%02x][%s]\n",

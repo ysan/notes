@@ -8,6 +8,10 @@
 #include "AudioComponentDescriptor.h"
 #include "SeriesDescriptor.h"
 #include "ContentDescriptor.h"
+#include "ServiceListDescriptor.h"
+#include "SatelliteDeliverySystemDescriptor.h"
+#include "TerrestrialDeliverySystemDescriptor.h"
+#include "TSInformationDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME_DESCRIPTOR					(0x40) // ネットワーク名記述子
