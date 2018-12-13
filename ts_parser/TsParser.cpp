@@ -14,6 +14,7 @@ CTsParser::CTsParser (void)
 	,mpBottom (NULL)
 	,mBuffSize (0)
 	,mUnitSize (0)
+	,mParseRemainSize (0)
 	,mTOT (5)
 	,mEIT_H (65535)
 	,mEIT_M (65535)
@@ -49,7 +50,7 @@ bool CTsParser::copyInnerBuffer (uint8_t *pBuff, size_t size)
 	if (mBuffSize >= totalDataSize) {
 		// 	実コピー
 		memcpy (mpBottom, pBuff, size);
-		mpCurrent = mpBottom;
+		mpCurrent = mpBottom - mParseRemainSize;  // current update
 		mpBottom += size;
 printf ("copyInnerBuffer size=%lu remain=%lu\n", mBuffSize, mBuffSize-totalDataSize);
 		return true;
@@ -86,7 +87,7 @@ printf ("copyInnerBuffer size=%lu remain=%lu\n", mBuffSize, mBuffSize-totalDataS
 
 	// 	実コピー
 	memcpy (mpBottom, pBuff, size);
-	mpCurrent = mpBottom;
+	mpCurrent = mpBottom - mParseRemainSize;  // current update
 	mpBottom += size;
 
 printf ("copyInnerBuffer(malloc) top=%p bottom=%p size=%lu remain=%lu\n", mpTop, mpBottom, mBuffSize, mBuffSize-totalDataSize);
@@ -168,7 +169,7 @@ uint8_t * CTsParser::getSyncTopAddr (uint8_t *pTop, uint8_t *pBtm, size_t unitSi
 	uint8_t *pWork = NULL;
 
 	pWork = pTop;
-	pBtm -= unitSize * 8;
+	pBtm -= unitSize * 8; // unitSize 8コ分のデータがある前提
 
 	while (pWork <= pBtm) {
 		if (*pWork == SYNC_BYTE) {
@@ -236,7 +237,8 @@ bool CTsParser::searchPAT (void)
 
 
 	while ((pCur+unitSize) < pBtm) {
-		if ((*pCur != SYNC_BYTE) || (*(pCur+unitSize) != SYNC_BYTE)) {
+		if ((*pCur != SYNC_BYTE) && (*(pCur+unitSize) != SYNC_BYTE)) {
+printf ("getSyncTopAddr\n");
 			p = getSyncTopAddr (pCur, pBtm, unitSize);
 			if (!p) {
 				return false;
@@ -400,6 +402,9 @@ dumpTsHeader (&stTsHdr);
 
 		pCur += unitSize;
 	}
+
+	mParseRemainSize = pBtm - pCur;
+printf ("mParseRemainSize=[%d]\n", mParseRemainSize);
 
 
 	return true;

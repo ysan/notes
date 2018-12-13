@@ -42,6 +42,7 @@ private:
 	size_t mBuffSize ;
 
 	int mUnitSize;
+	int mParseRemainSize;
 
 
 	CProgramAssociationTable mPAT;
