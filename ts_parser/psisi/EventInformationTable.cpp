@@ -76,6 +76,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 		ev.descriptors_loop_length = (*(p+10) & 0x0f) << 8 | *(p+11);
 
 		p += EIT_EVENT_FIX_LEN;
+
 		int n = (int)ev.descriptors_loop_length;
 		while (n > 0) {
 			CDescriptor desc (p);
@@ -156,7 +157,7 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		printf ("duration                [%s]\n", szDuration);
 		printf ("running_status          [0x%02x]\n", iter_event->running_status);
 		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
-		printf ("descriptors_loop_length [0x%04x]\n", iter_event->descriptors_loop_length);
+		printf ("descriptors_loop_length [%d]\n", iter_event->descriptors_loop_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {

@@ -62,7 +62,7 @@ bool CRunningStatusTable::parse (const CSectionInfo *pCompSection, CTable* pOutT
 		stt.original_network_id = *(p+2) << 8 | *(p+3);
 		stt.service_id = *(p+4) << 8 | *(p+5);
 		stt.event_id = *(p+6) << 8 | *(p+7);
-		stt.running_status = *(p+8) & 0x7;
+		stt.running_status = *(p+8) & 0x07;
 
 		p += RST_STATUS_FIX_LEN;
 

@@ -47,10 +47,11 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 	pTable->header = *(const_cast<CSectionInfo*>(pCompSection)->getHeader());
 
 	p = pCompSection->getDataPartAddr();
-	pTable->reserved_future_use_2 = (*p >> 4) & 0xf;
-	pTable->network_descriptors_length = (*p & 0xf) << 8 | *(p+1);
+	pTable->reserved_future_use_2 = (*p >> 4) & 0x0f;
+	pTable->network_descriptors_length = (*p & 0x0f) << 8 | *(p+1);
 
 	p += NIT_FIX_LEN;
+
 	int n = (int)pTable->network_descriptors_length;
 	while (n > 0) {
 		CDescriptor desc (p);
@@ -63,8 +64,8 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 		p += (2 + *(p + 1));
 	}
 
-	pTable->reserved_future_use_3 = (*p >> 4) & 0xf;
-	pTable->transport_stream_loop_length = (*p & 0xf) << 8 | *(p+1);
+	pTable->reserved_future_use_3 = (*p >> 4) & 0x0f;
+	pTable->transport_stream_loop_length = (*p & 0x0f) << 8 | *(p+1);
 
 	p += NIT_FIX2_LEN;
 
@@ -86,9 +87,10 @@ bool CNetworkInformationTable::parse (const CSectionInfo *pCompSection, CTable* 
 		strm.transport_stream_id = *p << 8 | *(p+1);
 		strm.original_network_id = (*(p+2) << 8) | *(p+3);
 		strm.reserved_future_use = (*(p+4) >> 4) & 0x0f;
-		strm.transport_descriptors_length = (*(p+4) & 0xf) << 8 | *(p+5);
+		strm.transport_descriptors_length = (*(p+4) & 0x0f) << 8 | *(p+5);
 
 		p += NIT_STREAM_FIX_LEN;
+
 		int n = (int)strm.transport_descriptors_length;
 		while (n > 0) {
 			CDescriptor desc (p);
@@ -150,7 +152,7 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 	printf ("========================================\n");
 
 	printf ("table_id                         [0x%02x]\n", pTable->header.table_id);
-	printf ("network_descriptors_length       [0x%04x]\n", pTable->network_descriptors_length);
+	printf ("network_descriptors_length       [%d]\n", pTable->network_descriptors_length);
 
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
@@ -158,14 +160,14 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 		iter_desc->dump();
 	}
 
-	printf ("transport_stream_loop_length     [0x%04x]\n", pTable->transport_stream_loop_length);
+	printf ("transport_stream_loop_length     [%d]\n", pTable->transport_stream_loop_length);
 
 	std::vector<CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
 	for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
 		printf ("\n--  stream  --\n");
 		printf ("transport_stream_id          [0x%04x]\n", iter_strm->transport_stream_id);
 		printf ("original_network_id          [0x%04x]\n", iter_strm->original_network_id);
-		printf ("transport_descriptors_length [0x%04x]\n", iter_strm->transport_descriptors_length);
+		printf ("transport_descriptors_length [%d]\n", iter_strm->transport_descriptors_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {

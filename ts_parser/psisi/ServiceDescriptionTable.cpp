@@ -144,7 +144,7 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 		printf ("EIT_present_following_flag [0x%01x]\n", iter_svc->EIT_present_following_flag);
 		printf ("running_status             [0x%01x]\n", iter_svc->running_status);
 		printf ("free_CA_mode               [0x%01x]\n", iter_svc->free_CA_mode);
-		printf ("descriptors_loop_length    [0x%04x]\n", iter_svc->descriptors_loop_length);
+		printf ("descriptors_loop_length    [%d]\n", iter_svc->descriptors_loop_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_svc->descriptors.begin();
 		for (; iter_desc != iter_svc->descriptors.end(); ++ iter_desc) {

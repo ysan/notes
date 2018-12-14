@@ -45,6 +45,7 @@ SRCS_CPP	:= \
 	NetworkInformationTable.cpp \
 	ServiceDescriptionTable.cpp \
 	RunningStatusTable.cpp \
+	BroadcasterInformationTable.cpp \
 
 
 #

@@ -16,6 +16,7 @@
 #include "NetworkInformationTable.h"
 #include "ServiceDescriptionTable.h"
 #include "RunningStatusTable.h"
+#include "BroadcasterInformationTable.h"
 
 
 class CTsParser
@@ -54,6 +55,7 @@ private:
 	CNetworkInformationTable mNIT;
 	CServiceDescriptionTable mSDT;
 	CRunningStatusTable mRST;
+	CBroadcasterInformationTable mBIT;
 
 };
 

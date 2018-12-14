@@ -54,6 +54,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 	pTable->program_info_length = (*(p+2) & 0x0f) << 8 | *(p+3);
 
 	p += PMT_FIX_LEN;
+
 	int n = (int)pTable->program_info_length;
 	while (n > 0) {
 		CDescriptor desc (p);
@@ -84,6 +85,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 		strm.ES_info_length = (*(p+3) & 0x0f) << 8 | *(p+4);
 
 		p += PMT_STREAM_FIX_LEN;
+
 		int n = (int)strm.ES_info_length ;
 		while (n > 0) {
 			CDescriptor desc (p);
@@ -145,7 +147,7 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 	printf ("========================================\n");
 
 	printf ("PCR_PID             [0x%04x]\n", pTable->PCR_PID);
-	printf ("program_info_length [0x%04x]\n", pTable->program_info_length);
+	printf ("program_info_length [%d]\n", pTable->program_info_length);
 
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
@@ -158,7 +160,7 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 		printf ("\n--  stream  --\n");
 		printf ("stream_type    [0x%02x]\n", iter_strm->stream_type);
 		printf ("elementary_PID [0x%04x]\n", iter_strm->elementary_PID);
-		printf ("ES_info_length [0x%04x]\n", iter_strm->ES_info_length);
+		printf ("ES_info_length [%d]\n", iter_strm->ES_info_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {

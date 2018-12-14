@@ -308,6 +308,13 @@ dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
+		case PID_BIT:
+puts ("###############  BIT  ###############");
+CUtils::dumper (pCur, 188);
+dumpTsHeader (&stTsHdr);
+			isCheck = true;
+			break;
+
 		default:
 			// check PMT
 			pPatTable = &mPatTable [0];
@@ -388,6 +395,10 @@ dumpTsHeader (&stTsHdr);
 			} else if (stTsHdr.pid == PID_RST) {
 
 				mRST.checkSection (&stTsHdr, pPayload, payloadSize);
+
+			} else if (stTsHdr.pid == PID_BIT) {
+
+				mBIT.checkSection (&stTsHdr, pPayload, payloadSize);
 
 			} else if (stTsHdr.pid == pPatTable->program_map_PID) {
 
