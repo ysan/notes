@@ -27,6 +27,8 @@ void CProgramMapTable::onSectionComplete (const CSectionInfo *pCompSection)
 	if (!parse (pCompSection, pTable)) {
 		delete pTable;
 		pTable = NULL;
+		detachSectionList (pCompSection);
+		return ;
 	}
 
 	mTables.push_back (pTable);

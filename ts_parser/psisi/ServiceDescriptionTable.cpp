@@ -26,6 +26,8 @@ void CServiceDescriptionTable::onSectionComplete (const CSectionInfo *pCompSecti
 	if (!parse (pCompSection, pTable)) {
 		delete pTable;
 		pTable = NULL;
+		detachSectionList (pCompSection);
+		return ;
 	}
 
 	mTables.push_back (pTable);
@@ -147,7 +149,22 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_svc->descriptors.begin();
 		for (; iter_desc != iter_svc->descriptors.end(); ++ iter_desc) {
 			printf ("\n--  descriptor  --\n");
-			iter_desc->dump();
+			switch (iter_desc->tag) {
+			case DESC_TAG__SERVICE_DESCRIPTOR:
+				{
+					CServiceDescriptor sd (*iter_desc);
+					if (sd.isValid) {
+						sd.dump();
+					} else {
+						printf ("invalid ServiceDescriptor\n");
+					}
+				}
+				break;
+
+			default:
+				iter_desc->dump();
+				break;
+			}
 		}
 	}
 

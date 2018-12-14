@@ -102,7 +102,7 @@ public:
 
 protected:
 	CSectionInfo *getLatestCompleteSection (void) const;
-	void detachSectionList (CSectionInfo *pSectInfo);
+	void detachSectionList (const CSectionInfo *pSectInfo);
 	void detachAllSectionList (void);
 	CSectionInfo *searchSectionList (const CSectionInfo &sectInfo) const;
 	int getSectionListNum (void) const;
@@ -116,8 +116,8 @@ private:
 	CSectionInfo* attachSectionList (uint8_t *pBuff, size_t size);
 	CSectionInfo* addSectionList (CSectionInfo *pSectInfo);
 
-	void deleteSectionList (CSectionInfo &sectInfo);
-	void deleteSectionList (CSectionInfo *pSectInfo);
+	void deleteSectionList (const CSectionInfo &sectInfo);
+	void deleteSectionList (const CSectionInfo *pSectInfo);
 	void deleteAllSectionList (void);
 
 	void checkDetachFifoSectionList (void);
@@ -127,6 +127,9 @@ private:
 
 	bool checkSectionFirst (uint8_t *pPayload, size_t payloadSize);
 	bool checkSectionFollow (uint8_t *pPayload, size_t payloadSize);
+
+	void clearWorkSectionInfo (void);
+
 
 
 	uint16_t mPid;

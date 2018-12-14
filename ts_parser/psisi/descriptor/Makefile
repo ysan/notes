@@ -41,6 +41,7 @@ SRCS_CPP	:= \
 	TerrestrialDeliverySystemDescriptor.cpp \
 	TSInformationDescriptor.cpp \
 	PartialReceptionDescriptor.cpp \
+	ServiceDescriptor.cpp \
 
 #
 #   Configurations

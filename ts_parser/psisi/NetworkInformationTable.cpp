@@ -26,6 +26,8 @@ void CNetworkInformationTable::onSectionComplete (const CSectionInfo *pCompSecti
 	if (!parse (pCompSection, pTable)) {
 		delete pTable;
 		pTable = NULL;
+		detachSectionList (pCompSection);
+		return ;
 	}
 
 	mTables.push_back (pTable);

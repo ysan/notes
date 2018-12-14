@@ -12,6 +12,7 @@
 #include "SatelliteDeliverySystemDescriptor.h"
 #include "TerrestrialDeliverySystemDescriptor.h"
 #include "TSInformationDescriptor.h"
+#include "ServiceDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME_DESCRIPTOR					(0x40) // ネットワーク名記述子

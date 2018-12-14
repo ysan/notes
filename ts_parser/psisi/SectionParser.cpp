@@ -498,7 +498,7 @@ CSectionInfo* CSectionParser::addSectionList (CSectionInfo *pSectInfo)
 /**
  *
  */
-void CSectionParser::detachSectionList (CSectionInfo *pSectInfo)
+void CSectionParser::detachSectionList (const CSectionInfo *pSectInfo)
 {
 	if (!pSectInfo) {
 		return ;
@@ -510,6 +510,11 @@ void CSectionParser::detachSectionList (CSectionInfo *pSectInfo)
 	memcpy (pSectInfo->mpRaw, pSectInfo->mpTail, mpPool + (mPoolSize -1) - pSectInfo->mpTail);
 	uint32_t shift = pSectInfo->mpTail - pSectInfo->mpRaw;
 	mPoolInd -= shift;
+
+	// pool 消す時はセットで
+	if (pSectInfo == mpWorkSectInfo) {
+		clearWorkSectionInfo ();
+	}
 }
 
 /**
@@ -517,7 +522,7 @@ void CSectionParser::detachSectionList (CSectionInfo *pSectInfo)
  * インスタンスの一致で削除
  * 重複していないこと前提
  */
-void CSectionParser::deleteSectionList (CSectionInfo &sectInfo)
+void CSectionParser::deleteSectionList (const CSectionInfo &sectInfo)
 {
 	CSectionInfo *pTmp = NULL;
 	CSectionInfo *pBef = NULL;
@@ -585,7 +590,7 @@ puts ("delete");
  * アドレスの一致で削除
  * 重複していないこと前提
  */
-void CSectionParser::deleteSectionList (CSectionInfo *pSectInfo)
+void CSectionParser::deleteSectionList (const CSectionInfo *pSectInfo)
 {
 	if (!pSectInfo) {
 		return ;
@@ -661,6 +666,9 @@ void CSectionParser::detachAllSectionList (void)
 
 	memset (mpPool, 0x00, mPoolSize);
 	mPoolInd = 0;
+
+	// pool 消す時はセットで
+	clearWorkSectionInfo ();
 }
 
 /**
@@ -744,6 +752,11 @@ void CSectionParser::checkDetachFifoSectionList (void)
 		memcpy (pDelSect->mpRaw, pDelSect->mpTail, mpPool + (mPoolSize -1) - pDelSect->mpTail);
 		uint32_t shift = pDelSect->mpTail - pDelSect->mpRaw;
 		mPoolInd -= shift;
+
+		// pool 消す時はセットで
+		if (pDelSect == mpWorkSectInfo) {
+			clearWorkSectionInfo ();
+		}
 
 //TODO 関数化
 		// リストに入ってるsectionのmpRaw,mpData,mpTailをずらす
@@ -1069,6 +1082,20 @@ CSectionInfo *CSectionParser::getLatestCompleteSection (void) const
 	}
 
 	return pLatest;
+}
+
+/**
+ *
+ */
+void CSectionParser::clearWorkSectionInfo (void)
+{
+	memset (&(mpWorkSectInfo->mSectHdr), 0x00, sizeof(ST_SECTION_HEADER));
+	mpWorkSectInfo->mState = EN_SECTION_STATE__INIT;
+	mpWorkSectInfo->mpRaw = NULL;
+	mpWorkSectInfo->mpData = NULL;
+	mpWorkSectInfo->mpTail = NULL;
+	mpWorkSectInfo->mIsShortFormatHeader = false;
+	mpWorkSectInfo = NULL;
 }
 
 /**
