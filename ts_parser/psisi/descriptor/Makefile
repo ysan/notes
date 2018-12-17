@@ -42,6 +42,9 @@ SRCS_CPP	:= \
 	TSInformationDescriptor.cpp \
 	PartialReceptionDescriptor.cpp \
 	ServiceDescriptor.cpp \
+	SIParameterDescriptor.cpp \
+	NetworkNameDescriptor.cpp \
+	CAIdentifierDescriptor.cpp \
 
 #
 #   Configurations

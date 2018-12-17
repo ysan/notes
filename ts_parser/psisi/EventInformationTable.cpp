@@ -162,77 +162,7 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
 			printf ("\n--  descriptor  --\n");
-			switch (iter_desc->tag) {
-			case DESC_TAG__SHORT_EVENT_DESCRIPTOR:
-				{
-					CShortEventDescriptor sed (*iter_desc);
-					if (sed.isValid) {
-						sed.dump();
-					} else {
-						printf ("invalid ShortEventDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__EXTENDED_EVENT_DESCRIPTOR:
-				{
-					CExtendedEventDescriptor eed (*iter_desc);
-					if (eed.isValid) {
-						eed.dump();
-					} else {
-						printf ("invalid ExtendedEventDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__COMPONENT_DESCRIPTOR:
-				{
-					CComponentDescriptor cd (*iter_desc);
-					if (cd.isValid) {
-						cd.dump();
-					} else {
-						printf ("invalid ComponentDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__AUDIO_COMPONENT_DESCRIPTOR:
-				{
-					CAudioComponentDescriptor acd (*iter_desc);
-					if (acd.isValid) {
-						acd.dump();
-					} else {
-						printf ("invalid AudioComponentDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__SERIES_DESCRIPTOR:
-				{
-					CSeriesDescriptor sd (*iter_desc);
-					if (sd.isValid) {
-						sd.dump();
-					} else {
-						printf ("invalid SeriesDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__CONTENT_DESCRIPTOR:
-				{
-					CContentDescriptor cd (*iter_desc);
-					if (cd.isValid) {
-						cd.dump();
-					} else {
-						printf ("invalid ContentDescriptor\n");
-					}
-				}
-				break;
-
-			default:
-				iter_desc->dump();
-				break;
-			}
+			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 

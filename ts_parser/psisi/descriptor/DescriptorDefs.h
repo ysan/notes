@@ -13,6 +13,9 @@
 #include "TerrestrialDeliverySystemDescriptor.h"
 #include "TSInformationDescriptor.h"
 #include "ServiceDescriptor.h"
+#include "SIParameterDescriptor.h"
+#include "NetworkNameDescriptor.h"
+#include "CAIdentifierDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME_DESCRIPTOR					(0x40) // ネットワーク名記述子
@@ -111,5 +114,171 @@
 #define DESC_TAG__EMERGENCY_INFORMATION_DESCRIPTOR			(0xfc) // 緊急情報記述子
 #define DESC_TAG__DATA_COMPONENT_DESCRIPTOR					(0xfd) // データ符号化方式記述子
 #define DESC_TAG__SYSTEM_MANAGEMENT_DESCRIPTOR				(0xfe) // システム管理記述子
+
+
+class CDescriptorCommon {
+public:
+	static void dump (uint8_t tag, const CDescriptor &desc) {
+		switch (tag) {
+		case DESC_TAG__SHORT_EVENT_DESCRIPTOR:
+			{
+				CShortEventDescriptor sed (desc);
+				if (sed.isValid) {
+					sed.dump();
+				} else {
+					printf ("invalid ShortEventDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__EXTENDED_EVENT_DESCRIPTOR:
+			{
+				CExtendedEventDescriptor eed (desc);
+				if (eed.isValid) {
+					eed.dump();
+				} else {
+					printf ("invalid ExtendedEventDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__COMPONENT_DESCRIPTOR:
+			{
+				CComponentDescriptor cd (desc);
+				if (cd.isValid) {
+					cd.dump();
+				} else {
+					printf ("invalid ComponentDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__AUDIO_COMPONENT_DESCRIPTOR:
+			{
+				CAudioComponentDescriptor acd (desc);
+				if (acd.isValid) {
+					acd.dump();
+				} else {
+					printf ("invalid AudioComponentDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__SERIES_DESCRIPTOR:
+			{
+				CSeriesDescriptor sd (desc);
+				if (sd.isValid) {
+					sd.dump();
+				} else {
+					printf ("invalid SeriesDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__CONTENT_DESCRIPTOR:
+			{
+				CContentDescriptor cd (desc);
+				if (cd.isValid) {
+					cd.dump();
+				} else {
+					printf ("invalid ContentDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__SERVICE_LIST_DESCRIPTOR:
+			{
+				CServiceListDescriptor sld (desc);
+				if (sld.isValid) {
+					sld.dump();
+				} else {
+					printf ("invalid ServiceListDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__SATELLITE_DELIVERY_SYSTEM_DESCRIPTOR:
+			{
+				CSatelliteDeliverySystemDescriptor sdsd (desc);
+				if (sdsd.isValid) {
+					sdsd.dump();
+				} else {
+					printf ("invalid SatelliteDeliverySystemDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__TERRESTRIAL_DELIVERY_SYSTEM_DESCRIPTOR:
+			{
+				CTerrestrialDeliverySystemDescriptor tdsd (desc);
+				if (tdsd.isValid) {
+					tdsd.dump();
+				} else {
+					printf ("invalid TerrestrialDeliverySystemDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__TS_INFORMATION_DESCRIPTOR:
+			{
+				CTSInformationDescriptor tsid (desc);
+				if (tsid.isValid) {
+					tsid.dump();
+				} else {
+					printf ("invalid TSInformationDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__SERVICE_DESCRIPTOR:
+			{
+				CServiceDescriptor sd (desc);
+				if (sd.isValid) {
+					sd.dump();
+				} else {
+					printf ("invalid ServiceDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__SI_PARAMETER_DESCRIPTOR:
+			{
+				CSIParameterDescriptor spd (desc);
+				if (spd.isValid) {
+					spd.dump();
+				} else {
+					printf ("invalid SIParameterDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__NETWORK_NAME_DESCRIPTOR:
+			{
+				CNetworkNameDescriptor nnd (desc);
+				if (nnd.isValid) {
+					nnd.dump();
+				} else {
+					printf ("invalid NetworkNameDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__CA_IDENTIFIER_DESCRIPTOR:
+			{
+				CCAIdentifierDescriptor caid (desc);
+				if (caid.isValid) {
+					caid.dump();
+				} else {
+					printf ("invalid CAIdentifierDescriptor\n");
+				}
+			}
+			break;
+
+		default:
+			desc.dump();
+			break;
+		}
+	};
+};
 
 #endif

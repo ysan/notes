@@ -33,10 +33,6 @@ CShortEventDescriptor::~CShortEventDescriptor (void)
 
 bool CShortEventDescriptor::parse (void)
 {
-	memset (ISO_639_language_code, 0x00, sizeof(ISO_639_language_code));
-	memset (event_name_char, 0x00, sizeof(event_name_char));
-	memset (text_char, 0x00, sizeof(text_char));
-
 	uint8_t *p = data;
 
 	memcpy (ISO_639_language_code, p, 3);

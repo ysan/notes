@@ -157,7 +157,7 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
 		printf ("\n--  descriptor  --\n");
-		iter_desc->dump();
+		CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 	}
 
 	printf ("transport_stream_loop_length     [%d]\n", pTable->transport_stream_loop_length);
@@ -172,55 +172,7 @@ void CNetworkInformationTable::dumpTable (const CTable* pTable) const
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
 			printf ("\n--  descriptor  --\n");
-			switch (iter_desc->tag) {
-			case DESC_TAG__SERVICE_LIST_DESCRIPTOR:
-				{
-					CServiceListDescriptor sld (*iter_desc);
-					if (sld.isValid) {
-						sld.dump();
-					} else {
-						printf ("invalid ServiceListDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__SATELLITE_DELIVERY_SYSTEM_DESCRIPTOR:
-				{
-					CSatelliteDeliverySystemDescriptor sdsd (*iter_desc);
-					if (sdsd.isValid) {
-						sdsd.dump();
-					} else {
-						printf ("invalid SatelliteDeliverySystemDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__TERRESTRIAL_DELIVERY_SYSTEM_DESCRIPTOR:
-				{
-					CTerrestrialDeliverySystemDescriptor tdsd (*iter_desc);
-					if (tdsd.isValid) {
-						tdsd.dump();
-					} else {
-						printf ("invalid TerrestrialDeliverySystemDescriptor\n");
-					}
-				}
-				break;
-
-			case DESC_TAG__TS_INFORMATION_DESCRIPTOR:
-				{
-					CTSInformationDescriptor tsid (*iter_desc);
-					if (tsid.isValid) {
-						tsid.dump();
-					} else {
-						printf ("invalid TSInformationDescriptor\n");
-					}
-				}
-				break;
-
-			default:
-				iter_desc->dump();
-				break;
-			}
+			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 

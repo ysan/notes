@@ -148,7 +148,7 @@ void CBroadcasterInformationTable::dumpTable (const CTable* pTable) const
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
 		printf ("\n--  descriptor  --\n");
-		iter_desc->dump();
+		CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 	}
 
 	std::vector<CTable::CBroadcaster>::const_iterator iter_brd = pTable->broadcasters.begin();
@@ -160,7 +160,7 @@ void CBroadcasterInformationTable::dumpTable (const CTable* pTable) const
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_brd->descriptors.begin();
 		for (; iter_desc != iter_brd->descriptors.end(); ++ iter_desc) {
 			printf ("\n--  descriptor  --\n");
-			iter_desc->dump();
+			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 
