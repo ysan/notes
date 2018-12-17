@@ -16,6 +16,7 @@
 #include "SIParameterDescriptor.h"
 #include "NetworkNameDescriptor.h"
 #include "CAIdentifierDescriptor.h"
+#include "ConditionalAccessDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME_DESCRIPTOR					(0x40) // ネットワーク名記述子
@@ -270,6 +271,17 @@ public:
 					caid.dump();
 				} else {
 					printf ("invalid CAIdentifierDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__CONDITIONAL_ACCESS_DESCRIPTOR:
+			{
+				CConditionalAccessDescriptor cad (desc);
+				if (cad.isValid) {
+					cad.dump();
+				} else {
+					printf ("invalid ConditionalAccessDescriptor\n");
 				}
 			}
 			break;

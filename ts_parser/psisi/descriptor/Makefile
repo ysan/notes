@@ -45,6 +45,7 @@ SRCS_CPP	:= \
 	SIParameterDescriptor.cpp \
 	NetworkNameDescriptor.cpp \
 	CAIdentifierDescriptor.cpp \
+	ConditionalAccessDescriptor.cpp \
 
 #
 #   Configurations

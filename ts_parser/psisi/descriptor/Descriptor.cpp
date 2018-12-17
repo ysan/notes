@@ -65,7 +65,7 @@ void CDescriptor::dump (void) const
 void CDescriptor::dump (bool isDataDump) const
 {
 	printf ("tag    [0x%02x]\n", tag);
-	printf ("length [0x%02x]\n", length);
+	printf ("length [%d]\n", length);
 	if (isDataDump) {
 		CUtils::dumper (data, length);
 	}
