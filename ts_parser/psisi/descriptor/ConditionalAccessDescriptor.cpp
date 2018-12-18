@@ -47,10 +47,10 @@ bool CConditionalAccessDescriptor::parse (void)
 
 void CConditionalAccessDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
-	printf ("CA_system_ID [0x%04x]\n", CA_system_ID);
-	printf ("CA_PID       [0x%04x]\n", CA_PID);
+	_UTL_LOG_I ("CA_system_ID [0x%04x]\n", CA_system_ID);
+	_UTL_LOG_I ("CA_PID       [0x%04x]\n", CA_PID);
 }

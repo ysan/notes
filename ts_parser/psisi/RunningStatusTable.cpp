@@ -50,7 +50,7 @@ bool CRunningStatusTable::parse (const CSectionInfo *pCompSection, CTable* pOutT
 
 	int statusLen = (int) pTable->header.section_length ;
 	if (statusLen <= RST_STATUS_FIX_LEN) {
-		puts ("invalid RST");
+		_UTL_LOG_W ("invalid RST");
 		return false;
 	}
 
@@ -68,7 +68,7 @@ bool CRunningStatusTable::parse (const CSectionInfo *pCompSection, CTable* pOutT
 
 		statusLen -= RST_STATUS_FIX_LEN ;
 		if (statusLen < 0) {
-			puts ("invalid RST status");
+			_UTL_LOG_W ("invalid RST status");
 			return false;
 		}
 
@@ -112,19 +112,19 @@ void CRunningStatusTable::dumpTable (const CTable* pTable) const
 		return;
 	}
 	
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 
 	std::vector<CTable::CStatus>::const_iterator iter_stt = pTable->statuses.begin();
 	for (; iter_stt != pTable->statuses.end(); ++ iter_stt) {
-		printf ("\n--  statuses  --\n");
-		printf ("transport_stream_id [0x%04x]\n", iter_stt->transport_stream_id);
-		printf ("original_network_id [0x%04x]\n", iter_stt->original_network_id);
-		printf ("service_id          [0x%04x]\n", iter_stt->service_id);
-		printf ("event_id            [0x%04x]\n", iter_stt->event_id);
-		printf ("running_status      [0x%01x]\n", iter_stt->running_status);
+		_UTL_LOG_I ("\n--  statuses  --\n");
+		_UTL_LOG_I ("transport_stream_id [0x%04x]\n", iter_stt->transport_stream_id);
+		_UTL_LOG_I ("original_network_id [0x%04x]\n", iter_stt->original_network_id);
+		_UTL_LOG_I ("service_id          [0x%04x]\n", iter_stt->service_id);
+		_UTL_LOG_I ("event_id            [0x%04x]\n", iter_stt->event_id);
+		_UTL_LOG_I ("running_status      [0x%01x]\n", iter_stt->running_status);
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 }
 
 void CRunningStatusTable::clear (void)

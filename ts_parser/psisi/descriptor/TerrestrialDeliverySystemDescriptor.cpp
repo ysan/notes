@@ -48,7 +48,7 @@ bool CTerrestrialDeliverySystemDescriptor::parse (void)
 
 		freqLen -= 2 ;
 		if (freqLen < 0) {
-			puts ("invalid TerrestrialDeliverySystemDescriptor freq");
+			_UTL_LOG_W ("invalid TerrestrialDeliverySystemDescriptor freq");
 			return false;
 		}
 
@@ -65,17 +65,17 @@ bool CTerrestrialDeliverySystemDescriptor::parse (void)
 
 void CTerrestrialDeliverySystemDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
-	printf ("area_code         [0x%04x]\n", area_code);
-	printf ("guard_interval    [0x%02x]\n", guard_interval);
-	printf ("transmission_mode [0x%02x]\n", transmission_mode);
+	_UTL_LOG_I ("area_code         [0x%04x]\n", area_code);
+	_UTL_LOG_I ("guard_interval    [0x%02x]\n", guard_interval);
+	_UTL_LOG_I ("transmission_mode [0x%02x]\n", transmission_mode);
 
 	std::vector<CFreq>::const_iterator iter_freq = freqs.begin();
 	for (; iter_freq != freqs.end(); ++ iter_freq) {
-		printf ("\n--  freq  --\n");
-		printf ("frequency [%d][ch:%d]\n", iter_freq->frequency / 7, CTsCommon::freq2ch (iter_freq->frequency));
+		_UTL_LOG_I ("\n--  freq  --\n");
+		_UTL_LOG_I ("frequency [%d][ch:%d]\n", iter_freq->frequency / 7, CTsCommon::freq2ch (iter_freq->frequency));
 	}
 }

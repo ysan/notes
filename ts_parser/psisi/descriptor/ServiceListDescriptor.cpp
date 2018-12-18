@@ -42,7 +42,7 @@ bool CServiceListDescriptor::parse (void)
 
 		serviceLen -= 3 ;
 		if (serviceLen < 0) {
-			puts ("invalid ServiceListDescriptor service");
+			_UTL_LOG_W ("invalid ServiceListDescriptor service");
 			return false;
 		}
 
@@ -59,14 +59,14 @@ bool CServiceListDescriptor::parse (void)
 
 void CServiceListDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
 	std::vector<CService>::const_iterator iter_sv = services.begin();
 	for (; iter_sv != services.end(); ++ iter_sv) {
-		printf ("\n--  service  --\n");
-		printf ("service_id   [0x%04x]\n", iter_sv->service_id);
-		printf ("service_type [0x%02x]\n", iter_sv->service_type);
+		_UTL_LOG_I ("\n--  service  --\n");
+		_UTL_LOG_I ("service_id   [0x%04x]\n", iter_sv->service_id);
+		_UTL_LOG_I ("service_type [0x%02x]\n", iter_sv->service_type);
 	}
 }

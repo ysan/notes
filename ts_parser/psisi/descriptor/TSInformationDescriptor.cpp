@@ -82,30 +82,30 @@ bool CTSInformationDescriptor::parse (void)
 
 void CTSInformationDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("remote_control_key_id   [0x%02x]\n", remote_control_key_id);
-	printf ("length_of_ts_name       [0x%02x]\n", length_of_ts_name);
-	printf ("transmission_type_count [0x%02x]\n", transmission_type_count);
+	_UTL_LOG_I ("remote_control_key_id   [0x%02x]\n", remote_control_key_id);
+	_UTL_LOG_I ("length_of_ts_name       [0x%02x]\n", length_of_ts_name);
+	_UTL_LOG_I ("transmission_type_count [0x%02x]\n", transmission_type_count);
 
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)ts_name_char, (int)length_of_ts_name);
-	printf ("ts_name_char            [%s]\n", aribstr);
+	_UTL_LOG_I ("ts_name_char            [%s]\n", aribstr);
 
 	std::vector<CTransmission>::const_iterator iter_trans = transmissions.begin();
 	for (; iter_trans != transmissions.end(); ++ iter_trans) {
-		printf ("\n--  transmission  --\n");
-		printf ("transmission_type_info [0x%02x]\n", iter_trans->transmission_type_info);
-		printf ("num_of_service         [0x%02x]\n", iter_trans->num_of_service);
+		_UTL_LOG_I ("\n--  transmission  --\n");
+		_UTL_LOG_I ("transmission_type_info [0x%02x]\n", iter_trans->transmission_type_info);
+		_UTL_LOG_I ("num_of_service         [0x%02x]\n", iter_trans->num_of_service);
 
 		std::vector<CTransmission::CService>::const_iterator iter_svc = iter_trans->services.begin();
 		for (; iter_svc != iter_trans->services.end(); ++ iter_svc) {
-			printf ("\n--  service  --\n");
-			printf ("service_id [0x%04x]\n", iter_svc->service_id);
+			_UTL_LOG_I ("\n--  service  --\n");
+			_UTL_LOG_I ("service_id [0x%04x]\n", iter_svc->service_id);
 		}
 	}
 }

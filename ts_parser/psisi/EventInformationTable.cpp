@@ -60,7 +60,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 
 	int eventLen = (int) (pTable->header.section_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - EIT_FIX_LEN);
 	if (eventLen <= EIT_EVENT_FIX_LEN) {
-		puts ("invalid EIT event");
+		_UTL_LOG_W ("invalid EIT event");
 		return false;
 	}
 
@@ -81,7 +81,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 		while (n > 0) {
 			CDescriptor desc (p);
 			if (!desc.isValid) {
-				puts ("invalid desc");
+				_UTL_LOG_W ("invalid EIT desc");
 				return false;
 			}
 			ev.descriptors.push_back (desc);
@@ -91,7 +91,7 @@ bool CEventInformationTable::parse (const CSectionInfo *pCompSection, CTable* pO
 
 		eventLen -= (EIT_EVENT_FIX_LEN + ev.descriptors_loop_length) ;
 		if (eventLen < 0) {
-			puts ("invalid EIT event");
+			_UTL_LOG_W ("invalid EIT event");
 			return false;
 		}
 
@@ -135,38 +135,38 @@ void CEventInformationTable::dumpTable (const CTable* pTable) const
 		return;
 	}
 	
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 
-	printf ("table_id                    [0x%02x]\n", pTable->header.table_id);
-	printf ("transport_stream_id         [0x%04x]\n", pTable->transport_stream_id);
-	printf ("original_network_id         [0x%04x]\n", pTable->original_network_id);
-	printf ("segment_last_section_number [0x%02x]\n", pTable->segment_last_section_number);
-	printf ("original_network_id         [0x%02x]\n", pTable->last_table_id);
+	_UTL_LOG_I ("table_id                    [0x%02x]\n", pTable->header.table_id);
+	_UTL_LOG_I ("transport_stream_id         [0x%04x]\n", pTable->transport_stream_id);
+	_UTL_LOG_I ("original_network_id         [0x%04x]\n", pTable->original_network_id);
+	_UTL_LOG_I ("segment_last_section_number [0x%02x]\n", pTable->segment_last_section_number);
+	_UTL_LOG_I ("original_network_id         [0x%02x]\n", pTable->last_table_id);
 
 	std::vector<CTable::CEvent>::const_iterator iter_event = pTable->events.begin();
 	for (; iter_event != pTable->events.end(); ++ iter_event) {
-		printf ("\n--  event  --\n");
-		printf ("event_id                [0x%04x]\n", iter_event->event_id);
+		_UTL_LOG_I ("\n--  event  --\n");
+		_UTL_LOG_I ("event_id                [0x%04x]\n", iter_event->event_id);
 		char szStime [32];
 		memset (szStime, 0x00, sizeof(szStime));
 		CTsCommon::getStrEpoch (CTsCommon::getEpochFromMJD (iter_event->start_time), "%Y/%m/%d %H:%M:%S", szStime, sizeof(szStime));
-		printf ("start_time              [%s]\n", szStime);
+		_UTL_LOG_I ("start_time              [%s]\n", szStime);
 		char szDuration [32];
 		memset (szDuration, 0x00, sizeof(szDuration));
 		CTsCommon::getStrSecond (CTsCommon::getSecFromBCD (iter_event->duration), szDuration, sizeof(szDuration));
-		printf ("duration                [%s]\n", szDuration);
-		printf ("running_status          [0x%02x]\n", iter_event->running_status);
-		printf ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
-		printf ("descriptors_loop_length [%d]\n", iter_event->descriptors_loop_length);
+		_UTL_LOG_I ("duration                [%s]\n", szDuration);
+		_UTL_LOG_I ("running_status          [0x%02x]\n", iter_event->running_status);
+		_UTL_LOG_I ("free_CA_mode            [0x%02x]\n", iter_event->free_CA_mode);
+		_UTL_LOG_I ("descriptors_loop_length [%d]\n", iter_event->descriptors_loop_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_event->descriptors.begin();
 		for (; iter_desc != iter_event->descriptors.end(); ++ iter_desc) {
-			printf ("\n--  descriptor  --\n");
+			_UTL_LOG_I ("\n--  descriptor  --\n");
 			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 }
 
 void CEventInformationTable::clear (void)

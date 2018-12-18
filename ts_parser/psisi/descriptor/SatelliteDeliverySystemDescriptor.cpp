@@ -59,15 +59,15 @@ bool CSatelliteDeliverySystemDescriptor::parse (void)
 
 void CSatelliteDeliverySystemDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
-	printf ("frequency        [0x%08x]\n", frequency);
-	printf ("orbital_position [0x%04x]\n", orbital_position);
-	printf ("west_east_flag   [0x%02x]\n", west_east_flag);
-	printf ("polarisation     [0x%02x]\n", polarisation);
-	printf ("modulation       [0x%02x]\n", modulation);
-	printf ("symbol_rate      [0x%08x]\n", symbol_rate);
-	printf ("FEC_inner        [0x%02x]\n", FEC_inner);
+	_UTL_LOG_I ("frequency        [0x%08x]\n", frequency);
+	_UTL_LOG_I ("orbital_position [0x%04x]\n", orbital_position);
+	_UTL_LOG_I ("west_east_flag   [0x%02x]\n", west_east_flag);
+	_UTL_LOG_I ("polarisation     [0x%02x]\n", polarisation);
+	_UTL_LOG_I ("modulation       [0x%02x]\n", modulation);
+	_UTL_LOG_I ("symbol_rate      [0x%08x]\n", symbol_rate);
+	_UTL_LOG_I ("FEC_inner        [0x%02x]\n", FEC_inner);
 }

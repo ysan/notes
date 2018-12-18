@@ -67,21 +67,21 @@ bool CSeriesDescriptor::parse (void)
 
 void CSeriesDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("series_id              [0x%04x]\n", series_id);
-	printf ("repeat_label           [0x%02x]\n", repeat_label);
-	printf ("program_pattern        [0x%02x]\n", program_pattern);
-	printf ("expire_date_valid_flag [0x%02x]\n", expire_date_valid_flag);
-	printf ("expire_date            [0x%04x]\n", expire_date);
-	printf ("episode_number         [0x%04x]\n", episode_number);
-	printf ("last_episode_number    [0x%04x]\n", last_episode_number);
+	_UTL_LOG_I ("series_id              [0x%04x]\n", series_id);
+	_UTL_LOG_I ("repeat_label           [0x%02x]\n", repeat_label);
+	_UTL_LOG_I ("program_pattern        [0x%02x]\n", program_pattern);
+	_UTL_LOG_I ("expire_date_valid_flag [0x%02x]\n", expire_date_valid_flag);
+	_UTL_LOG_I ("expire_date            [0x%04x]\n", expire_date);
+	_UTL_LOG_I ("episode_number         [0x%04x]\n", episode_number);
+	_UTL_LOG_I ("last_episode_number    [0x%04x]\n", last_episode_number);
 
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)series_name_char, m_series_name_char_len);
-	printf ("series_name_char       [%s]\n", aribstr);
+	_UTL_LOG_I ("series_name_char       [%s]\n", aribstr);
 }

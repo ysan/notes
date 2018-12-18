@@ -52,7 +52,7 @@ bool CSIParameterDescriptor::parse (void)
 
 		tableLen -= (2 + tbl.table_description_length);
 		if (tableLen < 0) {
-			puts ("invalid SIParameterDescriptor table");
+			_UTL_LOG_W ("invalid SIParameterDescriptor table");
 			return false;
 		}
 
@@ -69,22 +69,22 @@ bool CSIParameterDescriptor::parse (void)
 
 void CSIParameterDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
-	printf ("parameter_version            [0x%02x]\n", parameter_version);
-	printf ("update_time                  [0x%04x]\n", update_time);
+	_UTL_LOG_I ("parameter_version            [0x%02x]\n", parameter_version);
+	_UTL_LOG_I ("update_time                  [0x%04x]\n", update_time);
 
 	std::vector<CTable>::const_iterator iter_tbl = tables.begin();
 	for (; iter_tbl != tables.end(); ++ iter_tbl) {
-		printf ("\n--  table  --\n");
-		printf ("table_id                 [0x%02x]\n", iter_tbl->table_id);
-		printf ("table_description_length [%d]\n", iter_tbl->table_description_length);
-		printf ("table_description_byte   [");
+		_UTL_LOG_I ("\n--  table  --\n");
+		_UTL_LOG_I ("table_id                 [0x%02x]\n", iter_tbl->table_id);
+		_UTL_LOG_I ("table_description_length [%d]\n", iter_tbl->table_description_length);
+		_UTL_LOG_I ("table_description_byte   [");
 		for (int i = 0; i < iter_tbl->table_description_length; ++ i) {
-			printf ("0x%02x,", iter_tbl->table_description_byte [i]);
+			_UTL_LOG_I ("0x%02x,", iter_tbl->table_description_byte [i]);
 		}
-		printf ("]\n");
+		_UTL_LOG_I ("]\n");
 	}
 }

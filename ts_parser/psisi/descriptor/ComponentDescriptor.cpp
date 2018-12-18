@@ -63,20 +63,20 @@ bool CComponentDescriptor::parse (void)
 
 void CComponentDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("stream_content        [0x%02x]\n", stream_content);
-	printf ("component_type        [0x%02x][%s][%s]\n",
+	_UTL_LOG_I ("stream_content        [0x%02x]\n", stream_content);
+	_UTL_LOG_I ("component_type        [0x%02x][%s][%s]\n",
 		component_type, CTsCommon::getVideoComponentType(component_type), CTsCommon::getVideoRatio(component_type));
-	printf ("component_tag         [0x%02x]\n", component_tag);
+	_UTL_LOG_I ("component_tag         [0x%02x]\n", component_tag);
 
-	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);
+	_UTL_LOG_I ("ISO_639_language_code [%s]\n", ISO_639_language_code);
 
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)component_text, (int)(length - 6));
-	printf ("component_text        [%s]\n", aribstr);
+	_UTL_LOG_I ("component_text        [%s]\n", aribstr);
 }

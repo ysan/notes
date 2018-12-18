@@ -67,7 +67,7 @@ bool CExtendedEventDescriptor::parse (void)
 
 		itemLen -= (1 + itm.item_description_length + 1 + itm.item_length) ;
 		if (itemLen < 0) {
-			puts ("invalid ExtendedEventDescriptor item");
+			_UTL_LOG_W ("invalid ExtendedEventDescriptor item");
 			return false;
 		}
 
@@ -89,31 +89,31 @@ bool CExtendedEventDescriptor::parse (void)
 
 void CExtendedEventDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
-	printf ("descriptor_number       [0x%x]\n", descriptor_number);
-	printf ("last_descriptor_number  [0x%x]\n", last_descriptor_number);
-	printf ("ISO_639_language_code   [%s]\n", ISO_639_language_code);
-	printf ("length_of_items         [%d]\n", length_of_items);
+	_UTL_LOG_I ("descriptor_number       [0x%x]\n", descriptor_number);
+	_UTL_LOG_I ("last_descriptor_number  [0x%x]\n", last_descriptor_number);
+	_UTL_LOG_I ("ISO_639_language_code   [%s]\n", ISO_639_language_code);
+	_UTL_LOG_I ("length_of_items         [%d]\n", length_of_items);
 
 	std::vector<CItem>::const_iterator iter_item = items.begin();
     for (; iter_item != items.end(); ++ iter_item) {
-		printf ("\n--  item  --\n");
-		printf ("item_description_length [%d]\n", iter_item->item_description_length);
+		_UTL_LOG_I ("\n--  item  --\n");
+		_UTL_LOG_I ("item_description_length [%d]\n", iter_item->item_description_length);
 		memset (aribstr, 0x00, MAXSECLEN);
 		AribToString (aribstr, (const char*)iter_item->item_description_char, (int)iter_item->item_description_length);
-		printf ("item_description_char   [%s]\n", aribstr);
-		printf ("item_length             [%d]\n", iter_item->item_length);
+		_UTL_LOG_I ("item_description_char   [%s]\n", aribstr);
+		_UTL_LOG_I ("item_length             [%d]\n", iter_item->item_length);
 		memset (aribstr, 0x00, MAXSECLEN);
 		AribToString (aribstr, (const char*)iter_item->item_char, (int)iter_item->item_length);
-		printf ("item_char               [%s]\n", aribstr);
+		_UTL_LOG_I ("item_char               [%s]\n", aribstr);
 	}
 
-	printf ("text_length             [%d]\n", text_length);
+	_UTL_LOG_I ("text_length             [%d]\n", text_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)text_char, (int)text_length);
-	printf ("text_char               [%s]\n", aribstr);
+	_UTL_LOG_I ("text_char               [%s]\n", aribstr);
 }

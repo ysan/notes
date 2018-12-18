@@ -39,7 +39,7 @@ bool CPartialReceptionDescriptor::parse (void)
 
 		serviceLen -= 2 ;
 		if (serviceLen < 0) {
-			puts ("invalid PartialReceptionDescriptor service");
+			_UTL_LOG_W ("invalid PartialReceptionDescriptor service");
 			return false;
 		}
 
@@ -56,13 +56,13 @@ bool CPartialReceptionDescriptor::parse (void)
 
 void CPartialReceptionDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
 	std::vector<CService>::const_iterator iter_svc = services.begin();
 	for (; iter_svc != services.end(); ++ iter_svc) {
-		printf ("\n--  service  --\n");
-		printf ("service_id [0x%04x]\n", iter_svc->service_id);
+		_UTL_LOG_I ("\n--  service  --\n");
+		_UTL_LOG_I ("service_id [0x%04x]\n", iter_svc->service_id);
 	}
 }

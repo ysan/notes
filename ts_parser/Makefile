@@ -12,6 +12,7 @@ INCLUDES	:= \
 	-I/usr/include/PCSC/ \
 
 LIBS		:= \
+	-lpthread \
 	-lpcsclite \
 	-L$(BASEDIR)/psisi -lpsisi \
 	-L$(BASEDIR)/aribstr -laribstr \

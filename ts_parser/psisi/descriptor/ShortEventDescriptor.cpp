@@ -58,21 +58,21 @@ bool CShortEventDescriptor::parse (void)
 
 void CShortEventDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("ISO_639_language_code [%s]\n", ISO_639_language_code);
+	_UTL_LOG_I ("ISO_639_language_code [%s]\n", ISO_639_language_code);
 
-	printf ("event_name_length     [%d]\n", event_name_length);
+	_UTL_LOG_I ("event_name_length     [%d]\n", event_name_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)event_name_char, (int)event_name_length);
-	printf ("event_name_char       [%s]\n", aribstr);
+	_UTL_LOG_I ("event_name_char       [%s]\n", aribstr);
 
-	printf ("text_length           [%d]\n", text_length);
+	_UTL_LOG_I ("text_length           [%d]\n", text_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)text_char, (int)text_length);
-	printf ("text_char             [%s]\n", aribstr);
+	_UTL_LOG_I ("text_char             [%s]\n", aribstr);
 }

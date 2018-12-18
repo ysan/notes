@@ -44,7 +44,7 @@ bool CContentDescriptor::parse (void)
 
 		contentLen -= 2 ;
 		if (contentLen < 0) {
-			puts ("invalid ContentDescriptor content");
+			_UTL_LOG_W ("invalid ContentDescriptor content");
 			return false;
 		}
 
@@ -61,24 +61,24 @@ bool CContentDescriptor::parse (void)
 
 void CContentDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
 	std::vector<CContent>::const_iterator iter_con = contents.begin();
 	for (; iter_con != contents.end(); ++ iter_con) {
-		printf ("\n--  content  --\n");
-		printf (
+		_UTL_LOG_I ("\n--  content  --\n");
+		_UTL_LOG_I (
 			"content_nibble_level_1 [0x%02x][%s]\n",
 			iter_con->content_nibble_level_1,
 			CTsCommon::getGenre_lvl1(iter_con->content_nibble_level_1)
 		);
-		printf (
+		_UTL_LOG_I (
 			"content_nibble_level_2 [0x%02x][%s]\n",
 			iter_con->content_nibble_level_2,
 			CTsCommon::getGenre_lvl2((iter_con->content_nibble_level_1 << 4 | iter_con->content_nibble_level_2) & 0xff)
 		);
-		printf ("user_nibble_1          [0x%02x]\n", iter_con->user_nibble_1);
-		printf ("user_nibble_2          [0x%02x]\n", iter_con->user_nibble_2);
+		_UTL_LOG_I ("user_nibble_1          [0x%02x]\n", iter_con->user_nibble_1);
+		_UTL_LOG_I ("user_nibble_2          [0x%02x]\n", iter_con->user_nibble_2);
 	}
 }

@@ -2,6 +2,8 @@
 #define _DESCRIPTOR_DEFS_H_
 
 
+#include "Utils.h"
+
 #include "ShortEventDescriptor.h"
 #include "ExtendedEventDescriptor.h"
 #include "ComponentDescriptor.h"
@@ -127,7 +129,7 @@ public:
 				if (sed.isValid) {
 					sed.dump();
 				} else {
-					printf ("invalid ShortEventDescriptor\n");
+					_UTL_LOG_W ("invalid ShortEventDescriptor\n");
 				}
 			}
 			break;
@@ -138,7 +140,7 @@ public:
 				if (eed.isValid) {
 					eed.dump();
 				} else {
-					printf ("invalid ExtendedEventDescriptor\n");
+					_UTL_LOG_W ("invalid ExtendedEventDescriptor\n");
 				}
 			}
 			break;
@@ -149,7 +151,7 @@ public:
 				if (cd.isValid) {
 					cd.dump();
 				} else {
-					printf ("invalid ComponentDescriptor\n");
+					_UTL_LOG_W ("invalid ComponentDescriptor\n");
 				}
 			}
 			break;
@@ -160,7 +162,7 @@ public:
 				if (acd.isValid) {
 					acd.dump();
 				} else {
-					printf ("invalid AudioComponentDescriptor\n");
+					_UTL_LOG_W ("invalid AudioComponentDescriptor\n");
 				}
 			}
 			break;
@@ -171,7 +173,7 @@ public:
 				if (sd.isValid) {
 					sd.dump();
 				} else {
-					printf ("invalid SeriesDescriptor\n");
+					_UTL_LOG_W ("invalid SeriesDescriptor\n");
 				}
 			}
 			break;
@@ -182,7 +184,7 @@ public:
 				if (cd.isValid) {
 					cd.dump();
 				} else {
-					printf ("invalid ContentDescriptor\n");
+					_UTL_LOG_W ("invalid ContentDescriptor\n");
 				}
 			}
 			break;
@@ -193,7 +195,7 @@ public:
 				if (sld.isValid) {
 					sld.dump();
 				} else {
-					printf ("invalid ServiceListDescriptor\n");
+					_UTL_LOG_W ("invalid ServiceListDescriptor\n");
 				}
 			}
 			break;
@@ -204,7 +206,7 @@ public:
 				if (sdsd.isValid) {
 					sdsd.dump();
 				} else {
-					printf ("invalid SatelliteDeliverySystemDescriptor\n");
+					_UTL_LOG_W ("invalid SatelliteDeliverySystemDescriptor\n");
 				}
 			}
 			break;
@@ -215,7 +217,7 @@ public:
 				if (tdsd.isValid) {
 					tdsd.dump();
 				} else {
-					printf ("invalid TerrestrialDeliverySystemDescriptor\n");
+					_UTL_LOG_W ("invalid TerrestrialDeliverySystemDescriptor\n");
 				}
 			}
 			break;
@@ -226,7 +228,7 @@ public:
 				if (tsid.isValid) {
 					tsid.dump();
 				} else {
-					printf ("invalid TSInformationDescriptor\n");
+					_UTL_LOG_W ("invalid TSInformationDescriptor\n");
 				}
 			}
 			break;
@@ -237,7 +239,7 @@ public:
 				if (sd.isValid) {
 					sd.dump();
 				} else {
-					printf ("invalid ServiceDescriptor\n");
+					_UTL_LOG_W ("invalid ServiceDescriptor\n");
 				}
 			}
 			break;
@@ -248,7 +250,7 @@ public:
 				if (spd.isValid) {
 					spd.dump();
 				} else {
-					printf ("invalid SIParameterDescriptor\n");
+					_UTL_LOG_W ("invalid SIParameterDescriptor\n");
 				}
 			}
 			break;
@@ -259,7 +261,7 @@ public:
 				if (nnd.isValid) {
 					nnd.dump();
 				} else {
-					printf ("invalid NetworkNameDescriptor\n");
+					_UTL_LOG_W ("invalid NetworkNameDescriptor\n");
 				}
 			}
 			break;
@@ -270,7 +272,7 @@ public:
 				if (caid.isValid) {
 					caid.dump();
 				} else {
-					printf ("invalid CAIdentifierDescriptor\n");
+					_UTL_LOG_W ("invalid CAIdentifierDescriptor\n");
 				}
 			}
 			break;
@@ -281,7 +283,7 @@ public:
 				if (cad.isValid) {
 					cad.dump();
 				} else {
-					printf ("invalid ConditionalAccessDescriptor\n");
+					_UTL_LOG_W ("invalid ConditionalAccessDescriptor\n");
 				}
 			}
 			break;

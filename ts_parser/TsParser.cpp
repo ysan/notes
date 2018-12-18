@@ -52,7 +52,7 @@ bool CTsParser::copyInnerBuffer (uint8_t *pBuff, size_t size)
 		memcpy (mpBottom, pBuff, size);
 		mpCurrent = mpBottom - mParseRemainSize;  // current update
 		mpBottom += size;
-printf ("copyInnerBuffer size=%lu remain=%lu\n", mBuffSize, mBuffSize-totalDataSize);
+		_UTL_LOG_I ("copyInnerBuffer size=%lu remain=%lu\n", mBuffSize, mBuffSize-totalDataSize);
 		return true;
 	}
 
@@ -90,7 +90,7 @@ printf ("copyInnerBuffer size=%lu remain=%lu\n", mBuffSize, mBuffSize-totalDataS
 	mpCurrent = mpBottom - mParseRemainSize;  // current update
 	mpBottom += size;
 
-printf ("copyInnerBuffer(malloc) top=%p bottom=%p size=%lu remain=%lu\n", mpTop, mpBottom, mBuffSize, mBuffSize-totalDataSize);
+	_UTL_LOG_I ("copyInnerBuffer(malloc) top=%p bottom=%p size=%lu remain=%lu\n", mpTop, mpBottom, mBuffSize, mBuffSize-totalDataSize);
 	return true;
 }
 
@@ -145,7 +145,7 @@ bool CTsParser::checkUnitSize (void)
 			n = i;
 		}
 	}
-printf("max_interval count m=%d  max_interval n=%d\n", m, n);
+	_UTL_LOG_I ("max_interval count m=%d  max_interval n=%d\n", m, n);
 
 	//TODO
 //	w = m*n;
@@ -154,7 +154,7 @@ printf("max_interval count m=%d  max_interval n=%d\n", m, n);
 //	}
 
 	mUnitSize = n;
-printf("mUnitSize %d\n", n);
+	_UTL_LOG_I ("mUnitSize %d\n", n);
 
 	return true;
 }
@@ -210,7 +210,7 @@ void CTsParser::dumpTsHeader (const ST_TS_HEADER *p) const
 	if (!p) {
 		return ;
 	}
-	printf (
+	_UTL_LOG_I (
 		"TsHeader: sync:0x%02x trans_err:0x%02x start_ind:0x%02x prio:0x%02x pid:0x%04x scram:0x%02x adap:0x%02x cont:0x%02x\n",
 		p->sync,
 		p->transport_error_indicator,
@@ -238,7 +238,7 @@ bool CTsParser::searchPAT (void)
 
 	while ((pCur+unitSize) < pBtm) {
 		if ((*pCur != SYNC_BYTE) && (*(pCur+unitSize) != SYNC_BYTE)) {
-printf ("getSyncTopAddr\n");
+//printf ("getSyncTopAddr\n");
 			p = getSyncTopAddr (pCur, pBtm, unitSize);
 			if (!p) {
 				return false;
@@ -252,66 +252,66 @@ printf ("getSyncTopAddr\n");
 
 		switch (stTsHdr.pid) {
 		case PID_PAT:
-puts ("###############  PAT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  PAT  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_TOT:
-puts ("###############  TOT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  TOT  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 
 			isCheck = true;
 			break;
 
 		case PID_EIT_H:
-puts ("###############  EIT_H  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  EIT_H  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_EIT_M:
-puts ("###############  EIT_M  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  EIT_M  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_EIT_L:
-puts ("###############  EIT_L  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  EIT_L  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_NIT:
-puts ("###############  NIT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  NIT  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_SDT:
-puts ("###############  SDT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  SDT  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_RST:
-puts ("###############  RST  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  RST  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
 		case PID_BIT:
-puts ("###############  BIT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+			_UTL_LOG_I ("###############  BIT  ###############");
+			CUtils::dumper (pCur, 188);
+			dumpTsHeader (&stTsHdr);
 			isCheck = true;
 			break;
 
@@ -324,9 +324,9 @@ dumpTsHeader (&stTsHdr);
 				}
 				if (pPatTable->program_number != 0) {
 					if (stTsHdr.pid == pPatTable->program_map_PID) {
-puts ("###############  PMT  ###############");
-CUtils::dumper (pCur, 188);
-dumpTsHeader (&stTsHdr);
+						_UTL_LOG_I ("###############  PMT  ###############");
+						CUtils::dumper (pCur, 188);
+						dumpTsHeader (&stTsHdr);
 						isCheck = true;
 						break;
 					}
@@ -415,7 +415,7 @@ dumpTsHeader (&stTsHdr);
 	}
 
 	mParseRemainSize = pBtm - pCur;
-printf ("mParseRemainSize=[%d]\n", mParseRemainSize);
+	_UTL_LOG_I ("mParseRemainSize=[%d]\n", mParseRemainSize);
 
 
 	return true;

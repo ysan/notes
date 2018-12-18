@@ -57,7 +57,7 @@ bool CBroadcasterInformationTable::parse (const CSectionInfo *pCompSection, CTab
 	while (n > 0) {
 		CDescriptor desc (p);
 		if (!desc.isValid) {
-			puts ("invalid desc");
+			_UTL_LOG_W ("invalid BIT desc");
 			return false;
 		}
 		pTable->descriptors.push_back (desc);
@@ -67,7 +67,7 @@ bool CBroadcasterInformationTable::parse (const CSectionInfo *pCompSection, CTab
 
 	int barodcasterLen = (int) (pTable->header.section_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - BIT_FIX_LEN - pTable->first_descriptors_length);
 	if (barodcasterLen <= BIT_BROADCASTER_FIX_LEN) {
-		puts ("invalid BIT broadcaster");
+		_UTL_LOG_W ("invalid BIT broadcaster");
 		return false;
 	}
 
@@ -85,7 +85,7 @@ bool CBroadcasterInformationTable::parse (const CSectionInfo *pCompSection, CTab
 		while (n > 0) {
 			CDescriptor desc (p);
 			if (!desc.isValid) {
-				puts ("invalid desc");
+				_UTL_LOG_W ("invalid BIT desc2");
 				return false;
 			}
 			brd.descriptors.push_back (desc);
@@ -95,7 +95,7 @@ bool CBroadcasterInformationTable::parse (const CSectionInfo *pCompSection, CTab
 
 		barodcasterLen -= (BIT_BROADCASTER_FIX_LEN + brd.broadcaster_descriptors_length) ;
 		if (barodcasterLen < 0) {
-			puts ("invalid BIT broadcaster");
+			_UTL_LOG_W ("invalid BIT broadcaster");
 			return false;
 		}
 
@@ -139,32 +139,32 @@ void CBroadcasterInformationTable::dumpTable (const CTable* pTable) const
 		return;
 	}
 	
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 
-	printf ("table_id                           [0x%02x]\n", pTable->header.table_id);
-	printf ("broadcast_view_propriety           [0x%02x]\n", pTable->broadcast_view_propriety);
-	printf ("first_descriptors_length           [%d]\n", pTable->first_descriptors_length);
+	_UTL_LOG_I ("table_id                           [0x%02x]\n", pTable->header.table_id);
+	_UTL_LOG_I ("broadcast_view_propriety           [0x%02x]\n", pTable->broadcast_view_propriety);
+	_UTL_LOG_I ("first_descriptors_length           [%d]\n", pTable->first_descriptors_length);
 
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
-		printf ("\n--  descriptor  --\n");
+		_UTL_LOG_I ("\n--  descriptor  --\n");
 		CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 	}
 
 	std::vector<CTable::CBroadcaster>::const_iterator iter_brd = pTable->broadcasters.begin();
 	for (; iter_brd != pTable->broadcasters.end(); ++ iter_brd) {
-		printf ("\n--  broadcaster  --\n");
-		printf ("broadcaster_id                 [0x%02x]\n", iter_brd->broadcaster_id);
-		printf ("broadcaster_descriptors_length [%d]\n", iter_brd->broadcaster_descriptors_length);
+		_UTL_LOG_I ("\n--  broadcaster  --\n");
+		_UTL_LOG_I ("broadcaster_id                 [0x%02x]\n", iter_brd->broadcaster_id);
+		_UTL_LOG_I ("broadcaster_descriptors_length [%d]\n", iter_brd->broadcaster_descriptors_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_brd->descriptors.begin();
 		for (; iter_desc != iter_brd->descriptors.end(); ++ iter_desc) {
-			printf ("\n--  descriptor  --\n");
+			_UTL_LOG_I ("\n--  descriptor  --\n");
 			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 }
 
 void CBroadcasterInformationTable::clear (void)

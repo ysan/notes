@@ -26,13 +26,13 @@ int CProgramAssociationTable::getTableNum (const CSectionInfo *pSectInfo) const
 
 	int nDataPartLen = (int)pSectInfo->getDataPartLen ();
 	if (nDataPartLen < 4) {
-		printf ("invalid ProgramAssociationTable data\n");
+		_UTL_LOG_E ("invalid PAT data\n");
 		return 0;
 	}
 
 	if ((nDataPartLen % 4) != 0) {
 		// 1ループの大きさは4の倍数
-		printf ("invalid ProgramAssociationTable data (not multiples of 4)\n");
+		_UTL_LOG_E ("invalid PAT data (not multiples of 4)\n");
 		return 0;
 	}
 
@@ -87,7 +87,7 @@ bool CProgramAssociationTable::getTable (CTable outArr[], int outArrSize) const
 	}
 
 	if (n > 0 && outArrSize == 0) {
-		printf ("warn:  ProgramAssociationTable is not get all.\n");
+		_UTL_LOG_W ("warn:  ProgramAssociationTable is not get all.\n");
 	}
 
 	return true;
@@ -100,14 +100,14 @@ void CProgramAssociationTable::dumpTable (const CTable inArr[], int arrSize) con
 	}
 
 	for (int i = 0; i < arrSize; ++ i) {
-		printf ("program_number [0x%04x]  ", inArr[i].program_number);
+		_UTL_LOG_I ("program_number [0x%04x]  ", inArr[i].program_number);
 		if (inArr[i].program_number == 0) {
-			printf ("network_PID     [0x%04x]  ", inArr[i].network_PID);
+			_UTL_LOG_I ("network_PID     [0x%04x]  ", inArr[i].network_PID);
 		} else {
-			printf ("program_map_PID [0x%04x]  ", inArr[i].program_map_PID);
+			_UTL_LOG_I ("program_map_PID [0x%04x]  ", inArr[i].program_map_PID);
 		}
-		printf ("PMTparser: [%p] ", inArr[i].mpPMT);
-		printf ("%s", inArr[i].isUsed ? "used " : "noused");
-		printf ("\n");
+		_UTL_LOG_I ("PMTparser: [%p] ", inArr[i].mpPMT);
+		_UTL_LOG_I ("%s", inArr[i].isUsed ? "used " : "noused");
+		_UTL_LOG_I ("\n");
 	}
 }

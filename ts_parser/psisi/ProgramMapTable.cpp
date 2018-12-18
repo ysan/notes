@@ -58,9 +58,8 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 	int n = (int)pTable->program_info_length;
 	while (n > 0) {
 		CDescriptor desc (p);
-//desc.dump();
 		if (!desc.isValid) {
-			puts ("invalid desc 1");
+			_UTL_LOG_W ("invalid PMT desc 1");
 			return false;
 		}
 		pTable->descriptors.push_back (desc);
@@ -70,7 +69,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 
 	int streamLen = (int) (pTable->header.section_length - pTable->program_info_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - PMT_FIX_LEN);
 	if (streamLen <= PMT_STREAM_FIX_LEN) {
-		puts ("invalid PMT stream");
+		_UTL_LOG_W ("invalid PMT stream");
 		return false;
 	}
 
@@ -90,7 +89,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 		while (n > 0) {
 			CDescriptor desc (p);
 			if (!desc.isValid) {
-				puts ("invalid desc 2");
+				_UTL_LOG_W ("invalid PMT desc 2");
 				return false;
 			}
 			strm.descriptors.push_back (desc);
@@ -100,7 +99,7 @@ bool CProgramMapTable::parse (const CSectionInfo *pCompSection, CTable* pOutTabl
 
 		streamLen -= (PMT_STREAM_FIX_LEN + strm.ES_info_length) ;
 		if (streamLen < 0) {
-			puts ("invalid PMT stream");
+			_UTL_LOG_W ("invalid PMT stream");
 			return false;
 		}
 
@@ -144,32 +143,32 @@ void CProgramMapTable::dumpTable (const CTable* pTable) const
 		return;
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 
-	printf ("PCR_PID             [0x%04x]\n", pTable->PCR_PID);
-	printf ("program_info_length [%d]\n", pTable->program_info_length);
+	_UTL_LOG_I ("PCR_PID             [0x%04x]\n", pTable->PCR_PID);
+	_UTL_LOG_I ("program_info_length [%d]\n", pTable->program_info_length);
 
 	std::vector<CDescriptor>::const_iterator iter_desc = pTable->descriptors.begin();
 	for (; iter_desc != pTable->descriptors.end(); ++ iter_desc) {
-		printf ("\n--  descriptor  --\n");
+		_UTL_LOG_I ("\n--  descriptor  --\n");
 		CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 	}
 
 	std::vector<CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
 	for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
-		printf ("\n--  stream  --\n");
-		printf ("stream_type    [0x%02x]\n", iter_strm->stream_type);
-		printf ("elementary_PID [0x%04x]\n", iter_strm->elementary_PID);
-		printf ("ES_info_length [%d]\n", iter_strm->ES_info_length);
+		_UTL_LOG_I ("\n--  stream  --\n");
+		_UTL_LOG_I ("stream_type    [0x%02x]\n", iter_strm->stream_type);
+		_UTL_LOG_I ("elementary_PID [0x%04x]\n", iter_strm->elementary_PID);
+		_UTL_LOG_I ("ES_info_length [%d]\n", iter_strm->ES_info_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_strm->descriptors.begin();
 		for (; iter_desc != iter_strm->descriptors.end(); ++ iter_desc) {
-			printf ("\n--  descriptor  --\n");
+			_UTL_LOG_I ("\n--  descriptor  --\n");
 			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 }
 
 void CProgramMapTable:: clear (void)

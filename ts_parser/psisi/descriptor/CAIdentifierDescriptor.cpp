@@ -40,7 +40,7 @@ bool CCAIdentifierDescriptor::parse (void)
 
 		casLen -= 2;
 		if (casLen < 0) {
-			puts ("invalid CAIdentifierDescriptor ca_system");
+			_UTL_LOG_W ("invalid CAIdentifierDescriptor ca_system");
 			return false;
 		}
 
@@ -57,13 +57,13 @@ bool CCAIdentifierDescriptor::parse (void)
 
 void CCAIdentifierDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	CDescriptor::dump (true);
 
 	std::vector<CCASystem>::const_iterator iter_cas = ca_systems.begin();
 	for (; iter_cas != ca_systems.end(); ++ iter_cas) {
-		printf ("\n--  ca_system  --\n");
-		printf ("CA_system_id [0x%04x]\n", iter_cas->CA_system_id);
+		_UTL_LOG_I ("\n--  ca_system  --\n");
+		_UTL_LOG_I ("CA_system_id [0x%04x]\n", iter_cas->CA_system_id);
 	}
 }

@@ -59,21 +59,21 @@ bool CServiceDescriptor::parse (void)
 
 void CServiceDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("service_type                 [0x%02x]\n", service_type);
+	_UTL_LOG_I ("service_type                 [0x%02x]\n", service_type);
 
-	printf ("service_provider_name_length [%d]\n", service_provider_name_length);
+	_UTL_LOG_I ("service_provider_name_length [%d]\n", service_provider_name_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)service_provider_name_char, (int)service_provider_name_length);
-	printf ("service_provider_name_char   [%s]\n", aribstr);
+	_UTL_LOG_I ("service_provider_name_char   [%s]\n", aribstr);
 
-	printf ("service_name_length          [%d]\n", service_name_length);
+	_UTL_LOG_I ("service_name_length          [%d]\n", service_name_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)service_name_char, (int)service_name_length);
-	printf ("text_char             [%s]\n", aribstr);
+	_UTL_LOG_I ("text_char             [%s]\n", aribstr);
 }

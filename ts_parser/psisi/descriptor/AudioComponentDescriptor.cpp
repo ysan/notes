@@ -89,34 +89,34 @@ bool CAudioComponentDescriptor::parse (void)
 
 void CAudioComponentDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
 	CDescriptor::dump (true);
 
-	printf ("stream_content              [0x%02x]\n", stream_content);
-	printf ("component_type              [0x%02x][%s]\n",
+	_UTL_LOG_I ("stream_content              [0x%02x]\n", stream_content);
+	_UTL_LOG_I ("component_type              [0x%02x][%s]\n",
 		component_type, CTsCommon::getAudioComponentType(component_type));
-	printf ("component_tag               [0x%02x]\n", component_tag);
-	printf ("stream_type                 [0x%02x]\n", stream_type);
-	printf ("simulcast_group_tag         [0x%02x]\n", simulcast_group_tag);
-	printf ("ES_multi_lingual_flag       [0x%02x][%s]\n",
+	_UTL_LOG_I ("component_tag               [0x%02x]\n", component_tag);
+	_UTL_LOG_I ("stream_type                 [0x%02x]\n", stream_type);
+	_UTL_LOG_I ("simulcast_group_tag         [0x%02x]\n", simulcast_group_tag);
+	_UTL_LOG_I ("ES_multi_lingual_flag       [0x%02x][%s]\n",
 		ES_multi_lingual_flag, ES_multi_lingual_flag ? "二ヶ国語" : "-");
-	printf ("main_component_flag         [0x%02x][%s]\n",
+	_UTL_LOG_I ("main_component_flag         [0x%02x][%s]\n",
 		main_component_flag, main_component_flag ? "主" : "副");
-	printf ("quality_indicator           [0x%02x][%s]\n",
+	_UTL_LOG_I ("quality_indicator           [0x%02x][%s]\n",
 		quality_indicator, CTsCommon::getAudioQuality(quality_indicator));
-	printf ("sampling_rate               [0x%02x][%s]\n",
+	_UTL_LOG_I ("sampling_rate               [0x%02x][%s]\n",
 		sampling_rate, CTsCommon::getAudioSamplingRate(sampling_rate));
 
-	printf ("ISO_639_language_code       [%s]\n", (char*)ISO_639_language_code);
+	_UTL_LOG_I ("ISO_639_language_code       [%s]\n", (char*)ISO_639_language_code);
 
 	if (ES_multi_lingual_flag) {
-		printf ("ISO_639_language_code_2 [%s]\n", (char*)ISO_639_language_code_2);
+		_UTL_LOG_I ("ISO_639_language_code_2 [%s]\n", (char*)ISO_639_language_code_2);
 	}
 
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)text_char, m_text_char_len);
-	printf ("text_char                   [%s]\n", aribstr);
+	_UTL_LOG_I ("text_char                   [%s]\n", aribstr);
 }

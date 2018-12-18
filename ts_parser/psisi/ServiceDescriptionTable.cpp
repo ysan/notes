@@ -54,7 +54,7 @@ bool CServiceDescriptionTable::parse (const CSectionInfo *pCompSection, CTable* 
 
 	int serviceLen = (int) (pTable->header.section_length - SECTION_HEADER_FIX_LEN - SECTION_CRC32_LEN - SDT_FIX_LEN);
 	if (serviceLen <= SDT_SERVICE_FIX_LEN) {
-		puts ("invalid SDT service");
+		_UTL_LOG_W ("invalid SDT service");
 		return false;
 	}
 
@@ -76,7 +76,7 @@ bool CServiceDescriptionTable::parse (const CSectionInfo *pCompSection, CTable* 
 		while (n > 0) {
 			CDescriptor desc (p);
 			if (!desc.isValid) {
-				puts ("invalid desc");
+				_UTL_LOG_W ("invalid SDT desc");
 				return false;
 			}
 			svc.descriptors.push_back (desc);
@@ -86,7 +86,7 @@ bool CServiceDescriptionTable::parse (const CSectionInfo *pCompSection, CTable* 
 
 		serviceLen -= (SDT_SERVICE_FIX_LEN + svc.descriptors_loop_length) ;
 		if (serviceLen < 0) {
-			puts ("invalid SDT stream");
+			_UTL_LOG_W ("invalid SDT stream");
 			return false;
 		}
 
@@ -130,30 +130,30 @@ void CServiceDescriptionTable::dumpTable (const CTable* pTable) const
 		return;
 	}
 	
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 
-	printf ("table_id                  [0x%02x]\n", pTable->header.table_id);
-	printf ("original_network_id       [0x%04x]\n", pTable->original_network_id);
+	_UTL_LOG_I ("table_id                  [0x%02x]\n", pTable->header.table_id);
+	_UTL_LOG_I ("original_network_id       [0x%04x]\n", pTable->original_network_id);
 
 	std::vector<CTable::CService>::const_iterator iter_svc = pTable->services.begin();
 	for (; iter_svc != pTable->services.end(); ++ iter_svc) {
-		printf ("\n--  service  --\n");
-		printf ("service_id                 [0x%04x]\n", iter_svc->service_id);
-		printf ("EIT_user_defined_flags     [0x%01x]\n", iter_svc->EIT_user_defined_flags);
-		printf ("EIT_schedule_flag          [0x%01x]\n", iter_svc->EIT_schedule_flag);
-		printf ("EIT_present_following_flag [0x%01x]\n", iter_svc->EIT_present_following_flag);
-		printf ("running_status             [0x%01x]\n", iter_svc->running_status);
-		printf ("free_CA_mode               [0x%01x]\n", iter_svc->free_CA_mode);
-		printf ("descriptors_loop_length    [%d]\n", iter_svc->descriptors_loop_length);
+		_UTL_LOG_I ("\n--  service  --\n");
+		_UTL_LOG_I ("service_id                 [0x%04x]\n", iter_svc->service_id);
+		_UTL_LOG_I ("EIT_user_defined_flags     [0x%01x]\n", iter_svc->EIT_user_defined_flags);
+		_UTL_LOG_I ("EIT_schedule_flag          [0x%01x]\n", iter_svc->EIT_schedule_flag);
+		_UTL_LOG_I ("EIT_present_following_flag [0x%01x]\n", iter_svc->EIT_present_following_flag);
+		_UTL_LOG_I ("running_status             [0x%01x]\n", iter_svc->running_status);
+		_UTL_LOG_I ("free_CA_mode               [0x%01x]\n", iter_svc->free_CA_mode);
+		_UTL_LOG_I ("descriptors_loop_length    [%d]\n", iter_svc->descriptors_loop_length);
 
 		std::vector<CDescriptor>::const_iterator iter_desc = iter_svc->descriptors.begin();
 		for (; iter_desc != iter_svc->descriptors.end(); ++ iter_desc) {
-			printf ("\n--  descriptor  --\n");
+			_UTL_LOG_I ("\n--  descriptor  --\n");
 			CDescriptorCommon::dump (iter_desc->tag, *iter_desc);
 		}
 	}
 
-	printf ("========================================\n");
+	_UTL_LOG_I ("========================================\n");
 }
 
 void CServiceDescriptionTable::clear (void)

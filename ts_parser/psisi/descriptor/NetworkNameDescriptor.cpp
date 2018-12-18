@@ -44,7 +44,7 @@ bool CNetworkNameDescriptor::parse (void)
 
 void CNetworkNameDescriptor::dump (void) const
 {
-	printf ("%s\n", __PRETTY_FUNCTION__);
+	_UTL_LOG_I ("%s\n", __PRETTY_FUNCTION__);
 
 	char aribstr [MAXSECLEN];
 
@@ -52,5 +52,5 @@ void CNetworkNameDescriptor::dump (void) const
 
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)name_char, (int)length);
-	printf ("name_char [%s]\n", aribstr);
+	_UTL_LOG_I ("name_char [%s]\n", aribstr);
 }
