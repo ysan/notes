@@ -115,7 +115,7 @@ char * strtok_r_impl (char *str, const char *delim, char **saveptr)
 		}
 
 		*saveptr = f + (int)strlen(delim);
-		printf ("a %p\n", *saveptr);
+//		printf ("a %p\n", *saveptr);
 
 		return str;
 
@@ -138,7 +138,7 @@ char * strtok_r_impl (char *str, const char *delim, char **saveptr)
 		}
 
 		*saveptr = f + (int)strlen(delim);
-		printf ("b %p\n", *saveptr);
+//		printf ("b %p\n", *saveptr);
 
 		return r;
 	}
@@ -248,7 +248,11 @@ void CUtils::getTimeOfDay (struct timeval *p)
 // default stdout
 FILE *CUtils::mfpLog = stdout;
 
-void CUtils::initLog (void)
+/**
+ * ファイル出力用
+ * ログ初期化
+ */
+bool CUtils::initLog (void)
 {
 	char szTime [64];
 	char ne [128];
@@ -287,9 +291,16 @@ void CUtils::initLog (void)
 	
 	if ((mfpLog = fopen (LOG_PATH "/" LOG_NAME "." LOG_EXT, "a")) == NULL) {
 		perror ("fopen");
+		return false;
 	}
+
+	return true;
 }
 
+/**
+ * ファイル出力用
+ * ログ終了
+ */
 void CUtils::finalizLog (void)
 {
 	if (mfpLog) {
@@ -320,9 +331,7 @@ void CUtils::putsLog (
     char szThreadName [THREAD_NAME_STRING_SIZE];
 	char type;
 	char szPerror[32];
-#ifndef _ANDROID_BUILD
 	char *pszPerror = NULL;
-#endif
 
 	memset (szBufVa, 0x00, sizeof (szBufVa));
 	memset (szTime, 0x00, sizeof (szTime));
@@ -361,6 +370,7 @@ void CUtils::putsLog (
 		pszPerror = strerror_r(errno, szPerror, sizeof (szPerror));
 #else
 		strerror_r(errno, szPerror, sizeof (szPerror));
+		pszPerror = szPerror;
 #endif
 		break;
 
@@ -374,8 +384,8 @@ void CUtils::putsLog (
 	getSysTimeMs (szTime, SYSTIME_MS_STRING_SIZE);
 	getThreadName (szThreadName, THREAD_NAME_STRING_SIZE);
 
+#if 0
 	deleteLF (szBufVa);
-
 	switch (enLogLevel) {
 	case EN_LOG_LEVEL_PE:
 		fprintf (
@@ -385,11 +395,7 @@ void CUtils::putsLog (
 			type,
 			szTime,
 			szBufVa,
-#ifndef _ANDROID_BUILD
 			pszPerror,
-#else
-			szPerror,
-#endif
 			pszFile,
 			pszFunc,
 			nLine
@@ -414,10 +420,109 @@ void CUtils::putsLog (
 		);
 		break;
 	}
-
 	fflush (pFp);
 
+#else
+	char *token = NULL;
+	char *saveptr = NULL;
+	char *s = szBufVa;
+	int n = 0;
+	while (1) {
+		token = strtok_r_impl (s, "\n", &saveptr);
+		if (token == NULL) {
+			if (n == 0 && (int)strlen(szBufVa) > 0) {
+				putsLogFprintf (
+					pFp,
+					enLogLevel,
+					szThreadName,
+					type,
+					szTime,
+					szBufVa,
+					pszPerror,
+					pszFile,
+					pszFunc,
+					nLine
+				);
+			}
+			break;
+		}
+
+		putsLogFprintf (
+			pFp,
+			enLogLevel,
+			szThreadName,
+			type,
+			szTime,
+			token,
+			pszPerror,
+			pszFile,
+			pszFunc,
+			nLine
+		);
+
+		s = NULL;
+	}
+#endif
+
 	fprintf (pFp, _UTL_TEXT_ATTR_RESET);
+	fflush (pFp);
+}
+
+/**
+ * putsLogFprintf
+ */
+void CUtils::putsLogFprintf (
+	FILE *pFp,
+	EN_LOG_LEVEL enLogLevel,
+	const char *pszThreadName,
+	char type,
+	const char *pszTime,
+	const char *pszBuf,
+	const char *pszPerror,
+	const char *pszFile,
+	const char *pszFunc,
+	int nLine
+)
+{
+	if (!pFp || !pszTime || !pszBuf || !pszFile || !pszFunc) {
+		return ;
+	}
+
+	switch (enLogLevel) {
+	case EN_LOG_LEVEL_PE:
+		fprintf (
+			pFp,
+			"[%s] %c %s  %s: %s   src=[%s %s()] line=[%d]\n",
+			pszThreadName,
+			type,
+			pszTime,
+			pszBuf,
+			pszPerror,
+			pszFile,
+			pszFunc,
+			nLine
+		);
+		break;
+
+	case EN_LOG_LEVEL_I:
+	case EN_LOG_LEVEL_N:
+	case EN_LOG_LEVEL_W:
+	case EN_LOG_LEVEL_E:
+	default:
+		fprintf (
+			pFp,
+			"[%s] %c %s  %s   src=[%s %s()] line=[%d]\n",
+			pszThreadName,
+			type,
+			pszTime,
+			pszBuf,
+			pszFile,
+			pszFunc,
+			nLine
+		);
+		break;
+	}
+
 	fflush (pFp);
 }
 
@@ -468,7 +573,8 @@ void CUtils::putsLog (
 
 /**
  * putsLW
- * ログ出力 src,lineなし 本体
+ * ログ出力 本体
+ * (src,lineなし)
  */
 void CUtils::putsLogLW (
 	FILE *pFp,
@@ -486,9 +592,7 @@ void CUtils::putsLogLW (
     char szThreadName [THREAD_NAME_STRING_SIZE];
 	char type;
 	char szPerror[32];
-#ifndef _ANDROID_BUILD
 	char *pszPerror = NULL;
-#endif
 
 	memset (szBufVa, 0x00, sizeof (szBufVa));
 	memset (szTime, 0x00, sizeof (szTime));
@@ -527,6 +631,7 @@ void CUtils::putsLogLW (
 		pszPerror = strerror_r(errno, szPerror, sizeof (szPerror));
 #else
 		strerror_r(errno, szPerror, sizeof (szPerror));
+		pszPerror = szPerror;
 #endif
 		break;
 
@@ -540,8 +645,8 @@ void CUtils::putsLogLW (
 	getSysTimeMs (szTime, SYSTIME_MS_STRING_SIZE);
 	getThreadName (szThreadName, THREAD_NAME_STRING_SIZE);
 
+#if 0
 	deleteLF (szBufVa);
-
 	switch (enLogLevel) {
 	case EN_LOG_LEVEL_PE:
 		fprintf (
@@ -551,11 +656,7 @@ void CUtils::putsLogLW (
 			type,
 			szTime,
 			szBufVa,
-#ifndef _ANDROID_BUILD
 			pszPerror
-#else
-			szPerror
-#endif
 		);
 		break;
 
@@ -574,16 +675,102 @@ void CUtils::putsLogLW (
 		);
 		break;
 	}
-
 	fflush (pFp);
+#else
+	char *token = NULL;
+	char *saveptr = NULL;
+	char *s = szBufVa;
+	int n = 0;
+	while (1) {
+		token = strtok_r_impl (s, "\n", &saveptr);
+		if (token == NULL) {
+			if (n == 0 && (int)strlen(szBufVa) > 0) {
+				putsLogFprintf (
+					pFp,
+					enLogLevel,
+					szThreadName,
+					type,
+					szTime,
+					szBufVa,
+					pszPerror
+				);
+			}
+			break;
+		}
+
+		putsLogFprintf (
+			pFp,
+			enLogLevel,
+			szThreadName,
+			type,
+			szTime,
+			token,
+			pszPerror
+		);
+
+		s = NULL;
+		++ n;
+	}
+#endif
 
 	fprintf (pFp, _UTL_TEXT_ATTR_RESET);
 	fflush (pFp);
 }
 
 /**
+ * putsLogFprintf
+ * (src,lineなし)
+ */
+void CUtils::putsLogFprintf (
+	FILE *pFp,
+	EN_LOG_LEVEL enLogLevel,
+	const char *pszThreadName,
+	char type,
+	const char *pszTime,
+	const char *pszBuf,
+	const char *pszPerror
+)
+{
+	if (!pFp || !pszTime || !pszBuf) {
+		return ;
+	}
+
+	switch (enLogLevel) {
+	case EN_LOG_LEVEL_PE:
+		fprintf (
+			pFp,
+			"[%s] %c %s  %s: %s\n",
+			pszThreadName,
+			type,
+			pszTime,
+			pszBuf,
+			pszPerror
+		);
+		break;
+
+	case EN_LOG_LEVEL_I:
+	case EN_LOG_LEVEL_N:
+	case EN_LOG_LEVEL_W:
+	case EN_LOG_LEVEL_E:
+	default:
+		fprintf (
+			pFp,
+			"[%s] %c %s  %s\n",
+			pszThreadName,
+			type,
+			pszTime,
+			pszBuf
+		);
+		break;
+	}
+
+	fflush (pFp);
+}
+
+/**
  * putsLog
- * ログ出力 src,lineなし loglevel判定なし
+ * ログ出力 loglevel判定なし
+ * (src,lineなし)
  */
 void CUtils::putsLogLW (
 	FILE *pFp,
@@ -600,7 +787,8 @@ void CUtils::putsLogLW (
 
 /**
  * putsLog
- * ログ出力 src,lineなし loglevel判定あり
+ * ログ出力 loglevel判定あり
+ * (src,lineなし)
  */
 void CUtils::putsLogLW (
 	FILE *pFp,
@@ -618,40 +806,6 @@ void CUtils::putsLogLW (
 	va_start (va, pszFormat);
 	putsLogLW (pFp, enLogLevel, pszFormat, va);
 	va_end (va);
-}
-
-int CUtils::readFile (int fd, uint8_t *pBuff, size_t nSize)
-{
-	if ((!pBuff) || (nSize == 0)) {
-		return -1;
-	}
-
-	int nReadSize = 0;
-	int nDone = 0;
-
-	while (1) {
-		nReadSize = read (fd, pBuff, nSize);
-		if (nReadSize < 0) {
-			perror ("read()");
-			return -1;
-
-		} else if (nReadSize == 0) {
-			// file end
-			break;
-
-		} else {
-			// read done
-			pBuff += nReadSize;
-			nSize -= nReadSize;
-			nDone += nReadSize;
-
-			if (nSize == 0) {
-				break;
-			}
-		}
-	}
-
-	return nDone;
 }
 
 /**
@@ -716,6 +870,40 @@ void CUtils::putsBackTrace (void)
 	}
 	_UTL_LOG_W ("============================================================\n");
 	free (pRtn);
+}
+
+int CUtils::readFile (int fd, uint8_t *pBuff, size_t nSize)
+{
+	if ((!pBuff) || (nSize == 0)) {
+		return -1;
+	}
+
+	int nReadSize = 0;
+	int nDone = 0;
+
+	while (1) {
+		nReadSize = read (fd, pBuff, nSize);
+		if (nReadSize < 0) {
+			perror ("read()");
+			return -1;
+
+		} else if (nReadSize == 0) {
+			// file end
+			break;
+
+		} else {
+			// read done
+			pBuff += nReadSize;
+			nSize -= nReadSize;
+			nDone += nReadSize;
+
+			if (nSize == 0) {
+				break;
+			}
+		}
+	}
+
+	return nDone;
 }
 
 #define DUMP_PUTS_OFFSET	"  "

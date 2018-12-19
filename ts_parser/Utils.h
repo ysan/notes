@@ -168,7 +168,7 @@ public:
 
 
 	static FILE *mfpLog;
-	static void initLog (void);
+	static bool initLog (void);
 	static void finalizLog (void);
 	static void putsLog (
 		FILE *pFp,
@@ -244,6 +244,29 @@ private:
 		int nLine,
 		const char *pszFormat,
 		va_list va
+	);
+
+	static void putsLogFprintf (
+		FILE *pFp,
+		EN_LOG_LEVEL enLogLevel,
+		const char *pszThreadName,
+		char type,
+		const char *pszTime,
+		const char *pszBuf,
+		const char *pszPerror,
+		const char *pszFile,
+		const char *pszFunc,
+		int nLine
+	);
+
+	static void putsLogFprintf (
+		FILE *pFp,
+		EN_LOG_LEVEL enLogLevel,
+		const char *pszThreadName,
+		char type,
+		const char *pszTime,
+		const char *pszBuf,
+		const char *pszPerror
 	);
 
 	static void putsLogLW (
