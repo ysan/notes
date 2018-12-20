@@ -10,6 +10,7 @@
 
 CBroadcasterInformationTable::CBroadcasterInformationTable (void)
 {
+	mTables.clear();
 }
 
 CBroadcasterInformationTable::~CBroadcasterInformationTable (void)

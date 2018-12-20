@@ -35,7 +35,7 @@ void CTsParser::run (uint8_t *pBuff, size_t size)
 	copyInnerBuffer (pBuff, size);
 	checkUnitSize ();
 
-	searchPAT ();
+	parse ();
 }
 
 //TODO 全部ため込むかたち
@@ -223,7 +223,7 @@ void CTsParser::dumpTsHeader (const ST_TS_HEADER *p) const
 	);
 }
 
-bool CTsParser::searchPAT (void)
+bool CTsParser::parse (void)
 {
 	ST_TS_HEADER stTsHdr = {0};
 	uint8_t *p = NULL; //work
@@ -233,7 +233,9 @@ bool CTsParser::searchPAT (void)
 	size_t unitSize = mUnitSize;
 	size_t payloadSize = 0;
 	bool isCheck = false;
-	CProgramAssociationTable::CTable *pPatTable = NULL;
+	CProgramAssociationTable::CTable *pCurPatTable = NULL;
+	CDsmccControl *pCurDsmccCtl = NULL;
+
 
 
 	while ((pCur+unitSize) < pBtm) {
@@ -317,13 +319,13 @@ bool CTsParser::searchPAT (void)
 
 		default:
 			// check PMT
-			pPatTable = &mPatTable [0];
+			pCurPatTable = &mPatTables [0];
 			for (int i = 0; i < 32; ++ i) {
-				if (!pPatTable->isUsed) {
+				if (!pCurPatTable->isUsed) {
 					continue;
 				}
-				if (pPatTable->program_number != 0) {
-					if (stTsHdr.pid == pPatTable->program_map_PID) {
+				if (pCurPatTable->program_number != 0) {
+					if (stTsHdr.pid == pCurPatTable->program_map_PID) {
 						_UTL_LOG_I ("###############  PMT  ###############");
 						CUtils::dumper (pCur, 188);
 						dumpTsHeader (&stTsHdr);
@@ -331,42 +333,66 @@ bool CTsParser::searchPAT (void)
 						break;
 					}
 				}
-
-				++ pPatTable ;
+				++ pCurPatTable ;
 			}
+
+			// check DSMCC
+			pCurDsmccCtl = &mDsmccCtls [0];
+			for (int i = 0; i < 256; ++ i) {
+				if (!pCurDsmccCtl->isUsed) {
+					continue;
+				}
+				if (stTsHdr.pid == pCurDsmccCtl->pid) {
+					_UTL_LOG_I ("###############  DSMCC  ###############");
+					CUtils::dumper (pCur, 188);
+					dumpTsHeader (&stTsHdr);
+					isCheck = true;
+					break;
+				}
+				++ pCurDsmccCtl;
+			}
+
 
 			break;
 		}
 
+		pPayload = pCur + TS_HEADER_LEN;
+
+		// adaptation_field_control 2bit
+		// 00 ISO/IECによる将来の使用のために予約されている。
+		// 01 アダプテーションフィールドなし、ペイロードのみ
+		// 10 アダプテーションフィールドのみ、ペイロードなし
+		// 11 アダプテーションフィールドの次にペイロード
+		if ((stTsHdr.adaptation_field_control & 0x02) == 0x02) {
+			// アダプテーションフィールド付き
+			pPayload += *pPayload + 1; // lengthとそれ自身の1byte分進める
+		}
+
+		// TTS(Timestamped TS)(total192bytes) や
+		// FEC(Forward Error Correction:順方向誤り訂正)(total204bytes)
+		// は除外します
+		payloadSize = TS_PACKET_LEN - (pPayload - pCur);
+
+
+// check table_id
+//if (stTsHdr.payload_unit_start_indicator == 1) {
+//	uint8_t table_id = *pPayload;
+//	_UTL_LOG_I ("dddddddddddddd   table_id 0x%02x   pid 0x%04x", table_id, stTsHdr.pid);
+//}
+
+
 		if (isCheck) {
-			pPayload = pCur + TS_HEADER_LEN; // ts header 4byte分進める
-
-			// adaptation_field_control 2bit
-			// 00 ISO/IECによる将来の使用のために予約されている。
-			// 01 アダプテーションフィールドなし、ペイロードのみ
-			// 10 アダプテーションフィールドのみ、ペイロードなし
-			// 11 アダプテーションフィールドの次にペイロード
-			if ((stTsHdr.adaptation_field_control & 0x02) == 0x02) {
-				// アダプテーションフィールド付き
-				pPayload += *pPayload + 1; // lengthとそれ自身の1byte分進める
-			}
-
-			// TTS(Timestamped TS)(total192bytes) や
-			// FEC(Forward Error Correction:順方向誤り訂正)(total204bytes)
-			// は除外します
-			payloadSize = TS_PACKET_LEN - (pPayload - pCur);
-
-
 
 			if (stTsHdr.pid == PID_PAT) {
 
-				mPAT.checkSection (&stTsHdr, pPayload, payloadSize);
+				if (mPAT.checkSection (&stTsHdr, pPayload, payloadSize)) {
 
-				memset (mPatTable, 0x00, sizeof(mPatTable));
+					memset (mPatTables, 0x00, sizeof(mPatTables));
 
-				int n = mPAT.getTableNum ();
-				mPAT.getTable (mPatTable, 32);
-				mPAT.dumpTable (mPatTable, n);
+					int n = mPAT.getTableNum ();
+					mPAT.getTable (mPatTables, 32);
+					mPAT.dumpTable (mPatTables, n);
+				}
 
 			} else if (stTsHdr.pid == PID_TOT) {
 
@@ -400,16 +426,59 @@ bool CTsParser::searchPAT (void)
 
 				mBIT.checkSection (&stTsHdr, pPayload, payloadSize);
 
-			} else if (stTsHdr.pid == pPatTable->program_map_PID) {
+			} else if (stTsHdr.pid == pCurPatTable->program_map_PID) {
 
-				if (pPatTable->mpPMT) {
-					pPatTable->mpPMT->checkSection (&stTsHdr, pPayload, payloadSize);
+				if (pCurPatTable->mpPMT) {
+					if (pCurPatTable->mpPMT->checkSection (&stTsHdr, pPayload, payloadSize)) {
+
+						// stream_typeからDSMCCのPIDを取得する //////////
+						const std::vector<CProgramMapTable::CTable*> *pTables = pCurPatTable->mpPMT->getTables();
+						std::vector<CProgramMapTable::CTable*>::const_iterator iter = pTables->begin();
+						for (; iter != pTables->end(); ++ iter) {
+							CProgramMapTable::CTable *pTable = *iter;
+							std::vector<CProgramMapTable::CTable::CStream>::const_iterator iter_strm = pTable->streams.begin();
+							for (; iter_strm != pTable->streams.end(); ++ iter_strm) {
+								if ((iter_strm->stream_type == 0x0b) || (iter_strm->stream_type == 0x0d)) {
+									bool isExisted = false;
+									for (int i = 0; i < 256; ++ i) {
+										if (mDsmccCtls[i].isUsed && (mDsmccCtls[i].pid == iter_strm->elementary_PID)) {
+											isExisted = true;
+											break;
+										}
+									}
+									if (!isExisted) {
+										int i = 0;
+										for (i = 0; i < 256; ++ i) {
+											if (!mDsmccCtls[i].isUsed) {
+												mDsmccCtls[i].pid = iter_strm->elementary_PID;
+												mDsmccCtls[i].mpDSMCC = new CDSMCC (65535);
+												mDsmccCtls[i].isUsed = true;
+												break;
+											}
+										}
+										if (i == 256) {
+											_UTL_LOG_W ("mDsmccCtls is full.");
+										}
+									}
+								}
+							}
+
+						}
+						//////////////////////////////////////////////////
+
+					}
 				}
-				
+
+			} else if (stTsHdr.pid == pCurDsmccCtl->pid) {
+				if (pCurDsmccCtl->mpDSMCC) {
+					pCurDsmccCtl->mpDSMCC->checkSection (&stTsHdr, pPayload, payloadSize);
+				}
 			}
 
 			isCheck = false;
 		}
+
+
 
 		pCur += unitSize;
 	}

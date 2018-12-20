@@ -10,6 +10,7 @@
 
 CProgramMapTable::CProgramMapTable (void)
 {
+	mTables.clear();
 }
 
 CProgramMapTable::~CProgramMapTable (void)
@@ -175,4 +176,9 @@ void CProgramMapTable:: clear (void)
 {
 	releaseTables ();
 	detachAllSectionList ();
+}
+
+const std::vector<CProgramMapTable::CTable*> *CProgramMapTable::getTables (void) const
+{
+	return &mTables;
 }

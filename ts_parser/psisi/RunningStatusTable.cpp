@@ -10,6 +10,7 @@
 
 CRunningStatusTable::CRunningStatusTable (void)
 {
+	mTables.clear();
 }
 
 CRunningStatusTable::~CRunningStatusTable (void)

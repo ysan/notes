@@ -17,7 +17,26 @@
 #include "ServiceDescriptionTable.h"
 #include "RunningStatusTable.h"
 #include "BroadcasterInformationTable.h"
+#include "DSMCC.h"
 
+class CDsmccControl {
+public:
+	CDsmccControl (void)
+		:pid (0)
+		,mpDSMCC (NULL)
+		,isUsed (false)
+	{}
+	virtual ~CDsmccControl (void) {
+		if (mpDSMCC) {
+			delete mpDSMCC;
+			mpDSMCC = NULL;
+		}
+	}
+
+	uint16_t pid;
+	CDSMCC *mpDSMCC;
+	bool isUsed;
+};
 
 class CTsParser
 {
@@ -34,7 +53,7 @@ private:
 	void getTsHeader (ST_TS_HEADER *pDst, uint8_t *pSrc) const;
 	void dumpTsHeader (const ST_TS_HEADER *p) const;
 
-	bool searchPAT (void);
+	bool parse (void);
 
 
 	uint8_t *mpTop ;
@@ -47,7 +66,7 @@ private:
 
 
 	CProgramAssociationTable mPAT;
-	CProgramAssociationTable::CTable mPatTable [4 * 8];
+	CProgramAssociationTable::CTable mPatTables [4 * 8];
 	CTimeOffsetTable mTOT;
 	CEventInformationTable mEIT_H;
 	CEventInformationTable mEIT_M;
@@ -57,6 +76,7 @@ private:
 	CRunningStatusTable mRST;
 	CBroadcasterInformationTable mBIT;
 
+	CDsmccControl mDsmccCtls [256];
 };
 
 #endif

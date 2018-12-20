@@ -25,7 +25,12 @@ public:
 			,mpPMT (NULL)
 			,isUsed (false)
 		{}
-		virtual ~CTable (void) {}
+		virtual ~CTable (void) {
+			if (mpPMT) {
+				delete mpPMT;
+				mpPMT = NULL;
+			}
+		}
 
 		uint16_t program_number;
 		uint16_t network_PID; // if program_number == 0 then network_PID

@@ -75,5 +75,5 @@ void CServiceDescriptor::dump (void) const
 	_UTL_LOG_I ("service_name_length          [%d]\n", service_name_length);
 	memset (aribstr, 0x00, MAXSECLEN);
 	AribToString (aribstr, (const char*)service_name_char, (int)service_name_length);
-	_UTL_LOG_I ("text_char             [%s]\n", aribstr);
+	_UTL_LOG_I ("service_name_char            [%s]\n", aribstr);
 }

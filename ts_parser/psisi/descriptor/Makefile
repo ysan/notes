@@ -46,6 +46,7 @@ SRCS_CPP	:= \
 	NetworkNameDescriptor.cpp \
 	CAIdentifierDescriptor.cpp \
 	ConditionalAccessDescriptor.cpp \
+	StreamIdentifierDescriptor.cpp \
 
 #
 #   Configurations

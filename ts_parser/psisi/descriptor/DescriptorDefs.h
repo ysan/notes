@@ -19,6 +19,7 @@
 #include "NetworkNameDescriptor.h"
 #include "CAIdentifierDescriptor.h"
 #include "ConditionalAccessDescriptor.h"
+#include "StreamIdentifierDescriptor.h"
 
 
 #define DESC_TAG__NETWORK_NAME_DESCRIPTOR					(0x40) // ネットワーク名記述子
@@ -284,6 +285,17 @@ public:
 					cad.dump();
 				} else {
 					_UTL_LOG_W ("invalid ConditionalAccessDescriptor\n");
+				}
+			}
+			break;
+
+		case DESC_TAG__STREAM_IDENTIFIER_DESCRIPTOR:
+			{
+				CStreamIdentifierDescriptor sid (desc);
+				if (sid.isValid) {
+					sid.dump();
+				} else {
+					_UTL_LOG_W ("invalid StreamIdentifierDescriptor\n");
 				}
 			}
 			break;

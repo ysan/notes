@@ -212,13 +212,13 @@ typedef struct {
 
 class CTsCommon {
 public:
-    static void getStrEpoch (time_t tx, const char *format, char *pszout, int outsize);
-    static void getStrSecond (int second, char *pszout, int outsize);
+	static void getStrEpoch (time_t tx, const char *format, char *pszout, int outsize);
+	static void getStrSecond (int second, char *pszout, int outsize);
 
 
-    // ARIB specific
-    static time_t getEpochFromMJD (const uint8_t *mjd);
-    static int getSecFromBCD (const uint8_t *bcd);
+	// ARIB specific
+	static time_t getEpochFromMJD (const uint8_t *mjd);
+	static int getSecFromBCD (const uint8_t *bcd);
 	static const char* getGenre_lvl1 (uint8_t genre);
 	static const char* getGenre_lvl2 (uint8_t genre);
 	static const char* getVideoComponentType (uint8_t type);

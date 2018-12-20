@@ -10,6 +10,7 @@
 
 CServiceDescriptionTable::CServiceDescriptionTable (void)
 {
+	mTables.clear();
 }
 
 CServiceDescriptionTable::~CServiceDescriptionTable (void)

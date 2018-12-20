@@ -865,14 +865,15 @@ bool CSectionParser::checkSectionFirst (uint8_t *pPayload, size_t payloadSize)
 
 	if((p + pointer_field) >= (pPayload + payloadSize)) {
 //TODO
-		_UTL_LOG_I ("input data is probably broken");
+		_UTL_LOG_E ("input data is probably broken");
 		return false;
 	}
 
 	if (pointer_field > 0) {
 		_UTL_LOG_I("(pointer_field > 0)");
 		if (!checkSectionFollow (p, pointer_field)) {
-			return false;
+			// 続行しておく
+//			return false;
 		}
 		p += pointer_field;
 		size = size - pointer_field;
@@ -961,17 +962,17 @@ bool CSectionParser::checkSectionFollow (uint8_t *pPayload, size_t payloadSize)
 
 	if (!mpWorkSectInfo) {
 		_UTL_LOG_W ("head packet has not arrived yet");
-		ST_SECTION_HEADER tmp;
-		CSectionInfo::parseHeader (&tmp, pPayload, pPayload + payloadSize);
-		CSectionInfo::dumpHeader (&tmp, (tmp.section_syntax_indicator == 0) ? true : false);
+//		ST_SECTION_HEADER tmp;
+//		CSectionInfo::parseHeader (&tmp, pPayload, pPayload + payloadSize);
+//		CSectionInfo::dumpHeader (&tmp, (tmp.section_syntax_indicator == 0) ? true : false);
 		return false;
 	}
 
 	if (mpWorkSectInfo->mState != EN_SECTION_STATE__RECEIVING) {
 		_UTL_LOG_W ("head packet has not arrived yet");
-		ST_SECTION_HEADER tmp;
-		CSectionInfo::parseHeader (&tmp, pPayload, pPayload + payloadSize);
-		CSectionInfo::dumpHeader (&tmp, (tmp.section_syntax_indicator == 0) ? true : false);
+//		ST_SECTION_HEADER tmp;
+//		CSectionInfo::parseHeader (&tmp, pPayload, pPayload + payloadSize);
+//		CSectionInfo::dumpHeader (&tmp, (tmp.section_syntax_indicator == 0) ? true : false);
 		return false;
 	}
 

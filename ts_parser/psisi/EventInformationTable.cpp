@@ -11,6 +11,7 @@
 CEventInformationTable::CEventInformationTable (size_t poolSize)
 	:CSectionParser (poolSize)
 {
+	mTables.clear();
 }
 
 CEventInformationTable::~CEventInformationTable (void)

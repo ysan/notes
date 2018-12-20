@@ -10,6 +10,7 @@
 
 CNetworkInformationTable::CNetworkInformationTable (void)
 {
+	mTables.clear();
 }
 
 CNetworkInformationTable::~CNetworkInformationTable (void)

@@ -85,6 +85,7 @@ public:
 	void dumpTable (const CTable* pTable) const;
 	void clear (void);
 
+	const std::vector<CTable*> *getTables (void) const;
 
 private:
 	bool parse (const CSectionInfo *pCompSection, CTable* pOutTable);
