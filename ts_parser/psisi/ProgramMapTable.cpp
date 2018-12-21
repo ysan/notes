@@ -18,7 +18,7 @@ CProgramMapTable::~CProgramMapTable (void)
 }
 
 
-void CProgramMapTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CProgramMapTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return;

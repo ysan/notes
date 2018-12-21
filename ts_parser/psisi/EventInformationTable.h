@@ -78,7 +78,7 @@ public:
 	explicit CEventInformationTable (size_t poolSize);
 	virtual ~CEventInformationTable (void);
 
-	void onSectionComplete (const CSectionInfo *pCompSection) override;
+	void onSectionCompleted (const CSectionInfo *pCompSection) override;
 
 	void dumpTables (void) const;
 	void dumpTable (const CTable* pTable) const;

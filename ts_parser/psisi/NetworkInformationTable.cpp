@@ -17,7 +17,7 @@ CNetworkInformationTable::~CNetworkInformationTable (void)
 {
 }
 
-void CNetworkInformationTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CNetworkInformationTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

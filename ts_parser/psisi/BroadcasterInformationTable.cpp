@@ -17,7 +17,7 @@ CBroadcasterInformationTable::~CBroadcasterInformationTable (void)
 {
 }
 
-void CBroadcasterInformationTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CBroadcasterInformationTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

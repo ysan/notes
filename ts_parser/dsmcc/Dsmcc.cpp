@@ -18,7 +18,7 @@ CDsmcc::~CDsmcc (void)
 {
 }
 
-void CDsmcc::onSectionComplete (const CSectionInfo *pCompSection)
+void CDsmcc::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

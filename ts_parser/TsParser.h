@@ -23,18 +23,18 @@ class CDsmccControl {
 public:
 	CDsmccControl (void)
 		:pid (0)
-		,mpDSMCC (NULL)
+		,mpDsmcc (NULL)
 		,isUsed (false)
 	{}
 	virtual ~CDsmccControl (void) {
-		if (mpDSMCC) {
-			delete mpDSMCC;
-			mpDSMCC = NULL;
+		if (mpDsmcc) {
+			delete mpDsmcc;
+			mpDsmcc = NULL;
 		}
 	}
 
 	uint16_t pid;
-	CDsmcc *mpDSMCC;
+	CDsmcc *mpDsmcc;
 	bool isUsed;
 };
 

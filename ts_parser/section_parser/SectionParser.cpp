@@ -900,6 +900,10 @@ dumpSectionList ();
 mpWorkSectInfo->dumpHeader ();
 
 
+	if (!onSectionStarted (mpWorkSectInfo)) {
+		return false;
+	}
+
 	if (mpWorkSectInfo->isReceiveAll()) {
 		mpWorkSectInfo->mState = EN_SECTION_STATE__RECEIVED;
 
@@ -945,7 +949,7 @@ mpWorkSectInfo->dumpHeader ();
 		checkDetachFifoSectionList ();
 dumpSectionList ();
 
-		onSectionComplete (mpWorkSectInfo);
+		onSectionCompleted (mpWorkSectInfo);
 
 		return true;
 	}
@@ -1037,7 +1041,7 @@ mpWorkSectInfo->dumpHeader ();
 		checkDetachFifoSectionList ();
 dumpSectionList ();
 
-		onSectionComplete (mpWorkSectInfo);
+		onSectionCompleted (mpWorkSectInfo);
 
 		return true;
 	}
@@ -1102,7 +1106,15 @@ void CSectionParser::clearWorkSectionInfo (void)
 /**
  *
  */
-void CSectionParser::onSectionComplete (const CSectionInfo *pCompSection)
+bool CSectionParser::onSectionStarted (const CSectionInfo *pCompSection)
 {
-	_UTL_LOG_I (__PRETTY_FUNCTION__);
+	return true;
+}
+
+/**
+ *
+ */
+void CSectionParser::onSectionCompleted (const CSectionInfo *pCompSection)
+{
+	return;
 }

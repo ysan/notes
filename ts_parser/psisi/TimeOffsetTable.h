@@ -18,7 +18,7 @@ public:
 	explicit CTimeOffsetTable (uint8_t fifoNum);
 	virtual ~CTimeOffsetTable (void);
 
-	void onSectionComplete (const CSectionInfo *pCompSection) override;
+	void onSectionCompleted (const CSectionInfo *pCompSection) override;
 
 	void dump (void) const;
 	void dump (const CSectionInfo *pSectInfo) const;

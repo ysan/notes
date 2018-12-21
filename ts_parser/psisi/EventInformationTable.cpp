@@ -18,7 +18,7 @@ CEventInformationTable::~CEventInformationTable (void)
 {
 }
 
-void CEventInformationTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CEventInformationTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

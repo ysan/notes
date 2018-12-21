@@ -17,7 +17,7 @@ CServiceDescriptionTable::~CServiceDescriptionTable (void)
 {
 }
 
-void CServiceDescriptionTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CServiceDescriptionTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

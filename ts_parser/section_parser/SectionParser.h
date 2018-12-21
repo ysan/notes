@@ -107,7 +107,8 @@ protected:
 	CSectionInfo *searchSectionList (const CSectionInfo &sectInfo) const;
 	int getSectionListNum (void) const;
 
-	virtual void onSectionComplete (const CSectionInfo *pCompSection);
+	virtual bool onSectionStarted (const CSectionInfo *pSection);
+	virtual void onSectionCompleted (const CSectionInfo *pCompSection);
 
 
 private:

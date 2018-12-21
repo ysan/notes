@@ -18,7 +18,7 @@ CTimeOffsetTable::~CTimeOffsetTable (void)
 {
 }
 
-void CTimeOffsetTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CTimeOffsetTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

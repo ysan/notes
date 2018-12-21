@@ -17,7 +17,7 @@ CRunningStatusTable::~CRunningStatusTable (void)
 {
 }
 
-void CRunningStatusTable::onSectionComplete (const CSectionInfo *pCompSection)
+void CRunningStatusTable::onSectionCompleted (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;

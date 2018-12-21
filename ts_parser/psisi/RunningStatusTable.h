@@ -59,7 +59,7 @@ public:
 	CRunningStatusTable (void);
 	virtual ~CRunningStatusTable (void);
 
-	void onSectionComplete (const CSectionInfo *pCompSection) override;
+	void onSectionCompleted (const CSectionInfo *pCompSection) override;
 
 	void dumpTables (void) const;
 	void dumpTable (const CTable* pTable) const;

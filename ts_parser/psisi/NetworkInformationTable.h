@@ -75,7 +75,7 @@ public:
 	CNetworkInformationTable (void);
 	virtual ~CNetworkInformationTable (void);
 
-	void onSectionComplete (const CSectionInfo *pCompSection) override;
+	void onSectionCompleted (const CSectionInfo *pCompSection) override;
 
 	void dumpTables (void) const;
 	void dumpTable (const CTable* pTable) const;

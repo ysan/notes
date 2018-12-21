@@ -451,7 +451,7 @@ bool CTsParser::parse (void)
 										for (i = 0; i < 256; ++ i) {
 											if (!mDsmccCtls[i].isUsed) {
 												mDsmccCtls[i].pid = iter_strm->elementary_PID;
-												mDsmccCtls[i].mpDSMCC = new CDsmcc (65535);
+												mDsmccCtls[i].mpDsmcc = new CDsmcc (65535);
 												mDsmccCtls[i].isUsed = true;
 												break;
 											}
@@ -470,8 +470,8 @@ bool CTsParser::parse (void)
 				}
 
 			} else if (stTsHdr.pid == pCurDsmccCtl->pid) {
-				if (pCurDsmccCtl->mpDSMCC) {
-					pCurDsmccCtl->mpDSMCC->checkSection (&stTsHdr, pPayload, payloadSize);
+				if (pCurDsmccCtl->mpDsmcc) {
+					pCurDsmccCtl->mpDsmcc->checkSection (&stTsHdr, pPayload, payloadSize);
 				}
 			}
 
