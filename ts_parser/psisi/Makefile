@@ -8,17 +8,18 @@ CFLAGS		:=	-std=c++11
 INCLUDES	:= \
 	-I./ \
 	-I$(BASEDIR) \
-	-I$(BASEDIR)/psisi/ \
-	-I$(BASEDIR)/psisi/descriptor/ \
+	-I$(BASEDIR)/section_parser/ \
+	-I$(BASEDIR)/descriptor/ \
 
 LIBS		:= \
-	-L$(BASEDIR)/aribstr -laribstr
+	-L$(BASEDIR)/section_parser -lsection_parser \
+	-L$(BASEDIR)/aribstr -laribstr \
+	-L$(BASEDIR)/descriptor -ldescriptor \
+
 
 APPEND_OBJS := \
-	./descriptor/descriptor.o \
 
 SUBDIRS		:= \
-	descriptor \
 
 #
 #   Target object
@@ -37,7 +38,6 @@ TARGET_TYPE	:=	SHARED
 SRCS		:=
 
 SRCS_CPP	:= \
-	SectionParser.cpp \
 	ProgramAssociationTable.cpp \
 	ProgramMapTable.cpp \
 	TimeOffsetTable.cpp \
@@ -46,7 +46,6 @@ SRCS_CPP	:= \
 	ServiceDescriptionTable.cpp \
 	RunningStatusTable.cpp \
 	BroadcasterInformationTable.cpp \
-	DSMCC.cpp \
 
 
 #

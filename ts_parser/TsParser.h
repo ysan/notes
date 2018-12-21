@@ -17,7 +17,7 @@
 #include "ServiceDescriptionTable.h"
 #include "RunningStatusTable.h"
 #include "BroadcasterInformationTable.h"
-#include "DSMCC.h"
+#include "Dsmcc.h"
 
 class CDsmccControl {
 public:
@@ -34,7 +34,7 @@ public:
 	}
 
 	uint16_t pid;
-	CDSMCC *mpDSMCC;
+	CDsmcc *mpDSMCC;
 	bool isUsed;
 };
 

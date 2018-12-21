@@ -24,7 +24,7 @@
 									// broadcaster_descriptors_length  12  uimsbf
 
 
-class CDSMCC : public CSectionParser
+class CDsmcc : public CSectionParser
 {
 public:
 	class CTable {
@@ -36,8 +36,8 @@ public:
 	};
 
 public:
-	explicit CDSMCC (size_t poolSize);
-	virtual ~CDSMCC (void);
+	explicit CDsmcc (size_t poolSize);
+	virtual ~CDsmcc (void);
 
 	void onSectionComplete (const CSectionInfo *pCompSection) override;
 

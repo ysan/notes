@@ -451,7 +451,7 @@ bool CTsParser::parse (void)
 										for (i = 0; i < 256; ++ i) {
 											if (!mDsmccCtls[i].isUsed) {
 												mDsmccCtls[i].pid = iter_strm->elementary_PID;
-												mDsmccCtls[i].mpDSMCC = new CDSMCC (65535);
+												mDsmccCtls[i].mpDSMCC = new CDsmcc (65535);
 												mDsmccCtls[i].isUsed = true;
 												break;
 											}

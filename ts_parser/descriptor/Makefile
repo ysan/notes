@@ -1,15 +1,17 @@
 #
 #   Defines
 #
-BASEDIR		:=	../../
+BASEDIR		:=	../
 CFLAGS		:=	-std=c++11 -fPIC
 INCLUDES	:= \
 	-I./ \
 	-I$(BASEDIR) \
-	-I$(BASEDIR)/psisi \
+	-I$(BASEDIR)/section_parser \
 	-I$(BASEDIR)/aribstr \
 
-LIBS		:=
+LIBS		:= \
+	-L$(BASEDIR)/section_parser -lsection_parser \
+	-L$(BASEDIR)/aribstr -laribstr \
 
 
 #
@@ -21,7 +23,7 @@ TARGET_NAME	:=	descriptor
 #   Target type
 #     (EXEC/SHARED/STATIC/OBJECT)
 #
-TARGET_TYPE	:=	OBJECT
+TARGET_TYPE	:=	SHARED
 
 #
 #   Compile sources

@@ -4,21 +4,21 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "DSMCC.h"
+#include "Dsmcc.h"
 #include "Utils.h"
 
 
-CDSMCC::CDSMCC (size_t poolSize)
+CDsmcc::CDsmcc (size_t poolSize)
 	:CSectionParser (poolSize)
 {
 	mTables.clear();
 }
 
-CDSMCC::~CDSMCC (void)
+CDsmcc::~CDsmcc (void)
 {
 }
 
-void CDSMCC::onSectionComplete (const CSectionInfo *pCompSection)
+void CDsmcc::onSectionComplete (const CSectionInfo *pCompSection)
 {
 	if (!pCompSection) {
 		return ;
@@ -37,7 +37,7 @@ void CDSMCC::onSectionComplete (const CSectionInfo *pCompSection)
 
 }
 
-bool CDSMCC::parse (const CSectionInfo *pCompSection, CTable* pOutTable)
+bool CDsmcc::parse (const CSectionInfo *pCompSection, CTable* pOutTable)
 {
 	if (!pCompSection || !pOutTable) {
 		return false;
@@ -48,7 +48,7 @@ bool CDSMCC::parse (const CSectionInfo *pCompSection, CTable* pOutTable)
 	return true;
 }
 
-void CDSMCC::releaseTables (void)
+void CDsmcc::releaseTables (void)
 {
 	if (mTables.size() == 0) {
 		return;
@@ -63,7 +63,7 @@ void CDSMCC::releaseTables (void)
 	mTables.clear();
 }
 
-void CDSMCC::dumpTables (void) const
+void CDsmcc::dumpTables (void) const
 {
 	if (mTables.size() == 0) {
 		return;
@@ -76,7 +76,7 @@ void CDSMCC::dumpTables (void) const
 //	}
 }
 
-void CDSMCC::dumpTable (const CTable* pTable) const
+void CDsmcc::dumpTable (const CTable* pTable) const
 {
 	if (!pTable) {
 		return;
@@ -87,7 +87,7 @@ void CDSMCC::dumpTable (const CTable* pTable) const
 	_UTL_LOG_I ("========================================\n");
 }
 
-void CDSMCC::clear (void)
+void CDsmcc::clear (void)
 {
 	releaseTables ();
 	detachAllSectionList ();

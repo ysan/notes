@@ -1,45 +1,38 @@
 #
 #   Defines
 #
-BASEDIR		:=	./
+BASEDIR		:=	../
 
 CFLAGS		:=	-std=c++11
 
 INCLUDES	:= \
 	-I./ \
+	-I$(BASEDIR) \
 	-I$(BASEDIR)/section_parser/ \
-	-I$(BASEDIR)/descriptor/ \
-	-I$(BASEDIR)/aribstr/ \
 	-I$(BASEDIR)/psisi/ \
-	-I$(BASEDIR)/dsmcc/ \
-	-I/usr/include/PCSC/ \
+	-I$(BASEDIR)/descriptor/ \
 
 LIBS		:= \
-	-lpthread \
-	-lpcsclite \
 	-L$(BASEDIR)/section_parser -lsection_parser \
-	-L$(BASEDIR)/descriptor -ldescriptor \
 	-L$(BASEDIR)/aribstr -laribstr \
+	-L$(BASEDIR)/descriptor -ldescriptor \
 	-L$(BASEDIR)/psisi -lpsisi \
-	-L$(BASEDIR)/dsmcc -ldsmcc \
+
+
+APPEND_OBJS := \
 
 SUBDIRS		:= \
-	section_parser \
-	aribstr \
-	descriptor \
-	psisi \
-	dsmcc \
 
 #
 #   Target object
 #
-TARGET_NAME	:=	ts_parser
+TARGET_NAME	:=	dsmcc
 
 #
 #   Target type
 #     (EXEC/SHARED/STATIC/OBJECT)
 #
-TARGET_TYPE	:=	EXEC
+TARGET_TYPE	:=	SHARED
 
 #
 #   Compile sources
@@ -47,10 +40,7 @@ TARGET_TYPE	:=	EXEC
 SRCS		:=
 
 SRCS_CPP	:= \
-	main.cpp \
-	TsParser.cpp \
-	Utils.cpp \
-	TsCommon.cpp \
+	Dsmcc.cpp \
 
 
 #
