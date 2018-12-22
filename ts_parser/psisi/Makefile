@@ -7,19 +7,18 @@ CFLAGS		:=	-std=c++11
 
 INCLUDES	:= \
 	-I./ \
+	-I./descriptor \
 	-I$(BASEDIR) \
 	-I$(BASEDIR)/section_parser/ \
-	-I$(BASEDIR)/descriptor/ \
 
 LIBS		:= \
 	-L$(BASEDIR)/section_parser -lsection_parser \
 	-L$(BASEDIR)/aribstr -laribstr \
-	-L$(BASEDIR)/descriptor -ldescriptor \
 
 
-APPEND_OBJS := \
+APPEND_OBJS := ./descriptor/descriptor.o
 
-SUBDIRS		:= \
+SUBDIRS		:= ./descriptor
 
 #
 #   Target object

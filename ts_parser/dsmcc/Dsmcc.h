@@ -12,7 +12,7 @@
 #include "Defs.h"
 #include "TsCommon.h"
 #include "SectionParser.h"
-#include "DescriptorDefs.h"
+//#include "DescriptorDefs.h"
 
 
 //#define BIT_FIX_LEN				(2) // reserved_future_use        3  bslbf

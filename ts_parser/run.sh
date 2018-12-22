@@ -4,7 +4,6 @@ BASE_DIR=${HOME}/prog/ts_parser
 
 
 export LD_LIBRARY_PATH=\
-${BASE_DIR}/descriptor:\
 ${BASE_DIR}/psisi:\
 ${BASE_DIR}/aribstr:\
 ${BASE_DIR}/section_parser:\

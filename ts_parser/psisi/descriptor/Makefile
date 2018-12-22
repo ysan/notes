@@ -1,7 +1,7 @@
 #
 #   Defines
 #
-BASEDIR		:=	../
+BASEDIR		:=	../../
 CFLAGS		:=	-std=c++11 -fPIC
 INCLUDES	:= \
 	-I./ \
@@ -23,7 +23,7 @@ TARGET_NAME	:=	descriptor
 #   Target type
 #     (EXEC/SHARED/STATIC/OBJECT)
 #
-TARGET_TYPE	:=	SHARED
+TARGET_TYPE	:=	OBJECT
 
 #
 #   Compile sources

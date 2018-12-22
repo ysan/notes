@@ -8,9 +8,9 @@ CFLAGS		:=	-std=c++11
 INCLUDES	:= \
 	-I./ \
 	-I$(BASEDIR)/section_parser/ \
-	-I$(BASEDIR)/descriptor/ \
 	-I$(BASEDIR)/aribstr/ \
 	-I$(BASEDIR)/psisi/ \
+	-I$(BASEDIR)/psisi/descriptor \
 	-I$(BASEDIR)/dsmcc/ \
 	-I/usr/include/PCSC/ \
 
@@ -18,7 +18,6 @@ LIBS		:= \
 	-lpthread \
 	-lpcsclite \
 	-L$(BASEDIR)/section_parser -lsection_parser \
-	-L$(BASEDIR)/descriptor -ldescriptor \
 	-L$(BASEDIR)/aribstr -laribstr \
 	-L$(BASEDIR)/psisi -lpsisi \
 	-L$(BASEDIR)/dsmcc -ldsmcc \
@@ -26,7 +25,6 @@ LIBS		:= \
 SUBDIRS		:= \
 	section_parser \
 	aribstr \
-	descriptor \
 	psisi \
 	dsmcc \
 
