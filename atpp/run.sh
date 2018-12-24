@@ -1,12 +1,11 @@
 #!/bin/bash
 
-BASE_DIR=${HOME}/prog/ts_parser
+BASE_DIR=${HOME}/prog/atpp
 
 
 export LD_LIBRARY_PATH=\
-${BASE_DIR}/psisi:\
 ${BASE_DIR}/aribstr:\
-${BASE_DIR}/section_parser:\
+${BASE_DIR}/psisi:\
 ${BASE_DIR}/dsmcc\
 
 
@@ -22,5 +21,5 @@ if [ ! -e $1 -o ! -f $1 ]; then
 fi
 
 #cat $1 | ${BASE_DIR}/ts_parser
-${BASE_DIR}/ts_parser -f $1
+${BASE_DIR}/atpp -f $1
 

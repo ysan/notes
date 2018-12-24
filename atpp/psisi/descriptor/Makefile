@@ -6,11 +6,9 @@ CFLAGS		:=	-std=c++11 -fPIC
 INCLUDES	:= \
 	-I./ \
 	-I$(BASEDIR) \
-	-I$(BASEDIR)/section_parser \
 	-I$(BASEDIR)/aribstr \
 
 LIBS		:= \
-	-L$(BASEDIR)/section_parser -lsection_parser \
 	-L$(BASEDIR)/aribstr -laribstr \
 
 

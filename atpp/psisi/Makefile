@@ -7,23 +7,21 @@ CFLAGS		:=	-std=c++11
 
 INCLUDES	:= \
 	-I./ \
+	-I./descriptor \
 	-I$(BASEDIR) \
-	-I$(BASEDIR)/section_parser/ \
-	-I$(BASEDIR)/psisi/ \
 
 LIBS		:= \
-	-L$(BASEDIR)/section_parser -lsection_parser \
 	-L$(BASEDIR)/aribstr -laribstr \
 
 
-APPEND_OBJS := \
+APPEND_OBJS := ./descriptor/descriptor.o
 
-SUBDIRS		:= \
+SUBDIRS		:= ./descriptor
 
 #
 #   Target object
 #
-TARGET_NAME	:=	dsmcc
+TARGET_NAME	:=	psisi
 
 #
 #   Target type
@@ -37,7 +35,14 @@ TARGET_TYPE	:=	SHARED
 SRCS		:=
 
 SRCS_CPP	:= \
-	Dsmcc.cpp \
+	ProgramAssociationTable.cpp \
+	ProgramMapTable.cpp \
+	TimeOffsetTable.cpp \
+	EventInformationTable.cpp \
+	NetworkInformationTable.cpp \
+	ServiceDescriptionTable.cpp \
+	RunningStatusTable.cpp \
+	BroadcasterInformationTable.cpp \
 
 
 #

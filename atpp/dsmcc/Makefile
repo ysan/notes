@@ -8,17 +8,20 @@ CFLAGS		:=	-std=c++11
 INCLUDES	:= \
 	-I./ \
 	-I$(BASEDIR) \
+	-I$(BASEDIR)/psisi/ \
 
 LIBS		:= \
+	-L$(BASEDIR)/aribstr -laribstr \
 
-APPEND_OBJS := \
 
-SUBDIRS		:= \
+APPEND_OBJS := ./descriptor/descriptor.o
+
+SUBDIRS		:= ./descriptor
 
 #
 #   Target object
 #
-TARGET_NAME	:=	section_parser
+TARGET_NAME	:=	dsmcc
 
 #
 #   Target type
@@ -32,7 +35,7 @@ TARGET_TYPE	:=	SHARED
 SRCS		:=
 
 SRCS_CPP	:= \
-	SectionParser.cpp \
+	Dsmcc.cpp \
 
 
 #
