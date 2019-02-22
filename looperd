@@ -1,0 +1,50 @@
+#! /bin/sh
+
+PID_FILE=/var/run/looper.pid
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+
+_do_loop () {
+	echo $$ > ${PID_FILE}
+
+	while [ 1 ]; do
+
+		logger -t $0 pid=$$
+		sleep 5
+
+	done
+}
+
+_do_kill () {
+	if [ -e ${PID_FILE} -a -f ${PID_FILE} ]; then
+		kill -kill `cat ${PID_FILE}`
+		rm -f ${PID_FILE}
+	fi
+}
+
+_do_start () {
+	if [ ! -e ${PID_FILE} ]; then
+		$0 start_loop &
+	fi
+}
+
+
+case "$1" in
+	start)
+		_do_start
+		;;
+	start_loop)
+		_do_loop
+		;;
+	restart)
+		_do_kill
+		_do_start
+		;;
+	stop)
+		_do_kill
+		;;
+	*)
+		echo "Usage: $0 start|restart|stop" >&2
+		exit 3
+		;;
+esac
