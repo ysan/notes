@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PID_FILE=/var/run/looper.pid
+PID_FILE=/var/run/looperd.pid
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
 
