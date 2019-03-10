@@ -1,7 +1,10 @@
 #!/bin/bash
 
 
-BACKUP_FROM=/mnt/Landisk/
+MOUNT_SRC=//192.168.50.7/disk
+MOUNT_POINT=/mnt/Landisk/
+
+BACKUP_FROM=${MOUNT_POINT}
 BACKUP_TO=/media/pi/EC-PHU3/Landisk_backup
 
 
@@ -83,7 +86,7 @@ function _check_mount_landisk () {
 	else
 		# not mounted
 		echo "not mounted Landisk. --> do mount..." >> ${WORK_LOG_PATH}
-		sudo mount -t cifs -o sec=ntlm -o username=admin,password= //192.168.50.8/disk /mnt/Landisk >> ${WORK_LOG_PATH} 2>&1
+		sudo mount -t cifs -o sec=ntlm -o username=admin,password= ${MOUNT_SRC} ${MOUNT_POINT} >> ${WORK_LOG_PATH} 2>&1
 		if [ $? -eq 0 ]; then
 			echo "mount OK" >> ${WORK_LOG_PATH}
 			return 0
@@ -94,9 +97,23 @@ function _check_mount_landisk () {
 	fi
 }
 
+function _check_duplicate () {
+	if [ $$ != `pgrep -fo $1`  ]; then
+		# duplicate
+		return 1
+	else
+		return 0
+	fi
+}
 
 
 ###---    main flow    ---###
+
+#_check_duplicate $0
+#if [ ! $? -eq 0 ]; then
+#	logger "`basename $0`: already running. exit..."
+#	exit 1
+#fi
 
 touch ${WORK_LOG_PATH}
 if [ ! $? -eq 0 ]; then
