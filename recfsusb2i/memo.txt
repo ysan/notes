@@ -1,0 +1,26 @@
+pcsc関係をインストール
+$ sudo apt-get install libpcsclite-dev pcsc-tools pcscd
+
+libarib25をgithubから落としてcmake後make install
+システムにインストールした
+
+recfsusb2i-20160220ソースをどこからか落としてきてmake
+$ make B25=1
+
+githubレポジトリ タイポミスでコンパイル通らない...
+https://github.com/jeeb/recfsusb2i
+
+
+27 NHK 総合
+26 NHK Eテレ
+25 日本テレビ
+24 テレビ朝日
+22 TBS
+23 テレビ東京
+21 フジテレビ
+16 東京MX
+
+cron設定に入る
+$ export EDITOR=vi
+$ crontab -e -u pi
+

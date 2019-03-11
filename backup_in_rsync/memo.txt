@@ -1,0 +1,13 @@
+ntfs-3g インストール
+$ sudo apt-get install ntfs-3g
+windowsのntfsを読み書きできるように
+
+hdparmをインストール
+$ sudo apt-get install hdparm
+HDDスピンダウン
+$ sudo hdparm -y /dev/sda
+
+
+cron設定に入る
+$ export EDITOR=vi
+$ crontab -e -u pi
