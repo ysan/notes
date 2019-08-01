@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="commons_ftptest" default="build_jar" basedir=".">
+
+	<property name="src_dir" value="src"/>
+	<property name="classes_dir" value="bin"/>
+	<property name="lib_dir" value="lib"/>
+	<property name="lib_jar_class_path" value="lib/commons-net-1.4.1.jar"/>
+
+	<property name="build_jar_name" value="commons_ftptest.jar"/>
+	<property name="main" value="com.ftptest.FTPTestMain"/>
+
+
+	<target name="compile">
+		<mkdir dir="${classes_dir}" />
+		<javac includeantruntime="false" srcdir="${src_dir}" destdir="${classes_dir}" debug="true">
+			<compilerarg value="-Xlint:unchecked" />
+			<classpath>
+				<pathelement path="lib/commons-net-1.4.1.jar"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="build_jar" depends="compile">
+		<jar jarfile="${build_jar_name}" basedir="${classes_dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main}"/>
+				<attribute name="Class-Path" value="${lib_jar_class_path}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes_dir}" />
+		<delete file="${build_jar_name}" />
+	</target>
+
+</project>
