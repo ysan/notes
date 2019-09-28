@@ -1,0 +1,13 @@
+元ネタ
+https://github.com/jr4qpv/rpi_t-kernel
+
+armツールチェーン インストール
+$ sudo yum install arm-none-eabi-gcc
+
+ubootのloadbで使うminicomのkermitをインストール
+$ sudo yum install ckermit
+
+
+ubootのビルド
+https://www.yokoweb.net/2016/08/11/ubuntu-uboot-gcc/
+
