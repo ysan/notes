@@ -32,3 +32,7 @@ $ export GIT_SSL_NO_VERIFY=1
 $ git log --diff-filter=D --summary
 
 
+// 過去に削除したファイルを復元する
+$ git checkout <commit>^ -- <file_name>
+
+
