@@ -1,0 +1,29 @@
+// aptの依存エラーの対応
+
+$ sudo apt-get install pandoc
+パッケージリストを読み込んでいます... 完了
+依存関係ツリーを作成しています                
+状態情報を読み取っています... 完了
+以下の問題を解決するために 'apt-get -f install' を実行する必要があるかもしれません:
+以下のパッケージには満たせない依存関係があります:
+ libpython2.7-dev : 依存: libpython2.7-stdlib (= 2.7.12-1ubuntu0~16.04.9) しかし、2.7.12-1ubuntu0~16.04.4 はインストールされようとしています
+                    依存: libpython2.7 (= 2.7.12-1ubuntu0~16.04.9) しかし、2.7.12-1ubuntu0~16.04.4 はインストールされようとしています
+ pandoc : 依存: pandoc-data (= 1.16.0.2~dfsg-1) しかし、インストールされようとしていません
+          依存: liblua5.1-0 しかし、インストールされようとしていません
+          依存: libluajit-5.1-2 しかし、インストールされようとしていません
+ python2.7-dev : 依存: python2.7 (= 2.7.12-1ubuntu0~16.04.8) しかし、2.7.12-1ubuntu0~16.04.4 はインストールされようとしています
+                 依存: libpython2.7-dev (= 2.7.12-1ubuntu0~16.04.8) しかし、2.7.12-1ubuntu0~16.04.9 はインストールされようとしています
+                 依存: libpython2.7 (= 2.7.12-1ubuntu0~16.04.8) しかし、2.7.12-1ubuntu0~16.04.4 はインストールされようとしています
+E: 未解決の依存関係です。'apt-get -f install' を実行してみてください (または解法を明示してください)。
+
+
+解決したコマンド
+  バージョンを指定して依存するもの全てインストール 2.7.12-1ubuntu0~16.04.9にそろえた
+↓
+
+$ sudo apt-get install libpython2.7-dev=2.7.12-1ubuntu0~16.04.9 python2.7=2.7.12-1ubuntu0~16.04.9 libpython2.7=2.7.12-1ubuntu0~16.04.9 python2.7-dev=2.7.12-1ubuntu0~16.04.9 libpython2.7-stdlib=2.7.12-1ubuntu0~16.04.9 libpython2.7-minimal=2.7.12-1ubuntu0~16.04.9 python2.7-minimal=2.7.12-1ubuntu0~16.04.9
+
+
+// git clone でerror: server certificate verification failed.
+export GIT_SSL_NO_VERIFY=1
+
