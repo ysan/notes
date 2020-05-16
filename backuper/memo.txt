@@ -1,0 +1,10 @@
+cron設定に入る
+$ export EDITOR=vi
+$ crontab -e -u pi
+
+
+1分ごと
+*/1 *  *  *   * /home/pi/backuper/backuper.sh
+
+2時間ごと
+00 */2 *  *   * /home/pi/backuper/backuper.sh
