@@ -11,7 +11,8 @@ BACKUP_TO=/media/pi/EC-PHU3/Landisk_backup
 HOME=/home/pi
 WORK_DIR=${HOME}/backup_in_rsync
 
-LOG_PREFIX=${WORK_DIR}/log/backup_in_rsync
+LOG_DIR=${WORK_DIR}/log
+LOG_PREFIX=${LOG_DIR}/backup_in_rsync
 WORK_LOG_PATH=${LOG_PREFIX}.log
 
 START_DATE=
@@ -109,13 +110,19 @@ function _check_duplicate () {
 
 ###---    main flow    ---###
 
+mkdir -p ${LOG_DIR} >/dev/null 2>&1
+if [ ! $? -eq 0 ]; then
+	logger "`basename $0`: LOG_DIR:[${LOG_DIR}] is invalid."
+	exit 1
+fi
+
 #_check_duplicate $0
 #if [ ! $? -eq 0 ]; then
 #	logger "`basename $0`: already running. exit..."
 #	exit 1
 #fi
 
-touch ${WORK_LOG_PATH}
+touch ${WORK_LOG_PATH} >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then
 	logger "`basename $0`: WORK_LOG_PATH:[${WORK_LOG_PATH}] is invalid."
 	exit 1
