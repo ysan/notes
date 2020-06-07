@@ -110,11 +110,13 @@ public:
 	}
 
 	void clear (void) {
-//TODO 適当クリア
-		// clear all
-		memset (this, 0x00, sizeof(CRecReserve));
-		start_time.clear();
+		transport_stream_id = 0;
+		original_network_id = 0;
+		service_id = 0;
+		event_id = 0;
+        start_time.clear();
 		end_time.clear();
+		title_name.clear();
 		state = EN_RESERVE_STATE__INIT;
 		is_used = false;
 	}

@@ -8,9 +8,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
+#include "cereal/types/vector.hpp"
+#include "cereal/types/memory.hpp"
 
 #include "RecReserve.h"
 
@@ -48,44 +52,71 @@ int main (void)
 {
 	std::string path = "./tmp.json";
 
+	// array
+//	CRecReserve r[3];
+//	r[0].transport_stream_id = 1;
+//	r[0].original_network_id = 1;
+//	r[0].service_id = 1;
+//	r[0].event_id = 1;
+//	r[0].start_time.setCurrentTime();
+//	r[0].end_time.setCurrentTime();
+//	r[0].title_name = "テスト1";
+//	r[0].state = EN_RESERVE_STATE__NOW_RECORDING;
+//	r[0].is_used = true;
 
-	CRecReserve r[3];
-	r[0].transport_stream_id = 1;
-	r[0].original_network_id = 1;
-	r[0].service_id = 1;
-	r[0].event_id = 1;
-	r[0].start_time.setCurrentTime();
-	r[0].end_time.setCurrentTime();
-	r[0].title_name = "テスト";
-	r[0].state = EN_RESERVE_STATE__NOW_RECORDING;
-	r[0].is_used = true;
+//	r[1].transport_stream_id = 2;
+//	r[1].original_network_id = 2;
+//	r[1].service_id = 2;
+//	r[1].event_id = 2;
+//	r[1].start_time.setCurrentTime();
+//	r[1].end_time.setCurrentTime();
+//	r[1].title_name = "テスト2";
+//	r[1].state = EN_RESERVE_STATE__NOW_RECORDING;
+//	r[1].is_used = true;
 
-	r[1].transport_stream_id = 2;
-	r[1].original_network_id = 2;
-	r[1].service_id = 2;
-	r[1].event_id = 2;
-	r[1].start_time.setCurrentTime();
-	r[1].end_time.setCurrentTime();
-	r[1].title_name = "テスト2";
-	r[1].state = EN_RESERVE_STATE__NOW_RECORDING;
-	r[1].is_used = true;
+//	r[2].transport_stream_id = 3;
+//	r[2].original_network_id = 3;
+//	r[2].service_id = 3;
+//	r[2].event_id = 3;
+//	r[2].start_time.setCurrentTime();
+//	r[2].end_time.setCurrentTime();
+//	r[2].title_name = "テスト3";
+//	r[2].state = EN_RESERVE_STATE__NOW_RECORDING;
+//	r[2].is_used = true;
 
-	r[2].transport_stream_id = 3;
-	r[2].original_network_id = 3;
-	r[2].service_id = 3;
-	r[2].event_id = 3;
-	r[2].start_time.setCurrentTime();
-	r[2].end_time.setCurrentTime();
-	r[2].title_name = "テスト3";
-	r[2].state = EN_RESERVE_STATE__NOW_RECORDING;
-	r[2].is_used = true;
+	// vector
+//	std::vector<CRecReserve> resvs;
+//	resvs.push_back(r[0]);
+//	resvs.push_back(r[1]);
+//	resvs.push_back(r[2]);
 
+	// uniq_ptr vector
+	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr;
+	for (int i = 0; i < 3; ++ i) {
+		CRecReserve *p = new CRecReserve();
+		p->transport_stream_id = i+1;
+		p->original_network_id = i+1;
+		p->service_id = i+1;
+		p->event_id = i+1;
+		p->start_time.setCurrentTime();
+		p->end_time.setCurrentTime();
+		std::stringstream ss;
+		ss << "テスト" << i+1;
+		p->title_name = ss.str();
+		p->state = EN_RESERVE_STATE__NOW_RECORDING;
+		p->is_used = true;
+		std::unique_ptr<CRecReserve> r_uptr (p);
+		resvs_uptr.push_back (std::move(r_uptr));
+	}
 
 	std::stringstream ss;
 	{
 		cereal::JSONOutputArchive o_archive (ss);
-		o_archive (r, sizeof(CRecReserve) * 3);
-    }
+
+//		o_archive (r, sizeof(CRecReserve) * 3); // array
+//		o_archive (cereal::make_nvp("r", resvs)); // vector
+		o_archive(cereal::make_nvp("r", resvs_uptr)); // uniq_ptr vector
+	}
 
 	std::ofstream ofs (path, std::ios::out);
 	ofs << ss.str();
@@ -99,19 +130,36 @@ int main (void)
 	std::ifstream ifs (path, std::ios::in);
 	ss2 << ifs.rdbuf();
 
-	CRecReserve rr[3];
+//	CRecReserve rr[3]; // array
+//	std::vector<CRecReserve> rresvs; // vector
+	std::vector<std::unique_ptr<CRecReserve>> rresvs_uptr; // uniq_ptr vector
+
 	cereal::JSONInputArchive i_archive (ss2);
-	i_archive (rr, sizeof(CRecReserve)*3);
+//	i_archive (rr, sizeof(CRecReserve)*3); // array
+//	i_archive (cereal::make_nvp("r", rresvs)); // vector
+	i_archive(cereal::make_nvp("r", rresvs_uptr)); // uniq_ptr vector
 
 	ifs.close();
 	ss2.clear();
 
 
 
-	// result
-	rr[0].dump();
-	rr[1].dump();
-	rr[2].dump();
+	//--- result ---
+
+	// array
+//	rr[0].dump();
+//	rr[1].dump();
+//	rr[2].dump();
+
+	// vector
+//	for (auto &r : rresvs) {
+//		r.dump();
+//	}
+
+	// uniq_ptr vector
+	for (auto &r : rresvs_uptr) {
+		r.get()->dump();
+	}
 
 
 	exit (EXIT_SUCCESS);
