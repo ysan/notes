@@ -1,0 +1,7 @@
+*.so
+*.o
+*.a
+*.d
+cereal
+testcereal
+*.json

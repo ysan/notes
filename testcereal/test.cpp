@@ -10,11 +10,13 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/types/vector.hpp"
 #include "cereal/types/memory.hpp"
+#include "cereal/types/map.hpp"
 
 #include "RecReserve.h"
 
@@ -91,7 +93,26 @@ int main (void)
 //	resvs.push_back(r[2]);
 
 	// uniq_ptr vector
-	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr;
+//	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr;
+//	for (int i = 0; i < 3; ++ i) {
+//		CRecReserve *p = new CRecReserve();
+//		p->transport_stream_id = i+1;
+//		p->original_network_id = i+1;
+//		p->service_id = i+1;
+//		p->event_id = i+1;
+//		p->start_time.setCurrentTime();
+//		p->end_time.setCurrentTime();
+//		std::stringstream ss;
+//		ss << "テスト" << i+1;
+//		p->title_name = ss.str();
+//		p->state = EN_RESERVE_STATE__NOW_RECORDING;
+//		p->is_used = true;
+//		std::unique_ptr<CRecReserve> r_uptr (p);
+//		resvs_uptr.push_back (std::move(r_uptr));
+//	}
+
+	// uniq_ptr vector map
+	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr0;
 	for (int i = 0; i < 3; ++ i) {
 		CRecReserve *p = new CRecReserve();
 		p->transport_stream_id = i+1;
@@ -101,13 +122,57 @@ int main (void)
 		p->start_time.setCurrentTime();
 		p->end_time.setCurrentTime();
 		std::stringstream ss;
-		ss << "テスト" << i+1;
+		ss << "map test " << i+1;
 		p->title_name = ss.str();
 		p->state = EN_RESERVE_STATE__NOW_RECORDING;
 		p->is_used = true;
 		std::unique_ptr<CRecReserve> r_uptr (p);
-		resvs_uptr.push_back (std::move(r_uptr));
+		resvs_uptr0.push_back (std::move(r_uptr));
 	}
+	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr1;
+	for (int i = 10; i < 15; ++ i) {
+		CRecReserve *p = new CRecReserve();
+		p->transport_stream_id = i+1;
+		p->original_network_id = i+1;
+		p->service_id = i+1;
+		p->event_id = i+1;
+		p->start_time.setCurrentTime();
+		p->end_time.setCurrentTime();
+		std::stringstream ss;
+		ss << "map test " << i+1;
+		p->title_name = ss.str();
+		p->state = EN_RESERVE_STATE__NOW_RECORDING;
+		p->is_used = true;
+		std::unique_ptr<CRecReserve> r_uptr (p);
+		resvs_uptr1.push_back (std::move(r_uptr));
+	}
+	std::vector<std::unique_ptr<CRecReserve>> resvs_uptr2;
+	for (int i = 20; i < 22; ++ i) {
+		CRecReserve *p = new CRecReserve();
+		p->transport_stream_id = i+1;
+		p->original_network_id = i+1;
+		p->service_id = i+1;
+		p->event_id = i+1;
+		p->start_time.setCurrentTime();
+		p->end_time.setCurrentTime();
+		std::stringstream ss;
+		ss << "map test " << i+1;
+		p->title_name = ss.str();
+		p->state = EN_RESERVE_STATE__NOW_RECORDING;
+		p->is_used = true;
+		std::unique_ptr<CRecReserve> r_uptr (p);
+		resvs_uptr2.push_back (std::move(r_uptr));
+	}
+
+	std::unique_ptr<std::vector<std::unique_ptr<CRecReserve>>> vec_resvs_uptr0 (&resvs_uptr0);
+	std::unique_ptr<std::vector<std::unique_ptr<CRecReserve>>> vec_resvs_uptr1 (&resvs_uptr1);
+	std::unique_ptr<std::vector<std::unique_ptr<CRecReserve>>> vec_resvs_uptr2 (&resvs_uptr2);
+
+	std::map <int, std::unique_ptr<std::vector<std::unique_ptr<CRecReserve>>>> table;
+	table.insert (std::make_pair(0, std::move(vec_resvs_uptr0)));
+	table.insert (std::make_pair(1, std::move(vec_resvs_uptr1)));
+	table.insert (std::make_pair(2, std::move(vec_resvs_uptr2)));
+
 
 	std::stringstream ss;
 	{
@@ -115,7 +180,8 @@ int main (void)
 
 //		o_archive (r, sizeof(CRecReserve) * 3); // array
 //		o_archive (cereal::make_nvp("r", resvs)); // vector
-		o_archive(cereal::make_nvp("r", resvs_uptr)); // uniq_ptr vector
+//		o_archive(cereal::make_nvp("r", resvs_uptr)); // uniq_ptr vector
+		o_archive(cereal::make_nvp("r", table)); // uniq_ptr vector map
 	}
 
 	std::ofstream ofs (path, std::ios::out);
@@ -132,12 +198,14 @@ int main (void)
 
 //	CRecReserve rr[3]; // array
 //	std::vector<CRecReserve> rresvs; // vector
-	std::vector<std::unique_ptr<CRecReserve>> rresvs_uptr; // uniq_ptr vector
+//	std::vector<std::unique_ptr<CRecReserve>> rresvs_uptr; // uniq_ptr vector
+	std::map <int, std::unique_ptr<std::vector<std::unique_ptr<CRecReserve>>>> rtable; // uniq_ptr vector map
 
 	cereal::JSONInputArchive i_archive (ss2);
 //	i_archive (rr, sizeof(CRecReserve)*3); // array
 //	i_archive (cereal::make_nvp("r", rresvs)); // vector
-	i_archive(cereal::make_nvp("r", rresvs_uptr)); // uniq_ptr vector
+//	i_archive(cereal::make_nvp("r", rresvs_uptr)); // uniq_ptr vector
+	i_archive(cereal::make_nvp("r", rtable)); // uniq_ptr vector map
 
 	ifs.close();
 	ss2.clear();
@@ -157,8 +225,16 @@ int main (void)
 //	}
 
 	// uniq_ptr vector
-	for (auto &r : rresvs_uptr) {
-		r.get()->dump();
+//	for (auto &r : rresvs_uptr) {
+//		r.get()->dump();
+//	}
+
+	// uniq_ptr vector map
+	for (auto &r : rtable) {
+		std::cout << "key:[" << r.first << "]" << std::endl;
+		for (auto &rr : *(r.second.get())) {
+			rr.get()->dump();
+		}
 	}
 
 
