@@ -1,0 +1,8 @@
+install:
+$ sudo apt install libwebsocketpp-dev
+
+exsample executing: 
+$ sudo stdbuf -oL tcpdump | ./testwss
+
+$ sudo stdbuf -oL tail -F /var/log/syslog | ./testwss
+

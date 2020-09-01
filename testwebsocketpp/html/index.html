@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="grid_container">
+		<header class="grid_header">header</header>
+		<main class="grid_main">
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+			main</BR>
+		</main>
+		<div id="sidew" class="grid_sidew">sidew</div> 
+		<div id="logw" class="grid_logw">logw
+
+		</div>
+		<footer class="grid_footer">footer</footer>
+	</div>
+
+	<script type="text/javascript" src="wsClient.js"></script>
+	<script type="text/javascript">
+		console.log ("script start");
+		let wsc = new wsClient ("ws://192.168.235.161:50000/?ID=TEST");
+		wsc.open();
+		console.log ("debug " + wsc.getState());
+
+	</script>
+
+</body>
+</html>

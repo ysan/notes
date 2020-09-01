@@ -1,0 +1,53 @@
+.grid_container {
+    margin: 0;
+    padding: 0;
+    font-size: 62.5%;
+    background-color: gray;
+    display: grid; /* グリッドレイアウト使用します */
+    grid-template: 
+        'header  header' 20px
+        'sidew   main'  auto /* 垂直方向resize可能のため autoにします */
+        'sidew   logw'  1fr /* mainのresizeに追従したいため 1frにします */
+        'footer  footer' 20px /
+        150px    1fr; /* 150px以降は 1frで横幅をブラウザ画面に合わせます(可変) */
+    grid-gap: 1px;
+    border: solid 1px black;
+    height: calc(100vh - 20px); /* ブラウザ画面の高さに合わせます(可変) 高さの大本はここ */
+}
+
+.grid_header {
+    grid-area: header;
+    background-color: darkkhaki;
+    border: solid 1px black;
+}
+
+.grid_main {
+    grid-area: main;
+    grid-row-gap: 0;
+    background-color: lightskyblue;
+    grid-gap: 5px;
+    border: solid 1px black;
+    resize: vertical; /* 垂直方向resizeにします */
+    max-height: calc(100vh * 3 / 4); /* resize下方向の可動域を設定します */
+    overflow: hidden; /* コンテンツが幅を超えたら切り捨てます */
+}
+
+.grid_sidew {
+    grid-area: sidew;
+    background-color:limegreen;
+    border: solid 1px black;
+}
+
+.grid_logw {
+    grid-area: logw;
+    background-color:coral;
+    border: solid 1px black;
+    overflow-y: auto; /* スクロールバーを付けます */
+    overflow-x: auto;
+}
+
+.grid_footer {
+    grid-area: footer;
+    background-color: dimgray;
+    border: solid 1px black;
+}
