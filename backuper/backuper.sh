@@ -73,7 +73,7 @@ function _check_mount_landisk () {
 	else
 		# not mounted
 		echo "not mounted Landisk. --> do mount..." >> ${WORK_LOG_PATH}
-		sudo mount -t cifs -o sec=ntlm -o username=admin,password= ${MOUNT_SRC} ${MOUNT_POINT} >> ${WORK_LOG_PATH} 2>&1
+		sudo mount -t cifs -o sec=ntlm,vers=1.0 -o username=admin,password= ${MOUNT_SRC} ${MOUNT_POINT} >> ${WORK_LOG_PATH} 2>&1
 		if [ $? -eq 0 ]; then
 			echo "mount OK" >> ${WORK_LOG_PATH}
 			return 0
