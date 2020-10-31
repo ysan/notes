@@ -1,0 +1,50 @@
+set listchars=tab:^_
+set ts=4
+colorscheme koehler
+set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp
+set noswapfile
+set noautoindent
+
+syntax on
+set nocompatible
+
+set hlsearch
+set clipboard=unnamedplus
+
+call plug#begin()
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+call plug#end()
+
+"let g:coc_disable_startup_warning = 1
+
+"nmap <silent> gd <Plug>(coc-definition)
+"nmap <silent> gy <Plug>(coc-type-definition)
+"nmap <silent> gi <Plug>(coc-implementation)
+"nmap <silent> gr <Plug>(coc-references)
+"nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+"function! s:show_documentation()
+"  if (index(['vim','help'], &filetype) >= 0)
+"    execute 'h '.expand('<cword>')
+"  else
+"    call CocAction('doHover')
+"  endif
+"endfunction
+"
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+call lsp#register_server({
+    \ 'name': 'clangd',
+    \ 'cmd': {server_info->['clangd-9']},
+    \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+    \ })
+
+nmap <buffer> gd <plug>(lsp-definition)
+nmap <buffer> gr <plug>(lsp-references)
+nmap <buffer> gi <plug>(lsp-implementation)
+nmap <buffer> gt <plug>(lsp-type-definition)
+

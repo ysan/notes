@@ -1,0 +1,10 @@
+c, c++用に vim-lspを試した。事前に以下インストール必要。
+
+compile-commands.json生成用
+$ sudo apt install bear
+
+language serverは clangdを使った。
+バージョンは9以上を使う。少なくとも6,7はreferenceが動かなかった。新しい方が吉。
+$ sudo apt install clangd-9
+
+これでcocnvimも使えると思う。c, c++用にはあえてcocnvim使う必要はないかも。。
