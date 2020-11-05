@@ -19,6 +19,8 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
+
+""""" cocnvmin settings """""
 "let g:coc_disable_startup_warning = 1
 
 "nmap <silent> gd <Plug>(coc-definition)
@@ -26,7 +28,6 @@ call plug#end()
 "nmap <silent> gi <Plug>(coc-implementation)
 "nmap <silent> gr <Plug>(coc-references)
 "nnoremap <silent> K :call <SID>show_documentation()<CR>
-
 "function! s:show_documentation()
 "  if (index(['vim','help'], &filetype) >= 0)
 "    execute 'h '.expand('<cword>')
@@ -34,17 +35,21 @@ call plug#end()
 "    call CocAction('doHover')
 "  endif
 "endfunction
-"
-let g:lsp_log_verbose = 1
-let g:lsp_log_file = expand('~/vim-lsp.log')
+
+
+""""" vim-lsp settings """""
+"let g:lsp_log_verbose = 1
+"let g:lsp_log_file = expand('~/vim-lsp.log')
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_highlight_references_enabled = 1
 call lsp#register_server({
     \ 'name': 'clangd',
     \ 'cmd': {server_info->['clangd-9']},
     \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
     \ })
-
-nmap <buffer> gd <plug>(lsp-definition)
-nmap <buffer> gr <plug>(lsp-references)
-nmap <buffer> gi <plug>(lsp-implementation)
-nmap <buffer> gt <plug>(lsp-type-definition)
+nmap gd <plug>(lsp-definition)
+nmap gr <plug>(lsp-references)
+nmap gi <plug>(lsp-implementation)
+nmap gt <plug>(lsp-type-definition)
 
