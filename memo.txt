@@ -36,3 +36,13 @@ $ git log --diff-filter=D --summary
 $ git checkout <commit>^ -- <file_name>
 
 
+// aptでインストールするdebパッケージをインストールしないで落としたい
+$ apt download パッケージ名
+
+
+// debパッケージをローカルで依存チェックする
+dpkgのdry-runではチェックできない
+$ dpkg -i --dry-run xxx.deb
+aptのシミュレートモードでやると吉
+$ apt -s install xxx.deb
+
