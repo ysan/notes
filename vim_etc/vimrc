@@ -39,7 +39,7 @@ call plug#end()
 
 """"" vim-lsp settings """""
 "let g:lsp_log_verbose = 1
-"let g:lsp_log_file = expand('~/vim-lsp.log')
+let g:lsp_log_file = expand('/tmp/vim-lsp.log')
 let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlight_references_enabled = 1
