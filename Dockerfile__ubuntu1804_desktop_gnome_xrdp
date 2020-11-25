@@ -1,0 +1,26 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get -y update
+RUN apt-get -y install -y \
+  ubuntu-desktop \
+  openssh-server \
+  curl \
+  vim \
+  git \
+  xrdp
+
+ARG USER_UID=1000
+ARG USER_USER=test
+ARG USER_PASSWORD=testtest
+　RUN useradd -m --uid ${USER_UID} --groups sudo ${USER_USER} \
+  && echo ${USER_USER}:${USER_PASSWORD} | chpasswd
+
+EXPOSE 3389 22 5900
+
+CMD ["/sbin/init"]
+
+
+# docker build -t u18d -f Dockerfile_ubuntu18_desktop .
+# docker run -it -d --privileged --name "u18d_c" -p 3389:3389 -p 2222:22 -p 5959:5900 u18d
