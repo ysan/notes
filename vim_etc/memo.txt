@@ -8,3 +8,6 @@ language serverは clangdを使った。
 $ sudo apt install clangd-9
 
 これでcocnvimも使えると思う。c, c++用にはあえてcocnvim使う必要はないかも。。
+
+vimバージョンは8.2以降のほうが良い。
+8.0系だとエラー表示がでなかった。。

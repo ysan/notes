@@ -41,6 +41,7 @@ call plug#end()
 "let g:lsp_log_verbose = 1
 let g:lsp_log_file = expand('/tmp/vim-lsp.log')
 let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlight_references_enabled = 1
 call lsp#register_server({
@@ -52,4 +53,8 @@ nmap gd <plug>(lsp-definition)
 nmap gr <plug>(lsp-references)
 nmap gi <plug>(lsp-implementation)
 nmap gt <plug>(lsp-type-definition)
+nmap gh <plug>(lsp-hover)
+nmap gp <plug>(lsp-peek-definition)
+nmap ge <plug>(lsp-next-diagnostic)
+nmap gth <plug>(lsp-type-hierarchy)
 
