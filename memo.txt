@@ -1,3 +1,15 @@
+// usbメモリのマウント
+$ sudo mount -t vfat /dev/sdb /mnt/任意のディレクトリ
+/dev/sdbは環境により変わると思われるので、
+usbメモリが認識された時刻で作成されたデバイスファイルを探る
+
+
+// ffmpegで無劣化切り出し (1時間4分20秒から33分25秒分を切り出し)
+$ ffmpeg -ss 1:04:20 -i input.mp4 -ss 0 -t 0:33:25 -c:v copy -c:a copy -async 1 -strict -2 part1.mp4
+参考
+https://creazy.net/2018/03/ffmpeg-no-deterioration-combine-cutout.html
+
+
 // aptの依存エラーの対応
 
 $ sudo apt-get install pandoc

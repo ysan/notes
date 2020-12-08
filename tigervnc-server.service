@@ -1,0 +1,32 @@
+## tigervnc-standalone-server lunch@user
+##
+## $ sudo apt install tigervnc-standalone-server
+##
+## setup
+## $ VNC_PASSWD=12345678
+## $ echo -e -n "${VNC_PASSWD}\n${VNC_PASSWD}\ny\n${VNC_PASSWD}\n${VNC_PASSWD}\n" | vncpasswd
+##
+## $ mkdir -p /home/${USER}/.vnc
+## $ echo '#!/bin/bash'                     > /home/${USER_NAME}/.vnc/xstartup
+## $ echo "unset SESSION_MANAGER"          >> /home/${USER_NAME}/.vnc/xstartup
+## $ echo "unset DBUS_SESSION_BUS_ADDRESS" >> /home/${USER_NAME}/.vnc/xstartup
+## $ echo "exec gnome-session"             >> /home/${USER_NAME}/.vnc/xstartup
+## $ chmod 755 /home/${USER}/.vnc/xstartup
+
+## :10001 means port 15901
+## assign username to xxxxx 
+[Unit]
+Description=tigervnc-server
+After=network.service
+
+[Service]
+ExecStart=/bin/bash -c '/usr/bin/vncserver :10001 -geometry 800x600 -localhost no > /dev/null 2>&1'
+ExecStartPre=/bin/bash -c '/usr/bin/vncserver -kill :10001 > /dev/null 2>&1'
+ExecStop=/bin/bash -c '/usr/bin/vncserver -kill :10001 > /dev/null 2>&1'
+Restart=always
+Type=forking
+User=xxxxx
+Group=xxxxx
+
+[Install]
+WantedBy=multi-user.target
