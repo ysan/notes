@@ -40,6 +40,11 @@ $ sudo apt-get install libpython2.7-dev=2.7.12-1ubuntu0~16.04.9 python2.7=2.7.12
 $ export GIT_SSL_NO_VERIFY=1
 
 
+// vmware_playerの共有フォルダをマウントする
+// 事前にplayerアプリ上で共有フォルダを設定しておくこと
+$ sudo vmhgfs-fuse .host: /mnt/hgfs/ -o allow_other -o uid=1000
+
+
 // 過去に削除したファイルの検索
 $ git log --diff-filter=D --summary
 
