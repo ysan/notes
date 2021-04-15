@@ -1,5 +1,11 @@
 c, c++用に vim-lspを試した。事前に以下インストール必要。
 
+vimplug
+$ curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+vimrcコピペして
+:PlugInstall
+
 compile-commands.json生成用
 $ sudo apt install bear
 
@@ -10,4 +16,12 @@ $ sudo apt install clangd-9
 これでcocnvimも使えると思う。c, c++用にはあえてcocnvim使う必要はないかも。。
 
 vimバージョンは8.2以降のほうが良い。
-8.0系だとエラー表示がでなかった。。
+8.0系だと診断が表示されなかった。。
+$ sudo add-apt-repository ppa:jonathonf/vim
+$ sudo apt install vim
+
+
+pythonのlspも試した。
+$ pip install python-language-server
+これだけでは診断が表示されず 依存するすべてのパッケージを入れる必要がある。
+$ pip3 install 'python-language-server[all]'
