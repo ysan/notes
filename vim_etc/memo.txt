@@ -21,7 +21,19 @@ $ sudo add-apt-repository ppa:jonathonf/vim
 $ sudo apt install vim
 
 
-pythonのlspも試した。
+pythonのvim-lspも試した。
 $ pip install python-language-server
 これだけでは診断が表示されず 依存するすべてのパッケージを入れる必要がある。
 $ pip3 install 'python-language-server[all]'
+プロジェクトルートからvimを開かないといけない。
+
+
+javaのvim-lspも試したが pom.xmlを認識できずうまくいかない。
+coc-nvimを試した プロジェクトの認識は問題ない
+が定義参照時のリストをカーソル移動している時に勝手にリストが閉じたり固まったりした。バグ？
+結局neovim を使うことで解消した。
+neovimはvimplugを別途ディレクトリにダウンロード必要。(vimplug github参照)
+:PlugInstall
+:CocInstall coc-java
+javaファイルを開くと初回はeclipse.jdt.lsがダウンロードされる。
+キーマップは公式githubから丸コピー。

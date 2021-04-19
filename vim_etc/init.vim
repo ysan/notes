@@ -15,13 +15,14 @@ set incsearch
 set clipboard=unnamedplus
 set cursorline
 
-call plug#begin()
+call plug#begin('~/.vim/plugged')
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
-if filereadable(expand('~/.vimrc.local'))
-	source ~/.vimrc.local
+if filereadable(expand('~/.config/nvim/init.vim.local'))
+	source ~/.config/nvim/init.vim.local
 endif
