@@ -68,3 +68,8 @@ dpkgのdry-runではチェックできない
 $ sudo dpkg -i --dry-run xxx.deb
 aptのシミュレートモードでやると吉
 $ sudo apt -s install パッケージ名
+
+
+// svnで消してしまったもの一式を取り消し
+$ svn status | grep -E "^\!" | awk '{print $2}' | xargs svn revert
+
