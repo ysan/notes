@@ -13,7 +13,10 @@ set nocompatible
 set hlsearch
 set incsearch
 set clipboard=unnamedplus
+
 set cursorline
+set t_Co=256
+hi CursorLine   term=reverse cterm=none ctermbg=242
 
 set cindent
 set shiftwidth=0
