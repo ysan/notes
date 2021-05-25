@@ -13,7 +13,36 @@ set nocompatible
 set hlsearch
 set incsearch
 set clipboard=unnamedplus
+
 set cursorline
+set t_Co=256
+hi CursorLine   term=reverse cterm=none ctermbg=242
+
+set cindent
+set shiftwidth=0
+
+"inoremap { {}<Left>
+"inoremap ( ()<ESC>i
+"inoremap [ []<ESC>i
+inoremap {} {}<ESC>i
+inoremap () ()<ESC>i
+inoremap [] []<ESC>i
+
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+inoremap (<Enter> ()<Left><CR><ESC><S-o>
+inoremap [<Enter> []<Left><CR><ESC><S-o>
+
+"inoremap ' ''<ESC>i
+"inoremap " ""<ESC>i
+"inoremap < <><ESC>i
+inoremap '' ''<ESC>i
+inoremap "" ""<ESC>i
+inoremap <> <><ESC>i
+
+noremap <S-h> ^
+noremap <S-j> }
+noremap <S-k> {
+noremap <S-l> $
 
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
