@@ -39,10 +39,6 @@ inoremap '' ''<ESC>i
 inoremap "" ""<ESC>i
 inoremap <> <><ESC>i
 
-noremap <S-h> ^
-noremap <S-j> }
-noremap <S-k> {
-noremap <S-l> $
 
 call plug#begin()
 Plug 'prabirshrestha/async.vim'
@@ -51,6 +47,6 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
-if filereadable(expand('~/.vimrc.local'))
-	source ~/.vimrc.local
+if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "ON"
+	source ~/.vimrc.lsp
 endif

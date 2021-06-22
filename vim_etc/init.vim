@@ -39,10 +39,6 @@ inoremap '' ''<ESC>i
 inoremap "" ""<ESC>i
 inoremap <> <><ESC>i
 
-noremap <S-h> ^
-noremap <S-j> }
-noremap <S-k> {
-noremap <S-l> $
 
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -52,6 +48,6 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
-if filereadable(expand('~/.config/nvim/init.vim.local'))
-	source ~/.config/nvim/init.vim.local
+if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "ON"
+	source ~/.config/nvim/init.vim.lsp
 endif
