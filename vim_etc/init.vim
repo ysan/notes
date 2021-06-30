@@ -21,23 +21,23 @@ hi CursorLine   term=reverse cterm=none ctermbg=242
 set cindent
 set shiftwidth=0
 
-"inoremap { {}<Left>
-"inoremap ( ()<ESC>i
-"inoremap [ []<ESC>i
-inoremap {} {}<ESC>i
-inoremap () ()<ESC>i
-inoremap [] []<ESC>i
+inoremap { {}<Left>
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap {} {}
+inoremap () ()
+inoremap [] []
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 
-"inoremap ' ''<ESC>i
-"inoremap " ""<ESC>i
-"inoremap < <><ESC>i
-inoremap '' ''<ESC>i
-inoremap "" ""<ESC>i
-inoremap <> <><ESC>i
+"inoremap ' ''<Left>
+"inoremap " ""<Left>
+"inoremap < <><Left>
+inoremap '' ''<Left>
+inoremap "" ""<Left>
+inoremap <> <><Left>
 
 
 call plug#begin('~/.vim/plugged')
@@ -48,6 +48,6 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
-if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "ON"
+if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "on"
 	source ~/.config/nvim/init.vim.lsp
 endif
