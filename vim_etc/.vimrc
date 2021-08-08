@@ -47,6 +47,6 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
-if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "on"
+if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "yes"
 	source ~/.vimrc.lsp
 endif
