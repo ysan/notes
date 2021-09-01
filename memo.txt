@@ -76,3 +76,7 @@ $ svn status | grep -E "^\!" | awk '{print $2}' | xargs svn revert
 // svn add all
 $ svn status | grep -E "^\?" | awk '{print $2}' | xargs svn add
 
+// virtual box(windows) で nested-VT-x を有効化する方法 (UIでチェック押せない時)
+> cd  C:\Program Files\Oracle\VirtualBox
+> VBoxManage.exe modifyvm 'YourVirtualBoxName' --nested-hw-virt on
+
