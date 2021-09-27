@@ -1,0 +1,13 @@
+---
+- hosts: all
+
+  vars:
+    stage_user: "{{ target_user }}"
+    stage_pass: "{{ target_pass }}"
+
+  roles:
+#    - test_sysctl
+    - uname
+    - vim
+#    - sshpass
+

@@ -1,0 +1,12 @@
+---
+- name: test
+  become: yes
+  sysctl:
+    name: ansible.posix.sysctl.test
+    value: '1'
+    state: present
+    reload: no
+  register: r
+
+- debug:
+    msg: "{{ r }}"

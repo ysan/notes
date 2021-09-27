@@ -1,0 +1,17 @@
+---
+- name: copy .vimrc
+  copy:
+    src: ../../../../../vim_etc/.vimrc
+    dest: "/home/{{ stage_user }}/"
+  register: r_copy
+- debug:
+    msg: "{{ r_copy }}"
+
+- name: copy .vimrc.lsp
+  copy:
+    src: ../../../../../vim_etc/.vimrc.lsp
+    dest: "/home/{{ stage_user }}/"
+  register: r_copy
+- debug:
+    msg: "{{ r_copy }}"
+

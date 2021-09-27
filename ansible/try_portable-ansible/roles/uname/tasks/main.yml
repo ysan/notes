@@ -1,0 +1,8 @@
+---
+- name: uname
+  shell: "uname -a"
+  changed_when: false
+  register: r
+- debug:
+    msg: "{{ r }}"
+

@@ -1,0 +1,31 @@
+---
+- name: check
+  shell: "bash -ilc 'which sshpass'"
+  changed_when: false
+  failed_when: false
+  register: r_which
+- debug:
+    msg: "{{ r_which }}"
+
+- name: remove /tmp sshpass
+  become: yes
+  file:
+    path: /tmp/sshpass-1.06
+    state: absent
+  changed_when: false
+  when: r_which.rc != 0
+
+- name: unpack sshpass to /tmp
+  unarchive:
+    src: ../files/sshpass-1.06.tar.gz
+    dest: /tmp
+  changed_when: false
+  when: r_which.rc != 0
+
+- name: build and install
+  become: yes
+  shell: "cd /tmp/sshpass-1.06; ./configure; make; make install;"
+  register: r_build
+  when: r_which.rc != 0
+- debug:
+    msg: "{{ r_build }}"

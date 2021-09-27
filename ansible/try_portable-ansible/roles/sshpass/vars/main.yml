@@ -1,0 +1,3 @@
+stage_user: "{{ sudo_user }}"
+stage_pass: "{{ sudo_pass }}"
+ansible_become_pass: "{{ sudo_pass }}"
