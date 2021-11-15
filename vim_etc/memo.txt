@@ -22,18 +22,48 @@ $ sudo apt install vim
 
 
 pythonのvim-lspも試した。
-$ pip install python-language-server
+$ pip3 install python-language-server
 これだけでは診断が表示されず 依存するすべてのパッケージを入れる必要がある。
 $ pip3 install 'python-language-server[all]'
-プロジェクトルートからvimを開かないといけない。
+プロジェクトルートからvimを開かないと定義参照がうまくいかない。
 
 
 javaのvim-lspも試したが pom.xmlを認識できずうまくいかない。
 coc-nvimを試した プロジェクトの認識は問題ない
 が定義参照時のリストをカーソル移動している時に勝手にリストが閉じたり固まったりした。バグ？
 結局neovim を使うことで解消した。
+
+-------------------------- ここから neovim --------------------------
 neovimはvimplugを別途ディレクトリにダウンロード必要。(vimplug github参照)
+キーマップは公式githubから丸コピー。
 :PlugInstall
+
+java向け
 :CocInstall coc-java
 javaファイルを開くと初回はeclipse.jdt.lsがダウンロードされる。
-キーマップは公式githubから丸コピー。
+
+python向け
+:CocInstall coc-python
+設定が悪いのか診断表示ができない。補完は問題ない。
+:CocInstall coc-jedi
+すでにcoc-pythonはアーカイブなのでこちらを試したが診断表示がでない。設定が悪いのか...
+
+c, c++向け
+:CocInstall coc-clangd
+clangdのコマンド名はclangd-9だったので :CocCommandで "clangd.path" : "clangd-9" を追加した。
+
+- novim補足 -
+nodejsはnコマンドから新しいバージョンインストールしたほうが良さそう。
+nコマンドのインストール
+$ sudo npm install -g n
+ex. 最新版インストール
+$ sudo n latest
+ex. 最新版LTSインストール
+$ sudo n lts
+ex. バージョン指定でインストール
+リストして入れたいのバージョン番号を指定。
+$ n ls-remote
+$ sudo n 12.8.1
+
+最終的にはnodeenvの方がいいのかも...
+
