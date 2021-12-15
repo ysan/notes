@@ -43,16 +43,26 @@ java向け
 javaファイルを開くと初回はeclipse.jdt.lsがダウンロードされる。
 
 python向け
-:CocInstall coc-python
-設定が悪いのか診断表示ができない。補完は問題ない。
 :CocInstall coc-jedi
 すでにcoc-pythonはアーカイブなのでこちらを試したが診断表示がでない。設定が悪いのか...
+--> coc-diagnostic でとりあえず解決
+:CocInstall coc-diagnostic
+pip3 install pylint black
+:CocConfig で以下を追記
+  "diagnostic-languageserver.filetypes" : {
+    "python": "pylint"
+  },
+  "diagnostic-languageserver.formatFiletypes": {
+    "python": "black"
+  }
+coc-diagnosticいいかも shellcheckでbashスクリプトにも対応できるよう
 
 c, c++向け
 :CocInstall coc-clangd
-clangdのコマンド名はclangd-9だったので :CocCommandで "clangd.path" : "clangd-9" を追加した。
+clangdのコマンド名はclangd-9だったので :CocCofigで "clangd.path" : "clangd-9" を追加した。
 
-- novim補足 -
+
+- 補足 -
 nodejsはnコマンドから新しいバージョンインストールしたほうが良さそう。
 nコマンドのインストール
 $ sudo npm install -g n
@@ -65,5 +75,4 @@ ex. バージョン指定でインストール
 $ n ls-remote
 $ sudo n 12.8.1
 
-最終的にはnodeenvの方がいいのかも...
-
+n or nodeenv どちらがいいのか...

@@ -21,15 +21,15 @@ hi CursorLine   term=reverse cterm=none ctermbg=242
 set cindent
 set shiftwidth=0
 
-inoremap { {}<Left>
-inoremap ( ()<Left>
-inoremap [ []<Left>
-inoremap {} {}
-inoremap () ()
-inoremap [] []
+"inoremap { {}<Left>
+"inoremap ( ()<Left>
+"inoremap [ []<Left>
+"inoremap {} {}
+"inoremap () ()
+"inoremap [] []
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
-inoremap (<Enter> ()<Left><CR><ESC><S-o>
+"inoremap (<Enter> ()<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 
 "inoremap ' ''<Left>
@@ -40,13 +40,19 @@ inoremap "" ""<Left>
 inoremap <> <><Left>
 
 
-call plug#begin()
+silent! call plug#begin()
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'morhetz/gruvbox'
 call plug#end()
 
+if filereadable(expand("$HOME/.vim/plugged/gruvbox/colors/gruvbox.vim"))
+    silent! colorscheme gruvbox
+    set background=light
+endif
+
 if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "yes"
-	source ~/.vimrc.lsp
+    source ~/.vimrc.lsp
 endif
