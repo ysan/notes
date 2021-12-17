@@ -24,9 +24,9 @@ set shiftwidth=0
 "inoremap { {}<Left>
 "inoremap ( ()<Left>
 "inoremap [ []<Left>
-"inoremap {} {}
-"inoremap () ()
-"inoremap [] []
+inoremap {} {}<Left>
+inoremap () ()<Left>
+inoremap [] []<Left>
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 "inoremap (<Enter> ()<Left><CR><ESC><S-o>
