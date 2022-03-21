@@ -15,7 +15,7 @@ class SliderSwitch {
     this.initializ();
   }
 
-  sizeString = ['_small', '', '_big'];
+  sizeString = ['__small', '', '__big'];
   getSizeString = () => {
     return this.sizeString[this.size];
   };

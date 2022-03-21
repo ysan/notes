@@ -8,7 +8,7 @@
   border-radius: 25px;
 }
 
-.sliderswitch_bg_small {
+.sliderswitch_bg__small {
   position: absolute; /* Need parent position:relative */
   top: 0;
   left: 0;
@@ -18,7 +18,7 @@
   border-radius: 12.5px;
 }
 
-.sliderswitch_bg_big {
+.sliderswitch_bg__big {
   position: absolute; /* Need parent position:relative */
   top: 0;
   left: 0;
@@ -39,7 +39,7 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
 }
 
-.sliderswitch_ball_small {
+.sliderswitch_ball__small {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -50,7 +50,7 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
 }
 
-.sliderswitch_ball_big {
+.sliderswitch_ball__big {
   position: absolute;
   width: 40px;
   height: 40px;
@@ -73,20 +73,20 @@
   animation: kf_sliderswitch_ball_to_disable 0.2s forwards;
 }
 
-.sliderswitch_ball_to_enable_small {
-  animation: kf_sliderswitch_ball_to_enable_small 0.2s forwards;
+.sliderswitch_ball_to_enable__small {
+  animation: kf_sliderswitch_ball_to_enable__small 0.2s forwards;
 }
 
-.sliderswitch_ball_to_disable_small {
-  animation: kf_sliderswitch_ball_to_disable_small 0.2s forwards;
+.sliderswitch_ball_to_disable__small {
+  animation: kf_sliderswitch_ball_to_disable__small 0.2s forwards;
 }
 
-.sliderswitch_ball_to_enable_big {
-  animation: kf_sliderswitch_ball_to_enable_big 0.2s forwards;
+.sliderswitch_ball_to_enable__big {
+  animation: kf_sliderswitch_ball_to_enable__big 0.2s forwards;
 }
 
-.sliderswitch_ball_to_disable_big {
-  animation: kf_sliderswitch_ball_to_disable_big 0.2s forwards;
+.sliderswitch_ball_to_disable__big {
+  animation: kf_sliderswitch_ball_to_disable__big 0.2s forwards;
 }
 
 @keyframes kf_sliderswitch_ball_to_enable {
@@ -107,7 +107,7 @@
   }
 }
 
-@keyframes kf_sliderswitch_ball_to_enable_small {
+@keyframes kf_sliderswitch_ball_to_enable__small {
   0% {
     transform: translateX(0px);
   }
@@ -116,7 +116,7 @@
   }
 }
 
-@keyframes kf_sliderswitch_ball_to_disable_small {
+@keyframes kf_sliderswitch_ball_to_disable__small {
   0% {
     transform: translateX(25px);
   }
@@ -125,7 +125,7 @@
   }
 }
 
-@keyframes kf_sliderswitch_ball_to_enable_big {
+@keyframes kf_sliderswitch_ball_to_enable__big {
   0% {
     transform: translateX(0px);
   }
@@ -134,7 +134,7 @@
   }
 }
 
-@keyframes kf_sliderswitch_ball_to_disable_big {
+@keyframes kf_sliderswitch_ball_to_disable__big {
   0% {
     transform: translateX(50px);
   }

@@ -1,0 +1,35 @@
+.sliderswitch_cb {
+  /*checkbox*/
+  visibility: hidden;
+}
+
+.sliderswitch_cb_bg {
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 50px;
+  height: 25px;
+  background-color: rgb(187, 187, 187);
+  border-radius: 40px;
+  transition: background-color 0.2s;
+}
+
+.sliderswitch_cb_ball {
+  display: block;
+  position: absolute;
+  top: 2.5px;
+  left: 2.5px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+  transition: left 0.2s;
+}
+.sliderswitch_cb:checked ~ .sliderswitch_cb_bg {
+  background-color: rgb(0, 140, 255);
+}
+.sliderswitch_cb:checked ~ .sliderswitch_cb_ball {
+  left: 27.5px;
+}
