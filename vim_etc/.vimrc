@@ -21,23 +21,23 @@ hi CursorLine   term=reverse cterm=none ctermbg=242
 set cindent
 set shiftwidth=0
 
-"inoremap { {}<Left>
-"inoremap ( ()<Left>
-"inoremap [ []<Left>
-inoremap {} {}<Left>
-inoremap () ()<Left>
-inoremap [] []<Left>
+inoremap { {}<Left>
+inoremap ( ()<Left>
+inoremap [ []<Left>
+"inoremap {} {}<Left>
+"inoremap () ()<Left>
+"inoremap [] []<Left>
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 "inoremap (<Enter> ()<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 
-"inoremap ' ''<Left>
-"inoremap " ""<Left>
-"inoremap < <><Left>
-inoremap '' ''<Left>
-inoremap "" ""<Left>
-inoremap <> <><Left>
+inoremap ' ''<Left>
+inoremap " ""<Left>
+inoremap < <><Left>
+"inoremap '' ''<Left>
+"inoremap "" ""<Left>
+"inoremap <> <><Left>
 
 
 silent! call plug#begin()
