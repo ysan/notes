@@ -1,0 +1,107 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install -y \
+  psmisc \
+  bc \
+  wget \
+  curl \
+  vim \
+  tmux \
+  subversion \
+  git \
+  locales \
+  sudo \
+  g++ \
+  cmake \
+  clangd-9 \
+  bear \
+  python3 \
+  python3-pip \
+  python3-venv \
+  nodejs \
+  npm
+
+RUN apt-get install -y netcat-openbsd telnet iputils-ping net-tools iproute2 dnsutils traceroute
+
+RUN echo root:root | chpasswd
+
+# install vim8.2
+RUN apt-get install -y software-properties-common && add-apt-repository ppa:jonathonf/vim && \
+  apt-get update && apt-get install -y vim
+
+# install neovim
+RUN apt-get install -y software-properties-common && add-apt-repository ppa:neovim-ppa/stable && \
+  apt-get update && apt-get install -y neovim
+
+# install shellcheck
+ARG SHELLCHECK_STABLE_URL=https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
+RUN cd /root && curl -OLsk ${SHELLCHECK_STABLE_URL} && \
+  tar xvf shellcheck-stable.linux.x86_64.tar.xz && \
+  cd shellcheck-stable && cp -pr shellcheck /usr/local/
+
+# install nodejs
+RUN npm -g install n
+RUN apt-get remove -y nodejs npm
+RUN n stable
+
+# optimize locale ja_JP.utf8
+RUN localedef -f UTF-8 -i ja_JP ja_JP
+ENV LC_CTYPE ja_JP.utf8
+
+# add user
+ARG UID=1000
+ARG GID=1000
+ARG USER=develop
+ARG GROUP=develop
+ARG PASS=develop
+RUN groupadd -g $GID ${GROUP} && \
+  useradd -m -s /bin/bash -u ${UID} -g ${GID} -G sudo ${USER} && \
+  echo ${USER}:${PASS} | chpasswd
+
+# switch user
+USER ${USER}
+WORKDIR /home/${USER}
+
+ENV PATH $PATH:/home/${USER}/.local/bin
+ENV GIT_SSL_NO_VERIFY 1
+
+# download vimrc
+ARG VIMRC_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/init.vim
+ARG VIMRC_URL2=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/init.vim.lsp
+RUN mkdir -p /home/${USER}/.config/nvim/ && \
+  cd /home/${USER}/.config/nvim/ && \
+  curl -LOks ${VIMRC_URL} && \
+  curl -LOks ${VIMRC_URL2}
+
+# download vimplug
+RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+		       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k'
+
+RUN pip3 install pydantic==1.8.2
+RUN pip3 install pylint black
+
+# setup vim plugins
+RUN nvim +PlugInstall +qa
+RUN nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd' +qa
+
+# download coc-settings.json
+ARG COC_SETTINGS_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/coc-settings.json
+RUN mkdir -p /home/${USER}/.config/nvim/ && \
+	cd /home/${USER}/.config/nvim/ && \
+	curl -LOks ${COC_SETTINGS_URL}
+
+
+CMD /bin/bash
+
+
+# -----------------------------------------------------------------------------
+# --- docker build ---
+# docker build -t develop .
+
+# --- run daemon mode ---
+# docker run -it -d --name develop_con develop
+# docker run -it -d --name develop_con --mount type=bind,src=/xxx,dst=/yyy develop
+# docker exec -it develop_con /bin/bash
+# docker exec -it -u develop -w /home/develop develop_con /bin/bash
