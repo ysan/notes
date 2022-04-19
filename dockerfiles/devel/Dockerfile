@@ -39,7 +39,7 @@ RUN apt-get install -y software-properties-common && add-apt-repository ppa:neov
 ARG SHELLCHECK_STABLE_URL=https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
 RUN cd /root && curl -OLsk ${SHELLCHECK_STABLE_URL} && \
   tar xvf shellcheck-stable.linux.x86_64.tar.xz && \
-  cd shellcheck-stable && cp -pr shellcheck /usr/local/
+  cd shellcheck-stable && cp -pr shellcheck /usr/local/bin
 
 # install nodejs
 RUN npm -g install n
@@ -68,6 +68,12 @@ ENV PATH $PATH:/home/${USER}/.local/bin
 ENV GIT_SSL_NO_VERIFY 1
 
 # download vimrc
+ARG VIMRC_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/.vimrc
+ARG VIMRC_URL2=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/.vimrc.lsp
+RUN cd /home/${USER} && \
+  curl -LOks ${VIMRC_URL} && \
+  curl -LOks ${VIMRC_URL2}
+
 ARG VIMRC_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/init.vim
 ARG VIMRC_URL2=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/init.vim.lsp
 RUN mkdir -p /home/${USER}/.config/nvim/ && \
@@ -76,6 +82,8 @@ RUN mkdir -p /home/${USER}/.config/nvim/ && \
   curl -LOks ${VIMRC_URL2}
 
 # download vimplug
+RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+               https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k
 RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
 		       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k'
 
@@ -83,6 +91,7 @@ RUN pip3 install pydantic==1.8.2
 RUN pip3 install pylint black
 
 # setup vim plugins
+RUN vim +PlugInstall +qa
 RUN nvim +PlugInstall +qa
 RUN nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd' +qa
 
