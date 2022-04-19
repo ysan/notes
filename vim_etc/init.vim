@@ -21,23 +21,27 @@ hi CursorLine   term=reverse cterm=none ctermbg=242
 set cindent
 set shiftwidth=0
 
-inoremap { {}<Left>
-inoremap ( ()<Left>
-inoremap [ []<Left>
+set statusline=%F%m%h%w%<\ \ (%{&fenc!=''?&fenc:&enc},%{&ff},%Y)\ %=0x%02B\ %l/%L,%02v
+set laststatus=2
+
+"inoremap { {}<Left>
+imap ( ()<Left>
+imap [ []<Left>
+imap < <><Left>
 "inoremap {} {}<Left>
 "inoremap () ()<Left>
 "inoremap [] []<Left>
+"inoremap <> <><Left>
+inoremap <expr> ) strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
+inoremap <expr> ] strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
+inoremap <expr> > strpart(getline('.'), col('.')-1, 1) == ">" ? "\<Right>" : ">"
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
-"inoremap (<Enter> ()<Left><CR><ESC><S-o>
-inoremap [<Enter> []<Left><CR><ESC><S-o>
 
-inoremap ' ''<Left>
-inoremap " ""<Left>
-"inoremap < <><Left>
-"inoremap '' ''<Left>
-"inoremap "" ""<Left>
-"inoremap <> <><Left>
+"imap ' ''<Left>
+"imap " ""<Left>
+inoremap '' ''<Left>
+inoremap "" ""<Left>
 
 
 silent! call plug#begin('~/.vim/plugged')
