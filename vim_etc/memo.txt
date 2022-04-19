@@ -59,6 +59,8 @@ pip3 install pylint black
   "diagnostic-languageserver.formatFiletypes": {
     "python": "black"
   }
+pylintの詳細設定は jedi githubページに記載のものをまるコピー
+
 coc-diagnosticいいかも shellcheckでbashスクリプトにも対応できるよう
 
 c, c++向け
