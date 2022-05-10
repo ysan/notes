@@ -67,12 +67,18 @@
         }
       ],
       "securities": {
-        "W": "info",
-        "E": "warning",
-        "F": "info",
-        "C": "info",
-        "N": "hint"
+        "W": "warning",
+        "E": "error",
+        "F": "error",
+        "C": "error",
+        "N": "error"
       }
+    }
+  },
+  "diagnostic-languageserver.formatters": {
+    "black": {
+      "command": "black",
+      "args": ["-q", "--skip-string-normalization", "-"]
     }
   }
 }
