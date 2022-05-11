@@ -93,7 +93,7 @@ RUN pip3 install pylint black
 # setup vim plugins
 RUN vim +PlugInstall +qa
 RUN nvim +PlugInstall +qa
-RUN nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd coc-prettier coc-eslint coc-tsserver' +qa
+RUN nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd coc-prettier coc-eslint coc-tsserver coc-html coc-css' +qa
 
 # download coc-settings.json
 ARG COC_SETTINGS_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/coc-settings.json
