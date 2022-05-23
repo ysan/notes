@@ -80,3 +80,24 @@ $ svn status | grep -E "^\?" | awk '{print $2}' | xargs svn add
 > cd  C:\Program Files\Oracle\VirtualBox
 > VBoxManage.exe modifyvm 'YourVirtualBoxName' --nested-hw-virt on
 
+
+// jarファイルのdiff
+// usage: diff_jar xxx.jar path_a path_b
+diff_jar () {
+	echo "diff "$2/$1" "$3/$1
+	mkdir ./a
+	mkdir ./b
+	cp $2/$1 ./a
+	cp $3/$1 ./b
+	cd ./a
+	jar xvf $1 > /dev/null
+	rm $1
+	cd ../
+	cd ./b
+	jar xvf $1 > /dev/null
+	rm $1
+	cd ../
+	diff -r ./a ./b
+	rm -rf ./a
+	rm -rf ./b
+}
