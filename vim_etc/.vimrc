@@ -1,4 +1,5 @@
-set listchars=tab:^_
+set list
+set listchars=tab:^_,trail:-
 set ts=4
 colorscheme koehler
 set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp,cp932
@@ -43,7 +44,40 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap '' ''<Left>
 inoremap "" ""<Left>
 
+set display=uhex
 
+set splitbelow
+set splitright
+
+augroup _set_cursorline_only_active_window
+  autocmd!
+  autocmd VimEnter,BufWinEnter,WinEnter * setlocal cursorline
+  autocmd WinLeave * setlocal nocursorline
+augroup END
+
+function! ZenkakuSpace()
+  highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=#666666
+endfunction
+
+if has('syntax')
+  augroup _set_ZenkakuSpace
+    autocmd!
+    autocmd ColorScheme       * call ZenkakuSpace()
+    autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+  augroup END
+  call ZenkakuSpace()
+endif
+
+augroup _set_filetype_indent
+  autocmd!
+  autocmd VimEnter,BufWinEnter,WinEnter *.py   set expandtab ts=2 shiftwidth=2
+  autocmd VimEnter,BufWinEnter,WinEnter *.js   set expandtab ts=2 shiftwidth=2
+  autocmd VimEnter,BufWinEnter,WinEnter *.html set expandtab ts=2 shiftwidth=2
+  autocmd VimEnter,BufWinEnter,WinEnter *.css  set expandtab ts=2 shiftwidth=2
+augroup END
+
+
+"----------------------------------------------
 silent! call plug#begin()
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
@@ -53,10 +87,10 @@ Plug 'morhetz/gruvbox'
 call plug#end()
 
 if filereadable(expand("$HOME/.vim/plugged/gruvbox/colors/gruvbox.vim"))
-    silent! colorscheme gruvbox
-    set background=light
+  silent! colorscheme gruvbox
+  set background=light
 endif
 
 if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "yes"
-    source ~/.vimrc.lsp
+  source ~/.vimrc.lsp
 endif
