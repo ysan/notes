@@ -70,7 +70,7 @@ endif
 
 augroup _set_filetype_indent
   autocmd!
-  autocmd VimEnter,BufWinEnter,WinEnter *.py   set expandtab ts=2 shiftwidth=2
+  autocmd VimEnter,BufWinEnter,WinEnter *.py   set expandtab ts=4 shiftwidth=4
   autocmd VimEnter,BufWinEnter,WinEnter *.js   set expandtab ts=2 shiftwidth=2
   autocmd VimEnter,BufWinEnter,WinEnter *.html set expandtab ts=2 shiftwidth=2
   autocmd VimEnter,BufWinEnter,WinEnter *.css  set expandtab ts=2 shiftwidth=2
