@@ -13,7 +13,9 @@ set nocompatible
 
 set hlsearch
 set incsearch
-set clipboard=unnamedplus
+"set clipboard=unnamedplus
+set clipboard=unnamed
+set backspace=indent,eol,start
 
 set cursorline
 set t_Co=256
