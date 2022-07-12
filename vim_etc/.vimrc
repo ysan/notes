@@ -1,5 +1,5 @@
 set list
-set listchars=tab:^_,trail:-
+set listchars=tab:^\ ,trail:-
 set ts=4
 colorscheme koehler
 set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp,cp932
@@ -30,14 +30,14 @@ set laststatus=2
 "inoremap { {}<Left>
 imap ( ()<Left>
 imap [ []<Left>
-imap < <><Left>
+"imap < <><Left>
 "inoremap {} {}<Left>
 "inoremap () ()<Left>
 "inoremap [] []<Left>
-"inoremap <> <><Left>
-inoremap <expr> ) strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
-inoremap <expr> ] strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
-inoremap <expr> > strpart(getline('.'), col('.')-1, 1) == ">" ? "\<Right>" : ">"
+inoremap <> <><Left>
+"inoremap <expr> ) strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
+"inoremap <expr> ] strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
+"inoremap <expr> > strpart(getline('.'), col('.')-1, 1) == ">" ? "\<Right>" : ">"
 
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 
@@ -86,6 +86,7 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'morhetz/gruvbox'
+Plug 'sainnhe/edge'
 call plug#end()
 
 if filereadable(expand("$HOME/.vim/plugged/gruvbox/colors/gruvbox.vim"))
