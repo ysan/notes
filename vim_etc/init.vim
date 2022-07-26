@@ -78,19 +78,54 @@ augroup _set_filetype_indent
   autocmd VimEnter,BufWinEnter,WinEnter *.css  set expandtab ts=2 shiftwidth=2
 augroup END
 
+if has('nvim')
+  set pumblend=30
+  set termguicolors
+endif
 
 "----------------------------------------------
-silent! call plug#begin('~/.vim/plugged')
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'morhetz/gruvbox'
-Plug 'sainnhe/edge'
-call plug#end()
+if has('nvim')
+  silent! call plug#begin('~/.vim/plugged')
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'morhetz/gruvbox'
+  Plug 'sainnhe/edge'
+  Plug 'junegunn/seoul256.vim'
+  call plug#end()
+else
+  silent! call plug#begin()
+  Plug 'prabirshrestha/async.vim'
+  Plug 'prabirshrestha/vim-lsp'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'morhetz/gruvbox'
+  Plug 'sainnhe/edge'
+  Plug 'junegunn/seoul256.vim'
+  call plug#end()
+endif
 
 if filereadable(expand("$HOME/.vim/plugged/gruvbox/colors/gruvbox.vim"))
   silent! colorscheme gruvbox
   set background=light
 endif
 
-if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "yes"
-  source ~/.config/nvim/init.vim.lsp
+if has('nvim') && filereadable(expand("$HOME/.vim/plugged/edge/colors/edge.vim"))
+  silent! colorscheme edge
+  set background=dark
+endif
+
+if filereadable(expand("$HOME/.vim/plugged/seoul256.vim/colors/seoul256.vim"))
+"  let g:seoul256_background = 234 "for dark
+  let g:seoul256_background = 254
+  silent! colorscheme seoul256
+  set background=light
+endif
+
+if has('nvim')
+  if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "yes"
+    source ~/.config/nvim/init.vim.lsp
+  endif
+else
+  if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "yes"
+    source ~/.vimrc.lsp
+  endif
 endif
