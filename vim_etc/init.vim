@@ -27,25 +27,6 @@ set shiftwidth=0
 set statusline=%F%m%h%w%<\ \ (%{&fenc!=''?&fenc:&enc},%{&ff},%Y)\ %=0x%02B\ %l/%L,%02v
 set laststatus=2
 
-"inoremap { {}<Left>
-imap ( ()<Left>
-imap [ []<Left>
-"imap < <><Left>
-"inoremap {} {}<Left>
-"inoremap () ()<Left>
-"inoremap [] []<Left>
-inoremap <> <><Left>
-"inoremap <expr> ) strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
-"inoremap <expr> ] strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
-"inoremap <expr> > strpart(getline('.'), col('.')-1, 1) == ">" ? "\<Right>" : ">"
-
-inoremap {<Enter> {}<Left><CR><ESC><S-o>
-
-"imap ' ''<Left>
-"imap " ""<Left>
-inoremap '' ''<Left>
-inoremap "" ""<Left>
-
 set display=uhex
 
 set splitbelow
@@ -87,6 +68,8 @@ endif
 if has('nvim')
   silent! call plug#begin('~/.vim/plugged')
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'tpope/vim-surround'
   Plug 'morhetz/gruvbox'
   Plug 'sainnhe/edge'
   Plug 'junegunn/seoul256.vim'
@@ -97,10 +80,36 @@ else
   Plug 'prabirshrestha/vim-lsp'
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'tpope/vim-surround'
   Plug 'morhetz/gruvbox'
   Plug 'sainnhe/edge'
   Plug 'junegunn/seoul256.vim'
   call plug#end()
+endif
+
+if filereadable(expand("$HOME/.vim/plugged/auto-pairs/plugin/auto-pairs.vim"))
+  echo "loaded auto-pairs,"
+else
+  echo "not exits auto-pairs."
+  "inoremap { {}<Left>
+  imap ( ()<Left>
+  imap [ []<Left>
+  "imap < <><Left>
+  "inoremap {} {}<Left>
+  "inoremap () ()<Left>
+  "inoremap [] []<Left>
+  inoremap <> <><Left>
+  "inoremap <expr> ) strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
+  "inoremap <expr> ] strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
+  "inoremap <expr> > strpart(getline('.'), col('.')-1, 1) == ">" ? "\<Right>" : ">"
+
+  inoremap {<Enter> {}<Left><CR><ESC><S-o>
+
+  "imap ' ''<Left>
+  "imap " ""<Left>
+  inoremap '' ''<Left>
+  inoremap "" ""<Left>
 endif
 
 if filereadable(expand("$HOME/.vim/plugged/gruvbox/colors/gruvbox.vim"))
@@ -123,6 +132,8 @@ endif
 if has('nvim')
   if filereadable(expand('~/.config/nvim/init.vim.lsp')) && $VIMLSP == "yes"
     source ~/.config/nvim/init.vim.lsp
+  else
+    let g:coc_start_at_startup = 0
   endif
 else
   if filereadable(expand('~/.vimrc.lsp')) && $VIMLSP == "yes"
