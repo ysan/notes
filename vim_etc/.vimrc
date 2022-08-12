@@ -88,9 +88,7 @@ else
   call plug#end()
 endif
 
-if filereadable(expand("$HOME/.vim/plugged/auto-pairs/plugin/auto-pairs.vim"))
-  echo "loaded auto-pairs,"
-else
+if !filereadable(expand("$HOME/.vim/plugged/auto-pairs/plugin/auto-pairs.vim"))
   echo "not exits auto-pairs."
   "inoremap { {}<Left>
   imap ( ()<Left>
