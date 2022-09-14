@@ -6,6 +6,9 @@ set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp,cp932
 set noswapfile
 set noautoindent
 
+nnoremap <silent> <C-j> :bprev<CR>
+nnoremap <silent> <C-k> :bnext<CR>
+
 if has('syntax')
     syntax enable
 endif
@@ -122,7 +125,7 @@ endif
 
 if filereadable(expand("$HOME/.vim/plugged/seoul256.vim/colors/seoul256.vim"))
 "  let g:seoul256_background = 234 "for dark
-  let g:seoul256_background = 254
+"  let g:seoul256_background = 254 "for light
   silent! colorscheme seoul256
   set background=light
 endif
