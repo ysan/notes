@@ -1,6 +1,6 @@
 {
-  "clangd.path" : "clangd-9",
-  "diagnostic-languageserver.filetypes" : {
+  "clangd.path": "clangd-9",
+  "diagnostic-languageserver.filetypes": {
     "python": "pylint",
     "sh": "shellcheck"
   },
@@ -49,10 +49,7 @@
       "command": "flake8",
       "debounce": 200,
       "rootPatterns": [".git", "pyproject.toml", "setup.py"],
-      "args": [
-        "--format=%(row)d,%(col)d,%(code).1s,%(code)s: %(text)s",
-		"-"
-      ],
+      "args": ["--format=%(row)d,%(col)d,%(code).1s,%(code)s: %(text)s", "-"],
       "offsetLine": 0,
       "offsetColumn": 0,
       "offsetColumnEnd": 1,
@@ -80,5 +77,16 @@
       "command": "black",
       "args": ["-q", "--skip-string-normalization", "-"]
     }
-  }
+  },
+  "coc.preferences.formatOnSaveFiletypes": [
+    "css",
+    "html",
+    "markdown",
+    "typescriptreact",
+    "typescript",
+    "javascriptreact",
+    "javascript",
+    "json",
+    "graphql"
+  ]
 }
