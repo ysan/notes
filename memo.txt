@@ -101,3 +101,15 @@ diff_jar () {
 	rm -rf ./a
 	rm -rf ./b
 }
+
+
+// svnで特定のrevisionのファイルごとのsvndiff (空白無視) をまとめて落とす
+$ REV=108
+$ svn log --diff -r ${REV} | grep "^\-\-\- " | sort | awk '{printf "svn log --diff -x \"-w --ignore-eol-style\" -r '${REV}' %s\n", $2}' | while read line; do eval "${line}"; done > diff_r${REV}.txt
+
+workingのsvndiff (空白無視)
+$ svn diff -x "-w --ignore-eol-style" > diff.txt
+
+例えばREV108とworkingの差分の比較 (空白無視) (svndiffのdiffとってマージの確認とかで使う)
+$ diff -w -B -E diff_r108.txt diff.txt
+
