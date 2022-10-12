@@ -1,8 +1,17 @@
 #!/bin/bash
 
 
-MOUNT_SRC=//192.168.50.7/disk
+#MOUNT_SRC=//192.168.50.33/disk
+#MOUNT_SRC=//LANDISK-0197E5.local/disk
+#MOUNT_USER=admin
+#MOUNT_PASS=
+
+MOUNT_SRC=//LANDISK-C35758.local/disk1
+MOUNT_USER=admin
+MOUNT_PASS=admin
+
 MOUNT_POINT=/mnt/Landisk/
+
 DEST_DIR=${MOUNT_POINT}/WinXP_backup/y/My\ Documents/My\ Videos/xxore/er/m2ts/
 
 HOME=/home/pi
@@ -16,7 +25,7 @@ END_DATE=
 
 
 #TARGET_DIR=/home/pi
-TARGET_DIR=/etc/auto_rec_mini/data
+TARGET_DIR=/opt/auto_rec_mini/data
 TARGET_FILE_EXT=m2ts
 
 
@@ -73,7 +82,7 @@ function _check_mount_landisk () {
 	else
 		# not mounted
 		echo "not mounted Landisk. --> do mount..." >> ${WORK_LOG_PATH}
-		sudo mount -t cifs -o sec=ntlm,vers=1.0 -o username=admin,password= ${MOUNT_SRC} ${MOUNT_POINT} >> ${WORK_LOG_PATH} 2>&1
+		sudo mount -t cifs -o sec=ntlm,vers=1.0 -o username=${MOUNT_USER},password=${MOUNT_PASS} ${MOUNT_SRC} ${MOUNT_POINT} >> ${WORK_LOG_PATH} 2>&1
 		if [ $? -eq 0 ]; then
 			echo "mount OK" >> ${WORK_LOG_PATH}
 			return 0
