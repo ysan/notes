@@ -6,6 +6,9 @@ set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp,cp932
 set noswapfile
 set noautoindent
 
+set wildmenu
+set wildmode=longest,full
+
 nnoremap <silent> <C-j> :bprev<CR>
 nnoremap <silent> <C-k> :bnext<CR>
 
@@ -92,7 +95,7 @@ else
 endif
 
 if !filereadable(expand("$HOME/.vim/plugged/auto-pairs/plugin/auto-pairs.vim"))
-  echo "not exits auto-pairs."
+  "echo "not exits auto-pairs."
   "inoremap { {}<Left>
   imap ( ()<Left>
   imap [ []<Left>
