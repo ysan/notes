@@ -4,16 +4,16 @@
 BASEDIR		:=	./
 
 INCLUDES	:= \
-	-I./msgpack-c/include \
-	-I./msgpack-c/include/msgpack \
+	-I./msgpack-3.3.0/include \
+	-I./msgpack-3.3.0/include/msgpack \
 
-LIBS		:= -L$(BASEDIR)/msgpack-c -lmsgpack
+LIBS		:= -L$(BASEDIR)/msgpack-3.3.0 -lmsgpack
 
 LDFLAGS		:=
 
 APPEND_OBJS	:=
 
-SUBDIRS		:= msgpack-c
+SUBDIRS		:= msgpack-3.3.0
 
 USERDEFS	:= -std=c++11
 

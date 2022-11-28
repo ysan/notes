@@ -1,21 +1,19 @@
 #!/bin/bash
 
-which git >/dev/null 2>&1
-RET=$?
-if [ ! ${RET} -eq 0 ]; then
-	echo "git is not installed."
-	exit 1
-fi
+set -e
 
-if [ ! -d "./msgpack-c" ]; then
-	git clone https://github.com/msgpack/msgpack-c
+rm -rf ./msgpack-3.3.0
+
+if [ ! -d "./msgpack-3.3.0" ]; then
+	curl -LOk https://github.com/msgpack/msgpack-c/releases/download/cpp-3.3.0/msgpack-3.3.0.tar.gz
 	if [ ! ${RET} -eq 0 ]; then
-		echo "git clone failure. [git clone https://github.com/msgpack/msgpack-c]"
+		echo "msgpack download failure."
 		exit 1
 	fi
+	tar xvf msgpack-3.3.0.tar.gz
 fi
 
-cp -p Makefile.msgpack msgpack-c/Makefile
+cp -p Makefile.msgpack msgpack-3.3.0/Makefile
 if [ ${RET} -eq 0 ]; then
 	echo "setup successful."
 else
