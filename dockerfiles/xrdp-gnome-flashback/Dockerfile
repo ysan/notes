@@ -54,11 +54,20 @@ RUN install -o root -g root -m 0755 -d /var/run/sshd
 
 # setup supervisord config
 RUN { \
+      echo "[unix_http_server]"; \
+      echo "file=/var/run/supervisor.sock"; \
+      echo ""; \
       echo "[supervisord]"; \
       echo "user=root"; \
       echo "nodaemon=true"; \
       echo "logfile=/var/log/supervisor/supervisord.log"; \
       echo "childlogdir=/var/log/supervisor"; \
+      echo ""; \
+      echo "[rpcinterface:supervisor]"; \
+      echo "supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface"; \
+      echo ""; \
+      echo "[supervisorctl]"; \
+      echo "serverurl=unix:///var/run/supervisor.sock"; \
       echo ""; \
       echo "[program:sshd]"; \
       echo "command=/usr/sbin/sshd -D"; \
