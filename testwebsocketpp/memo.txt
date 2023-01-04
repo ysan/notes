@@ -1,8 +1,16 @@
-install:
-$ sudo apt install libwebsocketpp-dev
+setup libs
+$ curl -LOk https://github.com/chriskohlhoff/asio/archive/refs/tags/asio-1-24-0.tar.gz
+$ tar xvf asio-1-24-0.tar.gz
 
-exsample executing: 
-$ sudo stdbuf -oL tcpdump | ./testwss
+$ curl -LOk https://github.com/zaphoyd/websocketpp/archive/refs/tags/0.8.2.tar.gz
+$ tar xvf 0.8.2.tar.gz
 
-$ sudo stdbuf -oL tail -F /var/log/syslog | ./testwss
+build
+$ g++ -Iwebsocketpp-0.8.2 -Iasio-asio-1-24-0/asio/include -std=c++11 -lpthread main.cpp
+
+
+exsample executing
+$ sudo stdbuf -oL tcpdump | ./a.out
+
+$ sudo stdbuf -oL tail -F /var/log/syslog | ./a.out
 

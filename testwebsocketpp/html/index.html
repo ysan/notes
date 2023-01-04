@@ -33,7 +33,7 @@
 	<script type="text/javascript" src="wsClient.js"></script>
 	<script type="text/javascript">
 		console.log ("script start");
-		let wsc = new wsClient ("ws://192.168.235.161:50000/?ID=TEST");
+		const wsc = new wsClient ("ws://192.168.50.202:50000/?id=test");
 		wsc.open();
 		console.log ("debug " + wsc.getState());
 
