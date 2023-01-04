@@ -113,3 +113,22 @@ $ svn diff -x "-w --ignore-eol-style" > diff.txt
 例えばREV108とworkingの差分の比較 (空白無視) (svndiffのdiffとってマージの確認とかで使う)
 $ diff -w -B -E diff_r108.txt diff.txt
 
+
+// ラズパイで neovimをインストールする (RaspiOS buster)
+参考ソース https://hiratarosu.hateblo.jp/entry/2019/01/26/205929
+$ sudo apt install dirmngr
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9DBB0BE9366964F134855E2255F96FCF8231B6DD
+
+Neovim Stable : “Neovim PPA team
+https://launchpad.net/~neovim-ppa/+archive/ubuntu/stable
+ここに fingerprint (recv-keys)の値あり
+下のppalistもここにある
+
+$ sudo vi /etc/apt/sources.list.d/neovim-ppa.list
+deb https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu bionic main
+deb-src https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu bionic main
+この2行を記入する busterではbionicにしないとlibc等の依存しているライブラリのバージョンが足りないためインストール出来なかった
+
+$ sudo apt update
+$ sudo apt install neovim
+
