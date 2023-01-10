@@ -30,7 +30,7 @@ hi CursorLine   term=reverse cterm=none ctermbg=242
 set cindent
 set shiftwidth=0
 
-set statusline=%F%m%h%w%<\ \ (%{&fenc!=''?&fenc:&enc},%{&ff},%Y)\ %=[0x%02B]\ %l/%L(%p%%),%02v
+set statusline=%F%m%h%w%<\ \ (%{&fenc!=''?&fenc:&enc},%{&ff},%Y)\ %=[0x%02B]\ %l/%L(%p%%),%v
 set laststatus=2
 
 set display=uhex
