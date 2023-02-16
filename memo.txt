@@ -132,3 +132,6 @@ deb-src https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu bionic main
 $ sudo apt update
 $ sudo apt install neovim
 
+
+// gitconfigを変えずにgit diffをvimdiffで見る
+git difftool --tool=vimdiff --no-prompt
