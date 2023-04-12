@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
   git \
   locales \
   sudo \
+  unzip \
   g++ \
   cmake \
-  clangd-9 \
   bear \
   python3 \
   python3-pip \
@@ -35,11 +35,18 @@ RUN apt-get install -y software-properties-common && add-apt-repository ppa:jona
 RUN apt-get install -y software-properties-common && add-apt-repository ppa:neovim-ppa/stable && \
   apt-get update && apt-get install -y neovim
 
+# install clangd-15
+ARG CLANGD_URL=https://github.com/clangd/clangd/releases/download/15.0.6/clangd-linux-15.0.6.zip
+RUN cd /root && curl -LOks ${CLANGD_URL} && \
+  unzip clangd-linux-15.0.6.zip && \
+  cp -p clangd_15.0.6/bin/clangd /usr/local/bin && \
+  cp -pr clangd_15.0.6/lib/clang /usr/local/lib
+
 # install shellcheck
 ARG SHELLCHECK_STABLE_URL=https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
-RUN cd /root && curl -OLsk ${SHELLCHECK_STABLE_URL} && \
+RUN cd /root && curl -LOks ${SHELLCHECK_STABLE_URL} && \
   tar xvf shellcheck-stable.linux.x86_64.tar.xz && \
-  cd shellcheck-stable && cp -pr shellcheck /usr/local/bin
+  cp -p shellcheck-stable/shellcheck /usr/local/bin
 
 # install nodejs
 RUN npm -g install n
@@ -87,7 +94,7 @@ RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
 		       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k'
 
-RUN pip3 install pydantic==1.8.2
+#RUN pip3 install pydantic==1.8.2
 RUN pip3 install pylint black
 
 # setup vim plugins

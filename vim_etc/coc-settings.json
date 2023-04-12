@@ -1,5 +1,5 @@
 {
-  "clangd.path": "clangd-9",
+  "clangd.path": "clangd",
   "diagnostic-languageserver.filetypes": {
     "python": "pylint",
     "sh": "shellcheck"
