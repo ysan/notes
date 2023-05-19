@@ -115,9 +115,12 @@ CMD /bin/bash
 # -----------------------------------------------------------------------------
 # --- docker build ---
 # docker build -t develop .
+# docker build -t develop --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
 # docker run -it -d --name develop_con develop
 # docker run -it -d --name develop_con --mount type=bind,src=/xxx,dst=/yyy develop
+
 # docker exec -it develop_con /bin/bash
 # docker exec -it -u develop -w /home/develop develop_con /bin/bash
+
