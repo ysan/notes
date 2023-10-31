@@ -56,6 +56,9 @@ CMD /bin/bash
 # make menuconfig
 #  Kernel hacking -> [*] Kernel debugging
 #  Kernel hacking -> Compile-time checks and compiler options -> [*] Compile the kernel with debug info
+#  Kernel hacking -> printk and dmesg options -> [*] Enable dynamic printk() support
+#  Kernel hacking -> Tracers -> [*] Kernel Function Tracer
+#                               [*] Kernel Function Graph Tracer
 #  Processor type and features -> [ ] EFI runtime service support
 #                              -> [ ] Build a relocatable kernel
 # time make -j $(nproc)
@@ -74,9 +77,9 @@ CMD /bin/bash
 # make
 # make install
 
-# --- create initramfs (busybox simple) at host ---
-# mkdir -p ramfs/{proc,bin,sbin,dev,sys}
-# cd ramfs/bin
+# --- create rootfs (busybox simple) at host ---
+# mkdir -p rootfs/{proc,bin,sbin,dev,sys}
+# cd rootfs/bin
 # curl -LOks https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
 # chmod 755 ./busybox
 # ln -s busybox sh
@@ -93,16 +96,16 @@ CMD /bin/bash
 # sudo mknod console c 5 1
 # sudo mknod null c 1 3
 # cd ..
-# find ./ | cpio -o -H newc | gzip > initramfs.img
+# find ./ | cpio -o -H newc | gzip > ../rootfs.img
 
 # --- launch qemu at host ---
-# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/initramfs.img -append "console=ttyS0 rdinit=/sbin/init" -nographic
+# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init" -nographic
 # finish -> ctrl+a x
 
-# --- create initramfs (busybox full) at host ---
-# mkdir -p ramfs/{proc,dev,sys,run,etc/init.d}
-# cp -pr /path/to/busybox/_install/* ramfs/
-# cd ramfs/dev
+# --- create rootfs (busybox full) at host ---
+# mkdir -p rootfs/{proc,dev,sys,run,etc/init.d}
+# cp -pr /path/to/busybox/_install/* rootfs/
+# cd rootfs/dev
 # sudo mknod console c 5 1
 # sudo mknod null c 1 3
 # sudo mknod -m 666 tty c 5 0
@@ -112,17 +115,18 @@ CMD /bin/bash
 # > #!/bin/sh
 # > mount -v --bind /dev /dev
 # > mount -v --bind /dev/pts /dev/pts
-# > mount -vt proc proc /proc
-# > mount -vt sysfs sysfs /sys
-# > mount -vt tmpfs tmpfs /run
+# > mount -t proc none /proc
+# > mount -t sysfs none /sys
+# > mount -t tmpfs none /run
+# > mount -t debugfs none /sys/kernel/debug
 # > /sbin/mdev -s
 # > EOF
 # chmod 755 rcS
 # cd ../..
-# find ./ | cpio -o -H newc | gzip > initramfs.img
+# find ./ | cpio -o -H newc | gzip > ../rootfs.img
 
 # --- launch qemu + gdb at host ---
-# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/initramfs.img -append "console=ttyS0 rdinit=/sbin/init root=/dev/ram" -nographic -gdb tcp::12345 -S
+# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init root=/dev/ram" -nographic -gdb tcp::12345 -S
 # gdb
 # target remote localhost:12345
 # symbol-file /path/to/linux/vmlinux
