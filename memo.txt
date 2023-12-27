@@ -135,3 +135,13 @@ $ sudo apt install neovim
 
 // gitconfigを変えずにgit diffをvimdiffで見る
 git difftool --tool=vimdiff --no-prompt
+
+
+// 簡易TCPプロキシ loggerはasciiでの通信した場合のみ
+$ mkfifo -m 0600 ${FIFO}
+# listen from src & read fifo>stdin to src & stdout to nc as dest client
+# stdin to dest client & dest client response>stdout to write fifo
+$ nc -v -k -l ${SRC_PORT} < ${FIFO} | nc -v ${DEST_IPADDR} ${DEST_PORT} > ${FIFO}
+# asciiでの通信した場合のみloggerで出力
+$ nc -v -k -l ${SRC_PORT} < ${FIFO} | tee >(logger -i -s -t "proxy-->") | nc -v ${DEST_IPADDR} ${DEST_PORT} | tee ${FIFO} | logger -i -s -t "proxy<--"
+
