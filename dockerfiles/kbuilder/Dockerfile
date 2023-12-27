@@ -103,22 +103,27 @@ CMD /bin/bash
 # finish -> ctrl+a x
 
 # --- create rootfs (busybox full) at host ---
-# mkdir -p rootfs/{proc,dev,sys,run,etc/init.d}
+# mkdir -p rootfs/{proc,dev,sys,run,etc/init.d,mnt}
 # cp -pr /path/to/busybox/_install/* rootfs/
 # cd rootfs/dev
 # sudo mknod console c 5 1
 # sudo mknod null c 1 3
-# sudo mknod -m 666 tty c 5 0
 # sudo mknod ram b 1 0
+# sudo mknod zero c 1 5
+# sudo mknod urandom c 1 9
+# sudo mknod ttyS0 c 4 64
 # cd ../etc/init.d
 # cat <<EOF > rcS
 # > #!/bin/sh
-# > mount -v --bind /dev /dev
-# > mount -v --bind /dev/pts /dev/pts
 # > mount -t proc none /proc
 # > mount -t sysfs none /sys
 # > mount -t tmpfs none /run
 # > mount -t debugfs none /sys/kernel/debug
+# > mount -t tmpfs cgroup /sys/fs/cgroup
+# > mkdir /sys/fs/cgroup/cpu
+# > mkdir /sys/fs/cgroup/devices
+# > mount -t cgroup -o cpu cgroup /sys/fs/cgroup/cpu
+# > mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices
 # > /sbin/mdev -s
 # > EOF
 # chmod 755 rcS
@@ -126,7 +131,7 @@ CMD /bin/bash
 # find ./ | cpio -o -H newc | gzip > ../rootfs.img
 
 # --- launch qemu + gdb at host ---
-# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init root=/dev/ram" -nographic -gdb tcp::12345 -S
+# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init root=/dev/ram nokaslr" -nographic -gdb tcp::12345 -S
 # gdb
 # target remote localhost:12345
 # symbol-file /path/to/linux/vmlinux
