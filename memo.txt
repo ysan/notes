@@ -145,3 +145,22 @@ $ nc -v -k -l ${SRC_PORT} < ${FIFO} | nc -v ${DEST_IPADDR} ${DEST_PORT} > ${FIFO
 # asciiでの通信した場合のみloggerで出力
 $ nc -v -k -l ${SRC_PORT} < ${FIFO} | tee >(logger -i -s -t "proxy-->") | nc -v ${DEST_IPADDR} ${DEST_PORT} | tee ${FIFO} | logger -i -s -t "proxy<--"
 
+
+// fedora live isoをgrubからbootする (fedora31から)
+/liveに対象のisoを置く
+/etc/grub.d/40_customAに以下menuentryを追記
+特にlinuxefi initrdefi はisoを事前にマウントして /EFI/BOOT/grub.cfgを参考に  iso-scanを入れないとrootfsが見つからない
+また(lvm/fedora-root)はgrubコマンドラインからlsで見つけた /liveは lvm上の/dev/mapper/fedora-rootにあたり grub上では lvm/fedora-rootと認識されていた
+menuentry 'Fedora Live' --class os --class gnu-linux --class gnu --class os --group group_main {
+    set isofile="/live/Fedora-Workstation-Live-x86_64-38-1.6.iso"
+    insmod ext2
+    insmod loopback
+    insmod iso9660
+    loopback loop (lvm/fedora-root)$isofile
+    linuxefi (loop)/images/pxeboot/vmlinuz iso-scan/filename=$isofile root=live:CDLABEL=Fedora-WS-Live-38-1-6 rd.live.image rhgb
+    initrdefi (loop)/images/pxeboot/initrd.img
+}
+編集後
+$ sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+$ reboot
+grubメニューから'Fedora Live'を選択
