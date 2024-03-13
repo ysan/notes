@@ -59,6 +59,9 @@ mkdir /sys/fs/cgroup/devices
 mount -t cgroup -o cpu cgroup /sys/fs/cgroup/cpu
 mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices
 /sbin/mdev -s
+
+ip addr add 10.10.0.4/24 dev eth0
+ip link set eth0 up
 EOF
 chmod 755 ${TARGET_DIR}/etc/init.d/rcS
 echo "create ${TARGET_DIR}/etc/init.d/rcS -- done"
