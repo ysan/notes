@@ -1,11 +1,11 @@
 {
   "clangd.path": "clangd",
   "diagnostic-languageserver.filetypes": {
-    "python": "pylint",
+    "python": ["flake8", "mypy"],
     "sh": "shellcheck"
   },
   "diagnostic-languageserver.formatFiletypes": {
-    "python": "black"
+    "python": ["black", "autopep8"]
   },
   "diagnostic-languageserver.linters": {
     "pylint": {
@@ -70,12 +70,43 @@
         "C": "error",
         "N": "error"
       }
+    },
+    "mypy": {
+      "sourceName": "mypy",
+      "command": "mypy",
+      "args": [
+        "--no-color-output",
+        "--no-error-summary",
+        "--show-column-numbers",
+        "--follow-imports=silent",
+        "%file"
+      ],
+      "offsetLine": 0,
+      "offsetColumn": 0,
+      "offsetColumnEnd": 1,
+      "formatLines": 1,
+      "formatPattern": [
+        "^.*:(\\d+?):(\\d+?): ([a-z]+?): (.*)$",
+        {
+          "line": 1,
+          "column": 2,
+          "security": 3,
+          "message": 4
+        }
+      ],
+      "securities": {
+        "error": "error"
+      }
     }
   },
   "diagnostic-languageserver.formatters": {
     "black": {
       "command": "black",
-      "args": ["-q", "--skip-string-normalization", "-"]
+      "args": ["-q", "--skip-string-normalization", "-l 79", "-"]
+    },
+    "autopep8": {
+      "command": "autopep8",
+      "args": ["-"]
     }
   },
   "coc.preferences.formatOnSaveFiletypes": [
