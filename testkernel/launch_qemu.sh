@@ -7,7 +7,9 @@ fi
 
 QEMU_DIR="${HOME}/prog/github_repos/qemu/"
 QEMU_CMD="${QEMU_DIR}/build/qemu-system-x86_64 -L ${QEMU_DIR}/pc-bios"
+#QEMU_CMD="qemu-system-x86_64"
 KERNEL_IMG="${HOME}/prog/github_repos/linux/arch/x86/boot/bzImage"
+#KERNEL_IMG="/boot/vmlinuz-5.0.0-23-generic"
 ROOTFS="./rootfs.img"
 
 BRIDGE="br-qemu"
@@ -60,4 +62,3 @@ clean_br_tap () {
 create_br_tap
 ${QEMU_CMD} -kernel "${KERNEL_IMG}" -initrd "${ROOTFS}" -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr apic=verbose debug" -nographic -device edu -hda disk.img -smp 4 -m 256 -net nic -net tap,ifname=${TAP},script=no,downscript=no
 clean_br_tap
-
