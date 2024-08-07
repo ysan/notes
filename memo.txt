@@ -164,3 +164,10 @@ menuentry 'Fedora Live' --class os --class gnu-linux --class gnu --class os --gr
 $ sudo grub2-mkconfig -o /etc/grub2-efi.cfg
 $ reboot
 grubメニューから'Fedora Live'を選択
+
+
+// ffprobeでコーデックとストリームの情報表示
+$ ffprobe -hide_banner -show_streams -i in.mp4
+
+// ffmpegでFHDに変換 (4K重い対策)
+$ ffmpeg -i in.mp4 -vf scale=-1:1080 out.mp4
