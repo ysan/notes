@@ -71,6 +71,9 @@ RUN groupadd -g $GID ${GROUP} && \
   useradd -m -s /bin/bash -u ${UID} -g ${GID} -G sudo ${USER} && \
   echo ${USER}:${PASS} | chpasswd
 
+# user sudo no passwd
+RUN echo "${USER} ALL=NOPASSWD: ALL" > /etc/sudoers.d/container_users
+
 # switch user
 USER ${USER}
 WORKDIR /home/${USER}

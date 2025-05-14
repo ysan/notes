@@ -39,12 +39,12 @@ RUN cd /root && curl -LOks ${NVIM_URL} && \
   tar xvf nvim-linux64.tar.gz && \
   cp -pr nvim-linux64/* /usr/local/
 
-# install clangd-15
-ARG CLANGD_URL=https://github.com/clangd/clangd/releases/download/15.0.6/clangd-linux-15.0.6.zip
+# install clangd-19
+ARG CLANGD_URL=https://github.com/clangd/clangd/releases/download/19.1.2/clangd-linux-19.1.2.zip
 RUN cd /root && curl -LOks ${CLANGD_URL} && \
-  unzip clangd-linux-15.0.6.zip && \
-  cp -p clangd_15.0.6/bin/clangd /usr/local/bin && \
-  cp -pr clangd_15.0.6/lib/clang /usr/local/lib
+  unzip clangd-linux-19.1.2.zip && \
+  cp -p clangd_19.1.2/bin/clangd /usr/local/bin && \
+  cp -pr clangd_19.1.2/lib/clang /usr/local/lib
 
 # install shellcheck
 ARG SHELLCHECK_STABLE_URL=https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
@@ -55,7 +55,7 @@ RUN cd /root && curl -LOks ${SHELLCHECK_STABLE_URL} && \
 # install nodejs
 RUN npm -g install n
 RUN apt-get remove -y nodejs npm
-RUN n lts
+RUN n 20.17.0
 
 # optimize locale ja_JP.utf8
 RUN localedef -f UTF-8 -i ja_JP ja_JP
@@ -70,6 +70,9 @@ ARG PASS=develop
 RUN groupadd -g $GID ${GROUP} && \
   useradd -m -s /bin/bash -u ${UID} -g ${GID} -G sudo ${USER} && \
   echo ${USER}:${PASS} | chpasswd
+
+# user sudo no passwd
+RUN echo "${USER} ALL=NOPASSWD: ALL" > /etc/sudoers.d/container_users
 
 # switch user
 USER ${USER}
@@ -104,7 +107,8 @@ RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/p
 # setup vim plugins
 RUN vim +PlugInstall +qa
 RUN nvim +PlugInstall +qa
-RUN VIMLSP=yes nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd coc-prettier coc-eslint coc-tsserver coc-html coc-css coc-explorer' +qa
+#RUN VIMLSP=yes nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd coc-prettier coc-eslint coc-tsserver coc-html coc-css coc-explorer' +qa
+RUN VIMLSP=yes nvim +'CocInstall -sync coc-json@1.9.0 coc-jedi@0.36.1 coc-diagnostic@0.24.0 coc-clangd@0.31.0 coc-prettier@9.3.2 coc-eslint@1.7.0 coc-tsserver@2.2.0 coc-html@1.8.0 coc-css@2.1.0 coc-explorer@0.27.3' +qa
 
 # download coc-settings.json
 ARG COC_SETTINGS_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/coc-settings.json
