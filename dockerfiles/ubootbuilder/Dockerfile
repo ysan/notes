@@ -53,6 +53,7 @@ CMD /bin/bash
 
 # -----------------------------------------------------------------------------
 # --- clone TF-A ---
+# git clone -b lts-v2.10.16 --depth=1 https://github.com/ARM-software/arm-trusted-firmware TF-A-lts-v2.10.16
 # git clone -b v2.10-stm32mp-r1.2 --depth=1 https://github.com/STMicroelectronics/arm-trusted-firmware.git TF-A-v2.10-stm32mp-r1.2
 
 # --- clone u-boot ---
@@ -72,18 +73,24 @@ CMD /bin/bash
 # docker exec -it -u builder -w /home/builder ubuilder_con /bin/bash
 
 # --- build uboot ---
-# --- https://wiki.st.com/stm32mpu/wiki/STM32MP15_U-Boot ---
+# (https://wiki.st.com/stm32mpu/wiki/STM32MP15_U-Boot)
 # cd u-boot
 # export CROSS_COMPILE=arm-linux-gnueabihf-
 # make stm32mp15_trusted_defconfig
 # time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 all
 
 # --- build TF-A ---
-# --- https://wiki.st.com/stm32mpu/wiki/How_to_configure_TF-A_FIP ---
+# (https://wiki.st.com/stm32mpu/wiki/TF-A_BL2_overview)
+# (https://wiki.st.com/stm32mpu/wiki/How_to_configure_TF-A_BL2)
+# (https://wiki.st.com/stm32mpu/wiki/How_to_configure_TF-A_FIP)
+# (https://trustedfirmware-a.readthedocs.io/en/lts-v2.10/plat/st/stm32mp1.html#build-instructions)
 # cd TF-A
-# rm -rf build
 # export CROSS_COMPILE=arm-linux-gnueabihf-
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb fip
+# rm -rf build
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb all fip
+
+# --- write SD image ---
+
 
 # --- create compile_commands.json at host ---
 # cd u-boot
