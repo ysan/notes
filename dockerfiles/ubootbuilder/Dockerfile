@@ -52,11 +52,11 @@ CMD /bin/bash
 
 
 # -----------------------------------------------------------------------------
-# --- clone TF-A ---
+# --- clone TF-A at host ---
 # git clone -b lts-v2.10.16 --depth=1 https://github.com/ARM-software/arm-trusted-firmware TF-A-lts-v2.10.16
 # git clone -b v2.10-stm32mp-r1.2 --depth=1 https://github.com/STMicroelectronics/arm-trusted-firmware.git TF-A-v2.10-stm32mp-r1.2
 
-# --- clone u-boot ---
+# --- clone u-boot at host ---
 # git clone -b v2025.04 --depth=1 https://github.com/u-boot/u-boot u-boot-v2025.04
 # git clone -b v2023.10-stm32mp-r1.2 --depth=1 https://github.com/STMicroelectronics/u-boot u-boot-v2023.10-stm32mp-r1.2
 
@@ -89,8 +89,14 @@ CMD /bin/bash
 # rm -rf build
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb all fip
 
-# --- write SD image ---
-
+# --- write SD image at host ---
+# (https://wiki.st.com/stm32mpu/wiki/STM32CubeProgrammer_flashlayout)
+# (https://wiki.st.com/stm32mpu/wiki/How_to_populate_the_SD_card_with_dd_command)
+# git clone https://github.com/STMicroelectronics/meta-st-openstlinux
+# cd meta-st-stm32mp
+# git checkout mickledore
+# ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh xxx.tsv
+# sudo dd ...
 
 # --- create compile_commands.json at host ---
 # cd u-boot
