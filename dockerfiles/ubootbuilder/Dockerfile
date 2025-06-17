@@ -53,11 +53,15 @@ CMD /bin/bash
 
 # -----------------------------------------------------------------------------
 # --- clone TF-A at host ---
-# git clone -b lts-v2.10.16 --depth=1 https://github.com/ARM-software/arm-trusted-firmware TF-A-lts-v2.10.16
+# git clone https://github.com/ARM-software/arm-trusted-firmware
 # git clone -b v2.10-stm32mp-r1.2 --depth=1 https://github.com/STMicroelectronics/arm-trusted-firmware.git TF-A-v2.10-stm32mp-r1.2
 
+# --- clone OP-TEE at host ---
+# git clone https://github.com/OP-TEE/optee_os.git
+# git clone -b 4.0.0-stm32mp --depth=1 https://github.com/STMicroelectronics/optee_os.git optee-4.0.0-stm32mp
+
 # --- clone u-boot at host ---
-# git clone -b v2025.04 --depth=1 https://github.com/u-boot/u-boot u-boot-v2025.04
+# git clone https://github.com/u-boot/u-boot
 # git clone -b v2023.10-stm32mp-r1.2 --depth=1 https://github.com/STMicroelectronics/u-boot u-boot-v2023.10-stm32mp-r1.2
 
 # --- docker build ---
@@ -66,6 +70,7 @@ CMD /bin/bash
 # --- run daemon mode ---
 # docker run -it -d --name ubuilder_con \
 #   --mount type=bind,src=/path/to/TF-A-xxx,dst=/home/builder/TF-A \
+#   --mount type=bind,src=/path/to/optee-xxx,dst=/home/builder/optee \
 #   --mount type=bind,src=/path/to/u-boot-xxx,dst=/home/builder/u-boot \
 #   ubuilder
 
@@ -80,6 +85,11 @@ CMD /bin/bash
 # make stm32mp15_defconfig
 # time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 all
 
+# --- build optee ---
+# cd optee
+# export CROSS_COMPILE=arm-linux-gnueabihf-
+# time make -j $(nproc) PLATFORM=stm32mp1 CFG_EMBED_DTB_SOURCE_FILE=stm32mp157d-dk1.dts CFG_ARM32_core=y CFG_WITH_LPAE=n
+
 # --- build TF-A ---
 # (https://wiki.st.com/stm32mpu/wiki/TF-A_BL2_overview)
 # (https://wiki.st.com/stm32mpu/wiki/How_to_configure_TF-A_BL2)
@@ -89,9 +99,16 @@ CMD /bin/bash
 # cd TF-A
 # export CROSS_COMPILE=arm-linux-gnueabihf-
 # make distclean
+# create TF-A (sp_min) -> not supported
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 all
-# create fip
+# create fip (sp_min) -> not supported
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb DEBUG=1 fip
+
+# create TF-A (optee)
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 all
+# create fip (optee)
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb BL32=../optee/out/arm-plat-stm32mp1/core/tee-header_v2.bin BL32_EXTRA1=../optee/out/arm-plat-stm32mp1/core/tee-pager_v2.bin BL32_EXTRA2=../optee/out/arm-plat-stm32mp1/core/tee-pageable_v2.bin DEBUG=1 LOG_LEVEL=40 fip
+
 # check fip
 # ./tools/fiptool/fiptool info build/stm32mp1/debug/fip.bin
 # check bl32 dtb
@@ -103,8 +120,15 @@ CMD /bin/bash
 # git clone https://github.com/STMicroelectronics/meta-st-openstlinux
 # cd meta-st-stm32mp
 # git checkout scarthgap
-# ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh xxx.tsv
+# sample.tsv
+#Opt    Id      Name    Type    IP      Offset  Binary
+P       0x04    fsbl1   Binary  mmc0    0x00004400      tf-a-stm32mp157d-dk1.stm32
+P       0x05    fsbl2   Binary  mmc0    0x00044400      tf-a-stm32mp157d-dk1.stm32
+P       0x08    fip-a   FIP     mmc0    0x00104400      fip.bin
+PED     0x09    fip-b   FIP     mmc0    0x00504400      none
+# ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh sample.tsv
 # sudo dd ...
+
 
 # --- create compile_commands.json at host ---
 # cd u-boot
