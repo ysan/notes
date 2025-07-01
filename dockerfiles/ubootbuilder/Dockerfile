@@ -99,14 +99,17 @@ CMD /bin/bash
 # cd TF-A
 # export CROSS_COMPILE=arm-linux-gnueabihf-
 # make distclean
-# create TF-A (sp_min) -> not supported
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 all
-# create fip (sp_min) -> not supported
+
+# ## sp_min ##  --> not supported
+# create TF-A
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 all
+# create fip
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb DEBUG=1 fip
 
-# create TF-A (optee)
+# ## optee ##
+# create TF-A
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 all
-# create fip (optee)
+# create fip
 # make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb BL32=../optee/out/arm-plat-stm32mp1/core/tee-header_v2.bin BL32_EXTRA1=../optee/out/arm-plat-stm32mp1/core/tee-pager_v2.bin BL32_EXTRA2=../optee/out/arm-plat-stm32mp1/core/tee-pageable_v2.bin DEBUG=1 LOG_LEVEL=40 fip
 
 # check fip
