@@ -134,6 +134,7 @@ PED     0x09    fip-b   FIP     mmc0    0x00504400      none
 
 
 # --- create compile_commands.json at host ---
+# curl -LOk https://raw.githubusercontent.com/u-boot/u-boot/refs/heads/master/scripts/gen_compile_commands.py
 # cd u-boot
-# ./scripts/gen_compile_commands.py
+# /path/to/gen_compile_commands.py
 
