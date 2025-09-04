@@ -95,20 +95,19 @@ RUN mkdir -p /home/${USER}/.config/nvim/ && \
   curl -LOks ${VIMRC_URL} && \
   curl -LOks ${VIMRC_URL2}
 
+RUN sed -i "s/coc.nvim', {'branch': 'release'}/coc.nvim', {'tag': 'v0.0.82'}/g" /home/${USER}/.config/nvim/init.vim
+
 # download vimplug
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
                https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k
 RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
 		       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -k'
 
-#RUN pip3 install pydantic==1.8.2
-#RUN pip3 install pylint black
-
 # setup vim plugins
 RUN vim +PlugInstall +qa
 RUN nvim +PlugInstall +qa
 #RUN VIMLSP=yes nvim +'CocInstall -sync coc-json coc-jedi coc-diagnostic coc-clangd coc-prettier coc-eslint coc-tsserver coc-html coc-css coc-explorer' +qa
-RUN VIMLSP=yes nvim +'CocInstall -sync coc-json@1.9.0 coc-jedi@0.36.1 coc-diagnostic@0.24.0 coc-clangd@0.31.0 coc-prettier@9.3.2 coc-eslint@1.7.0 coc-tsserver@2.2.0 coc-html@1.8.0 coc-css@2.1.0 coc-explorer@0.27.3' +qa
+RUN VIMLSP=yes nvim +'CocInstall -sync coc-json@1.9.2 coc-jedi@0.36.1 coc-diagnostic@0.24.1 coc-clangd@0.31.0 coc-prettier@9.3.2 coc-eslint@1.7.0 coc-tsserver@2.2.0 coc-html@1.8.0 coc-css@2.1.0 coc-explorer@0.27.3' +qa
 
 # download coc-settings.json
 ARG COC_SETTINGS_URL=https://raw.githubusercontent.com/ysan/notes/master/vim_etc/coc-settings.json
