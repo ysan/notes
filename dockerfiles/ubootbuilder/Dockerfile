@@ -77,13 +77,27 @@ CMD /bin/bash
 # docker exec -it ubuilder_con /bin/bash
 # docker exec -it -u builder -w /home/builder ubuilder_con /bin/bash
 
+
 # --- build uboot ---
 # (https://wiki.st.com/stm32mpu/wiki/STM32MP15_U-Boot)
 # cd u-boot
 # export CROSS_COMPILE=arm-linux-gnueabihf-
 # make mrproper
 # make stm32mp15_defconfig
-# time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 all
+
+# early uart
+# ./scripts/config -e CONFIG_DEBUG_UART
+# ./scripts/config -e CONFIG_DEBUG_UART_STM32
+# ./scripts/config --set-val CONFIG_DEBUG_UART_BASE 0x40010000
+# ./scripts/config -e CONFIG_DEBUG_UART_ANNOUNCE
+
+# optee not support
+# make menuconfig
+#  Device Drivers ->
+     [ ] Trusted Execution Environment support
+
+# time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 KCFLAGS=-DDEBUG all
+
 
 # --- build optee ---
 # cd optee
@@ -116,6 +130,7 @@ CMD /bin/bash
 # ./tools/fiptool/fiptool info build/stm32mp1/debug/fip.bin
 # check bl32 dtb
 # fdtget -t s build/stm32mp1/debug/bl32.bin / compatible
+
 
 # --- write SD image at host ---
 # (https://wiki.st.com/stm32mpu/wiki/STM32CubeProgrammer_flashlayout)
