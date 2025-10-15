@@ -94,7 +94,7 @@ CMD /bin/bash
 # optee not support
 # make menuconfig
 #  Device Drivers ->
-     [ ] Trusted Execution Environment support
+#    [ ] Trusted Execution Environment support
 
 # time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 KCFLAGS=-DDEBUG all
 
@@ -102,6 +102,8 @@ CMD /bin/bash
 # --- build optee ---
 # cd optee
 # export CROSS_COMPILE=arm-linux-gnueabihf-
+# make clean
+# rm -rf out
 # time make -j $(nproc) PLATFORM=stm32mp1 CFG_EMBED_DTB_SOURCE_FILE=stm32mp157d-dk1.dts CFG_ARM32_core=y CFG_WITH_LPAE=n
 
 # --- build TF-A ---
@@ -138,18 +140,20 @@ CMD /bin/bash
 # git clone https://github.com/STMicroelectronics/meta-st-openstlinux
 # cd meta-st-stm32mp
 # git checkout scarthgap
-# sample.tsv
+# cp -p ./files/flashlayouts/FlashLayout_sdcard_stm32mp157f-ev1_sample.tsv sample.tsv
+# modified sample.tsv
 #Opt    Id      Name    Type    IP      Offset  Binary
-P       0x04    fsbl1   Binary  mmc0    0x00004400      tf-a-stm32mp157d-dk1.stm32
-P       0x05    fsbl2   Binary  mmc0    0x00044400      tf-a-stm32mp157d-dk1.stm32
-P       0x08    fip-a   FIP     mmc0    0x00104400      fip.bin
-PED     0x09    fip-b   FIP     mmc0    0x00504400      none
+#P       0x04    fsbl1   Binary  mmc0    0x00004400      tf-a-stm32mp157d-dk1.stm32
+#P       0x05    fsbl2   Binary  mmc0    0x00044400      tf-a-stm32mp157d-dk1.stm32
+#P       0x08    fip-a   FIP     mmc0    0x00104400      fip.bin
+#PED     0x09    fip-b   FIP     mmc0    0x00504400      none
 # ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh sample.tsv
 # sudo dd ...
 
 
-# --- create compile_commands.json at host ---
+# --- create compile_commands.json ---
 # curl -LOk https://raw.githubusercontent.com/u-boot/u-boot/refs/heads/master/scripts/gen_compile_commands.py
 # cd u-boot
+# chmod +x /path/to/gen_compile_commands.py
 # /path/to/gen_compile_commands.py
 
