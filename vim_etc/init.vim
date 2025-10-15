@@ -5,6 +5,7 @@ colorscheme koehler
 set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp,cp932
 set noswapfile
 set noautoindent
+set mouse=
 
 set wildmenu
 set wildmode=longest,full
