@@ -137,16 +137,16 @@ CMD /bin/bash
 # --- write SD image at host ---
 # (https://wiki.st.com/stm32mpu/wiki/STM32CubeProgrammer_flashlayout)
 # (https://wiki.st.com/stm32mpu/wiki/How_to_populate_the_SD_card_with_dd_command)
-# git clone https://github.com/STMicroelectronics/meta-st-openstlinux
+# git clone https://github.com/STMicroelectronics/meta-st-stm32mp
 # cd meta-st-stm32mp
 # git checkout scarthgap
 # cp -p ./files/flashlayouts/FlashLayout_sdcard_stm32mp157f-ev1_sample.tsv sample.tsv
 # modified sample.tsv
-#Opt    Id      Name    Type    IP      Offset  Binary
-#P       0x04    fsbl1   Binary  mmc0    0x00004400      tf-a-stm32mp157d-dk1.stm32
-#P       0x05    fsbl2   Binary  mmc0    0x00044400      tf-a-stm32mp157d-dk1.stm32
-#P       0x08    fip-a   FIP     mmc0    0x00104400      fip.bin
-#PED     0x09    fip-b   FIP     mmc0    0x00504400      none
+# #Opt    Id      Name    Type    IP      Offset  Binary
+# P       0x04    fsbl1   Binary  mmc0    0x00004400      tf-a-stm32mp157d-dk1.stm32
+# P       0x05    fsbl2   Binary  mmc0    0x00044400      tf-a-stm32mp157d-dk1.stm32
+# P       0x08    fip-a   FIP     mmc0    0x00104400      fip.bin
+# PED     0x09    fip-b   FIP     mmc0    0x00504400      none
 # ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh sample.tsv
 # sudo dd ...
 
