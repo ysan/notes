@@ -171,3 +171,13 @@ $ ffprobe -hide_banner -show_streams -i in.mp4
 
 // ffmpegでFHDに変換 (4K重い対策)
 $ ffmpeg -i in.mp4 -vf scale=-1:1080 out.mp4
+
+// ffmpegで最終フレーム抽出
+$ ffmpeg -i in.mp4 -vf reverse -vframes 1 -f image2 last_frame.png
+
+// ffmpegで無劣化結合
+inputs.txt
+file './video0.mp4'
+file './video1.mp4'
+file './video2.mp4'
+$ ffmpeg -f concat -safe 0 -i inputs.txt -c copy noa.mp4
