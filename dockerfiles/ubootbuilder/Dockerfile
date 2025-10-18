@@ -91,6 +91,13 @@ CMD /bin/bash
 # ./scripts/config --set-val CONFIG_DEBUG_UART_BASE 0x40010000
 # ./scripts/config -e CONFIG_DEBUG_UART_ANNOUNCE
 
+# countermeasure: Failed to persist EFI variables
+# make menuconfig
+#  Library routines ->
+#    [ ] Support running UEFI applications
+#
+# ... or add EFI system partition (ESP) in flashlayout
+
 # optee not support
 # make menuconfig
 #  Device Drivers ->
