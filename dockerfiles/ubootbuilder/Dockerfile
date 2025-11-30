@@ -91,18 +91,14 @@ CMD /bin/bash
 # ./scripts/config --set-val CONFIG_DEBUG_UART_BASE 0x40010000
 # ./scripts/config -e CONFIG_DEBUG_UART_ANNOUNCE
 
-# countermeasure: Failed to persist EFI variables
+# debug build countermeasure: Failed to persist EFI variables
 # make menuconfig
 #  Library routines ->
 #    [ ] Support running UEFI applications
 #
 # ... or add EFI system partition (ESP) in flashlayout
 
-# optee not support
-# make menuconfig
-#  Device Drivers ->
-#    [ ] Trusted Execution Environment support
-
+# time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 all
 # time make -j $(nproc) DEVICE_TREE=stm32mp157d-dk1 KCFLAGS=-DDEBUG all
 
 
@@ -112,6 +108,7 @@ CMD /bin/bash
 # make clean
 # rm -rf out
 # time make -j $(nproc) PLATFORM=stm32mp1 CFG_EMBED_DTB_SOURCE_FILE=stm32mp157d-dk1.dts CFG_ARM32_core=y CFG_WITH_LPAE=n
+
 
 # --- build TF-A ---
 # (https://wiki.st.com/stm32mpu/wiki/TF-A_BL2_overview)
@@ -125,15 +122,19 @@ CMD /bin/bash
 
 # ## sp_min ##  --> not supported
 # create TF-A
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 all
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb all
+# debug build
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 STM32MP_EARLY_CONSOLE=1 all
 # create fip
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb DEBUG=1 fip
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=sp_min DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb fip
 
 # ## optee ##
 # create TF-A
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 all
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb all
+# debug build
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb DEBUG=1 LOG_LEVEL=40 STM32MP_EARLY_CONSOLE=1 all
 # create fip
-# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb BL32=../optee/out/arm-plat-stm32mp1/core/tee-header_v2.bin BL32_EXTRA1=../optee/out/arm-plat-stm32mp1/core/tee-pager_v2.bin BL32_EXTRA2=../optee/out/arm-plat-stm32mp1/core/tee-pageable_v2.bin DEBUG=1 LOG_LEVEL=40 fip
+# make ARM_ARCH_MAJOR=7 ARCH=aarch32 STM32MP_SDMMC=1 PLAT=stm32mp1 AARCH32_SP=optee DTB_FILE_NAME=stm32mp157d-dk1.dtb BL33=../u-boot/u-boot-nodtb.bin BL33_CFG=../u-boot/u-boot.dtb BL32=../optee/out/arm-plat-stm32mp1/core/tee-header_v2.bin BL32_EXTRA1=../optee/out/arm-plat-stm32mp1/core/tee-pager_v2.bin BL32_EXTRA2=../optee/out/arm-plat-stm32mp1/core/tee-pageable_v2.bin fip
 
 # check fip
 # ./tools/fiptool/fiptool info build/stm32mp1/debug/fip.bin
@@ -156,6 +157,8 @@ CMD /bin/bash
 # PED     0x09    fip-b   FIP     mmc0    0x00504400      none
 # ./recipes-devtools/sdcard-raw-tools/sdcard-raw-tools/create_sdcard_from_flashlayout.sh sample.tsv
 # sudo dd ...
+# only fip-a partition
+# sudo dd if=fip.bin of=/dev/mmcblk0p3 bs=1M conv=fdatasync status=progress
 
 
 # --- create compile_commands.json ---
@@ -164,3 +167,7 @@ CMD /bin/bash
 # chmod +x /path/to/gen_compile_commands.py
 # /path/to/gen_compile_commands.py
 
+
+# --- launch tftpd at host ---
+# tftpd started by inetd listens on ipv6, so start it on ipv4 from the command
+sudo in.tftpd -L -4 -s $(pwd)
