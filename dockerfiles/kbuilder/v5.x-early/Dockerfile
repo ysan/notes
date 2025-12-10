@@ -35,20 +35,20 @@ CMD /bin/bash
 
 
 # -----------------------------------------------------------------------------
-# git clone -b v5.15 --depth=1 https://github.com/torvalds/linux
+# git clone -b v5.15 --depth=1 https://github.com/torvalds/linux linux-5.15
 # git clone -b 1_36_0 --depth=1 https://github.com/mirror/busybox
 
 # --- docker build ---
-# docker build -t kbuilder --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
+# docker build -t kbuilder-v5.x-early --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# docker run -it -d --name kbuilder_con \
+# docker run -it -d --name kbuilder-v5.x-early_con \
 #   --mount type=bind,src=/path/to/linux,dst=/home/builder/linux \
 #   --mount type=bind,src=/path/to/busybox,dst=/home/builder/busybox \
-#   kbuilder
+#   kbuilder-v5.x-early
 
-# docker exec -it kbuilder_con /bin/bash
-# docker exec -it -u builder -w /home/builder kbuilder_con /bin/bash
+# docker exec -it kbuilder-v5.x-early_con /bin/bash
+# docker exec -it -u builder -w /home/builder kbuilder-v5.x-early_con /bin/bash
 
 # --- build kernel ---
 # cd linux
