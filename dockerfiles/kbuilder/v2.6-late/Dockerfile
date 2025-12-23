@@ -27,7 +27,7 @@ ARG USER=builder
 ARG GROUP=builder
 ARG PASS=builder
 RUN groupadd -g $GID ${GROUP} && \
-  useradd -m -s /bin/bash -u ${UID} -g ${GID} -G sudo ${USER} && \
+  useradd    -s /bin/bash -u ${UID} -g ${GID} -G sudo ${USER} && \
   echo ${USER}:${PASS} | chpasswd
 
 # switch user
@@ -41,6 +41,7 @@ CMD /bin/bash
 
 # -----------------------------------------------------------------------------
 # git clone -b v2.6.32 --depth=1 https://github.com/torvalds/linux linux-2.6.32
+# git clone -b v2.6.32.71 --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-2.6.32.71
 
 # --- docker build ---
 # docker build -t kbuilder-v2.6-late --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
@@ -64,5 +65,5 @@ CMD /bin/bash
 # --- create compile_commands.json at host ---
 # pip3 install compiledb
 # compiledb -p build_log.txt
-# sed -i -e 's/\/home\/builder\/linux/\/home\/user\/path\/to\/linux-2.6.32/g' compile_commands.json
+# sed -i -e 's/\/home\/builder\/linux/\/home\/user\/path\/to\/linux-2.6.32.71/g' compile_commands.json
 

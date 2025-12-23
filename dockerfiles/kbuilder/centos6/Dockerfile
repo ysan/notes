@@ -82,7 +82,11 @@ CMD /bin/bash
 # <     make -s %{?cross_opts} ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
 # ---
 # >     make %{?cross_opts} ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags} > build_log.txt
-# rpmbuild --clean
+# 1087c1087
+# <     make -s %{?cross_opts} ARCH=$Arch V=1 %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
+# ---
+# >     make %{?cross_opts} ARCH=$Arch V=1 %{?_smp_mflags} modules %{?sparse_mflags} > build_log_modules.txt || exit 1
+# rpmbuild --clean kernel.spec
 # rpmbuild -bp kernel.spec
 # rpmbuild -bc --without debug --without debuginfo kernel.spec
 #

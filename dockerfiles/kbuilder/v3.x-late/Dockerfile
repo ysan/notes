@@ -41,6 +41,7 @@ CMD /bin/bash
 
 
 # -----------------------------------------------------------------------------
+# git clone -b v3.10 --depth=1 https://github.com/torvalds/linux linux-3.10
 # git clone -b v3.10.108 --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-3.10.108
 
 # --- docker build ---
