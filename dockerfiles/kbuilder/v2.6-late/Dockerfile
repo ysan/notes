@@ -43,12 +43,15 @@ CMD /bin/bash
 # git clone -b v2.6.32 --depth=1 https://github.com/torvalds/linux linux-2.6.32
 # git clone -b v2.6.32.71 --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-2.6.32.71
 
+# git clone -b 1_20_2 --depth=1 https://github.com/mirror/busybox busybox-1_20_2
+
 # --- docker build ---
 # docker build -t kbuilder-v2.6-late --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
 # docker run -it -d --name kbuilder-v2.6-late_con \
-#   --mount type=bind,src=/path/to/linux,dst=/home/builder/linux \
+#   --mount type=bind,src=/path/to/linux-2.6.32.71,dst=/home/builder/linux \
+#   --mount type=bind,src=/path/to/busybox-1_20_2,dst=/home/builder/busybox \
 #   kbuilder-v2.6-late
 
 # docker exec -it kbuilder-v2.6-late_con /bin/bash
@@ -67,3 +70,10 @@ CMD /bin/bash
 # compiledb -p build_log.txt
 # sed -i -e 's/\/home\/builder\/linux/\/home\/user\/path\/to\/linux-2.6.32.71/g' compile_commands.json
 
+# --- if need build busybox ---
+# cd busybox
+# make defconfig
+# make menuconfig
+#  Settings -> [*] Build static binary (no shared libs)
+# make
+# make install
