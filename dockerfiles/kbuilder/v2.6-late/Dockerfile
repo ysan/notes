@@ -41,34 +41,32 @@ CMD /bin/bash
 
 # -----------------------------------------------------------------------------
 # git clone -b v2.6.32 --depth=1 https://github.com/torvalds/linux linux-2.6.32
-# git clone -b v2.6.32.71 --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-2.6.32.71
 
-# git clone -b 1_20_2 --depth=1 https://github.com/mirror/busybox busybox-1_20_2
+# KERNEL_VERSION=v2.6.32.71
+# git clone -b ${KERNEL_VERSION} --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${KERNEL_VERSION}
+
+# BUSYBOX_VERSION=1_20_2
+# git clone -b ${BUSYBOX_VERSION} --depth=1 https://github.com/mirror/busybox busybox-${BUSYBOX_VERSION}
 
 # --- docker build ---
-# docker build -t kbuilder-v2.6-late --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
+# IMAGE_NAME=kbuilder-v2.6-late
+# docker build -t ${IMAGE_NAME} --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# docker run -it -d --name kbuilder-v2.6-late_con \
-#   --mount type=bind,src=/path/to/linux-2.6.32.71,dst=/home/builder/linux \
-#   --mount type=bind,src=/path/to/busybox-1_20_2,dst=/home/builder/busybox \
-#   kbuilder-v2.6-late
+# CONTAINER_NAME=${IMAGE_NAME}-dev
+# docker run -it -d --name ${CONTAINER_NAME} \
+#   --mount type=bind,src=$(realpath linux-${KERNEL_VERSION}),dst=/home/builder/linux \
+#   --mount type=bind,src=$(realpath busybox-${BUSYBOX_VERSION}),dst=/home/builder/busybox \
+#   ${IMAGE_NAME}
 
-# docker exec -it kbuilder-v2.6-late_con /bin/bash
-# docker exec -it -u builder -w /home/builder kbuilder-v2.6-late_con /bin/bash
+# docker exec -it ${CONTAINER_NAME} /bin/bash
+# docker exec -it -u builder -w /home/builder ${CONTAINER_NAME} /bin/bash
 
 # --- build kernel ---
 # cd linux
 # make defconfig
 # time make -j $(nproc)
-
-# --- create build log ---
-# make V=1 > build_log.txt
-#
-# --- create compile_commands.json at host ---
-# pip3 install compiledb
-# compiledb -p build_log.txt
-# sed -i -e 's/\/home\/builder\/linux/\/home\/user\/path\/to\/linux-2.6.32.71/g' compile_commands.json
+# make V=1 > build_log.txt # or create buildlog
 
 # --- if need build busybox ---
 # cd busybox
@@ -77,3 +75,8 @@ CMD /bin/bash
 #  Settings -> [*] Build static binary (no shared libs)
 # make
 # make install
+
+# --- create compile_commands.json at host ---
+# pip3 install compiledb
+# compiledb -p build_log.txt
+# sed -i "s|/home/builder/linux|$(realpath .)|g" compile_commands.json
