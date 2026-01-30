@@ -42,18 +42,18 @@ CMD /bin/bash
 # -----------------------------------------------------------------------------
 # git clone -b v2.6.32 --depth=1 https://github.com/torvalds/linux linux-2.6.32
 
-# KERNEL_VERSION=v2.6.32.71
+# KERNEL_VERSION="v2.6.32.71"
 # git clone -b ${KERNEL_VERSION} --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${KERNEL_VERSION}
 
-# BUSYBOX_VERSION=1_20_2
+# BUSYBOX_VERSION="1_20_2"
 # git clone -b ${BUSYBOX_VERSION} --depth=1 https://github.com/mirror/busybox busybox-${BUSYBOX_VERSION}
 
 # --- docker build ---
-# IMAGE_NAME=kbuilder-v2.6-late
+# IMAGE_NAME="kbuilder-v2.6-late"
 # docker build -t ${IMAGE_NAME} --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# CONTAINER_NAME=${IMAGE_NAME}-dev
+# CONTAINER_NAME="${IMAGE_NAME}-dev"
 # docker run -it -d --name ${CONTAINER_NAME} \
 #   --mount type=bind,src=$(realpath linux-${KERNEL_VERSION}),dst=/home/builder/linux \
 #   --mount type=bind,src=$(realpath busybox-${BUSYBOX_VERSION}),dst=/home/builder/busybox \
@@ -66,9 +66,9 @@ CMD /bin/bash
 # cd linux
 # make defconfig
 # time make -j $(nproc)
-# make V=1 > build_log.txt # or create buildlog
+# make V=1 > build_log.txt  # or create buildlog
 
-# --- if need build busybox ---
+# --- build busybox ---
 # cd busybox
 # make defconfig
 # make menuconfig
