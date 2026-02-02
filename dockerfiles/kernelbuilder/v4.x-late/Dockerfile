@@ -40,29 +40,42 @@ CMD /bin/bash
 
 # -----------------------------------------------------------------------------
 # git clone -b v4.19 --depth=1 https://github.com/torvalds/linux linux-4.19
-# git clone -b v4.19.325 --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-4.19.325
+
+# KERNEL_VERSION="v4.19.325"
+# git clone -b ${KERNEL_VERSION} --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${KERNEL_VERSION}
+
+# BUSYBOX_VERSION="1_32_1"
+# git clone -b ${BUSYBOX_VERSION} --depth=1 https://github.com/mirror/busybox busybox-${BUSYBOX_VERSION}
 
 # --- docker build ---
-# docker build -t kbuilder-v4.x-late --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
+# IMAGE_NAME="kbuilder-v4.x-late"
+# docker build -t ${IMAGE_NAME} --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# docker run -it -d --name kbuilder-v4.x-late_con \
-#   --mount type=bind,src=/path/to/linux,dst=/home/builder/linux \
-#   kbuilder-v4.x-late
+# CONTAINER_NAME="${IMAGE_NAME}-dev"
+# docker run -it -d --name ${CONTAINER_NAME} \
+#   --mount type=bind,src=$(realpath linux-${KERNEL_VERSION}),dst=/home/builder/linux \
+#   --mount type=bind,src=$(realpath busybox-${BUSYBOX_VERSION}),dst=/home/builder/busybox \
+#   ${IMAGE_NAME}
 
-# docker exec -it kbuilder-v4.x-late_con /bin/bash
-# docker exec -it -u builder -w /home/builder kbuilder-v4.x-late_con /bin/bash
+# docker exec -it ${CONTAINER_NAME} /bin/bash
+# docker exec -it -u builder -w /home/builder ${CONTAINER_NAME} /bin/bash
 
 # --- build kernel ---
 # cd linux
 # make defconfig
 # time make -j $(nproc)
+# make V=1 > build_log.txt  # or create buildlog
 
-# --- create build log ---
-# make V=1 > build_log.txt
-#
+# --- build busybox ---
+# cd busybox
+# make defconfig
+# make menuconfig
+#  Settings -> [*] Build static binary (no shared libs)
+# make
+# make install
+
 # --- create compile_commands.json at host ---
 # pip3 install compiledb
 # compiledb -p build_log.txt
-# sed -i -e 's/\/home\/builder\/linux/\/home\/user\/path\/to\/linux-4.19.325/g' compile_commands.json
-
+# sed -i "s|/home/builder/linux|$(realpath .)|g" compile_commands.json
