@@ -35,41 +35,34 @@ CMD /bin/bash
 
 
 # -----------------------------------------------------------------------------
-# git clone -b v5.15 --depth=1 https://github.com/torvalds/linux linux-5.15
-# git clone -b 1_36_0 --depth=1 https://github.com/mirror/busybox
+# git clone -b v5.4 --depth=1 https://github.com/torvalds/linux linux-5.4
+
+# KERNEL_VERSION="v5.4.302"
+# git clone -b ${KERNEL_VERSION} --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${KERNEL_VERSION}
+
+# BUSYBOX_VERSION="1_36_1"
+# git clone -b ${BUSYBOX_VERSION} --depth=1 https://github.com/mirror/busybox busybox-${BUSYBOX_VERSION}
 
 # --- docker build ---
-# docker build -t kbuilder-v5.x-early --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
+# IMAGE_NAME="kbuilder-v5.x-early"
+# docker build -t ${IMAGE_NAME} --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# docker run -it -d --name kbuilder-v5.x-early_con \
-#   --mount type=bind,src=/path/to/linux,dst=/home/builder/linux \
-#   --mount type=bind,src=/path/to/busybox,dst=/home/builder/busybox \
-#   kbuilder-v5.x-early
+# CONTAINER_NAME="${IMAGE_NAME}-dev"
+# docker run -it -d --name ${CONTAINER_NAME} \
+#   --mount type=bind,src=$(realpath linux-${KERNEL_VERSION}),dst=/home/builder/linux \
+#   --mount type=bind,src=$(realpath busybox-${BUSYBOX_VERSION}),dst=/home/builder/busybox \
+#   ${IMAGE_NAME}
 
-# docker exec -it kbuilder-v5.x-early_con /bin/bash
-# docker exec -it -u builder -w /home/builder kbuilder-v5.x-early_con /bin/bash
+# docker exec -it ${CONTAINER_NAME} /bin/bash
+# docker exec -it -u builder -w /home/builder ${CONTAINER_NAME} /bin/bash
 
 # --- build kernel ---
 # cd linux
 # make defconfig
-# make menuconfig
-#  Kernel hacking -> [*] Kernel debugging
-#  Kernel hacking -> Compile-time checks and compiler options -> [*] Compile the kernel with debug info
-#  Kernel hacking -> printk and dmesg options -> [*] Enable dynamic printk() support
-#  Kernel hacking -> Tracers -> [*] Kernel Function Tracer
-#                               [*] Kernel Function Graph Tracer
-#  Processor type and features -> [ ] EFI runtime service support
-#                              -> [ ] Build a relocatable kernel
 # time make -j $(nproc)
 
-# --- create compile_commands.json at host ---
-# cd linux
-# ./scripts/clang-tools/gen_compile_commands.py
-# or
-# ./scripts/gen_compile_commands.py
-
-# --- if need build busybox ---
+# --- build busybox ---
 # cd busybox
 # make defconfig
 # make menuconfig
@@ -77,65 +70,9 @@ CMD /bin/bash
 # make
 # make install
 
-# --- create rootfs (busybox simple) at host ---
-# mkdir -p rootfs/{proc,bin,sbin,dev,sys}
-# cd rootfs/bin
-# curl -LOks https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
-# chmod 755 ./busybox
-# ln -s busybox sh
-# ln -s busybox mount
-# cd ../sbin
-# cat <<EOF > init
-# > #!/bin/sh
-# > mount -t proc none /proc
-# > mount -t sysfs none /sys
-# > exec /bin/sh
-# > EOF
-# chmod 755 init
-# cd ../dev
-# sudo mknod console c 5 1
-# sudo mknod null c 1 3
-# cd ..
-# find ./ | cpio -o -H newc | gzip > ../rootfs.img
-
-# --- launch qemu at host ---
-# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init" -nographic
-# finish -> ctrl+a x
-
-# --- create rootfs (busybox full) at host ---
-# mkdir -p rootfs/{proc,dev,sys,run,etc/init.d,mnt}
-# cp -pr /path/to/busybox/_install/* rootfs/
-# cd rootfs/dev
-# sudo mknod console c 5 1
-# sudo mknod null c 1 3
-# sudo mknod ram b 1 0
-# sudo mknod zero c 1 5
-# sudo mknod urandom c 1 9
-# sudo mknod ttyS0 c 4 64
-# cd ../etc/init.d
-# cat <<EOF > rcS
-# > #!/bin/sh
-# > mount -t proc none /proc
-# > mount -t sysfs none /sys
-# > mount -t tmpfs none /run
-# > mount -t debugfs none /sys/kernel/debug
-# > mount -t tmpfs cgroup /sys/fs/cgroup
-# > mkdir /sys/fs/cgroup/cpu
-# > mkdir /sys/fs/cgroup/devices
-# > mount -t cgroup -o cpu cgroup /sys/fs/cgroup/cpu
-# > mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices
-# > /sbin/mdev -s
-# > EOF
-# chmod 755 rcS
-# cd ../..
-# find ./ | cpio -o -H newc | gzip > ../rootfs.img
-
-# --- launch qemu + gdb at host ---
-# qemu-system-x86_64 -kernel /path/to/bzImage -initrd /path/to/rootfs.img -append "console=ttyS0 rdinit=/sbin/init root=/dev/ram nokaslr" -nographic -gdb tcp::12345 -S
-# gdb
-# target remote localhost:12345
-# symbol-file /path/to/linux/vmlinux
-# directory /path/to/linux
-# b start_kernel
-# layout split
-# c
+# --- create compile_commands.json at host ---
+# cd linux-${KERNEL_VERSION}
+# ./scripts/clang-tools/gen_compile_commands.py
+# or
+# ./scripts/gen_compile_commands.py
+# sed -i "s|/home/builder/linux|$(realpath .)|g" compile_commands.json
