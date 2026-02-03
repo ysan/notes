@@ -1,0 +1,117 @@
+################################
+# eduデバイスを追加
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu
+
+
+################################
+# GDBでカーネルをステップ実行
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu -gdb tcp::12345 -S
+
+# 事前にゲストkernelをデバッグ情報付きビルドする必要がある (kernel v5.x)
+# cd linux
+# make defconfig
+# make menuconfig
+#   Kernel hacking -> [*] Kernel debugging
+#   Kernel hacking -> Compile-time checks and compiler options -> [*] Compile the kernel with debug info
+#   Kernel hacking -> printk and dmesg options -> [*] Enable dynamic printk() support
+#   Kernel hacking -> Tracers -> [*] Kernel Function Tracer
+#                                [*] Kernel Function Graph Tracer
+#   Processor type and features -> [ ] EFI runtime service support
+#                                  [ ] Build a relocatable kernel
+# time make -j $(nproc)
+
+# gdb
+# (gdb) target remote localhost:12345
+# (gdb) symbol-file path/to/linux/vmlinux
+# (gdb) directory path/to/linux
+# (gdb) b start_kernel
+# (gdb) layout split
+# (gdb) c
+
+
+################################
+# IRQドメインと割り込み記述子のデバッグメッセージを有効化
+#   irqdomain.c +p irqdomain.c内のpr_debug()を全て有効化
+#   irqdesc.c +p   irqdesc.c内のpr_debug()を全て有効化
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr dyndbg=\"file irqdomain.c +p; file irqdesc.c +p\"" -nographic -device edu
+
+# 事前にゲストkernelをdynamic printk を有効化する必要ある
+
+
+################################
+# pci_assign_irq()関数の呼び出しツリーをトレース
+#   ftrace=function_graph              関数の呼び出し階層を記録
+#   ftrace_graph_filter=pci_assign_irq この関数だけに絞る
+#   tp_printk                          tracepointをカーネルログに出力
+#   trace_buf_size=1M                  トレースバッファを1MBに拡大
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr tp_printk trace_buf_size=1M ftrace=function_graph ftrace_graph_filter=pci_assign_irq" -nographic -device edu
+
+#   ftrace_graph_filter=pin_2_irq この関数だけに絞る
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr tp_printk trace_buf_size=1M ftrace=function_graph ftrace_graph_filter=pin_2_irq" -nographic -device edu
+
+# 事前にゲストkernelをfunction tracer を有効化する必要ある
+
+
+################################
+# APIC詳細ログ
+#   apic=verbose  Local APICとI/O APICの詳細ログ
+#   debug         カーネル全体のデバッグメッセージ増加
+#   -smp 2        2コアCPU（マルチコアでの割り込み分散を確認？）
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr apic=verbose debug" -nographic -device edu -smp 2
+
+
+################################
+# ホストとゲスト間でファイル共有
+#  -virtfs
+#    local                      ホストのローカルファイルシステムを共有
+#    path=/tmp/shared           ホスト側の共有ディレクトリ
+#    mount_tag=shared           ゲスト側でマウントする際のタグ名
+#    security_model=passthrough ホストの権限をそのまま使う
+#    id=shared                  この共有の識別子
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr noapic" -nographic -virtfs local,path=/tmp/shared,mount_tag=shared,security_model=passthrough,id=shared
+
+# 事前にゲストkernelのビルドでP9を有効にする ここを参照
+# https://wiki.qemu.org/Documentation/9psetup
+# ->
+# CONFIG_NET_9P=y
+# CONFIG_NET_9P_VIRTIO=y
+# CONFIG_9P_FS=y
+# CONFIG_9P_FS_POSIX_ACL=y
+# CONFIG_VIRTIO_PCI=y
+
+# ゲストでマウント
+# mkdir -p /mnt/shared
+# mount -t 9p -o trans=virtio,version=9p2000.L,cache=loose shared /mnt/shared
+
+# ただしホストのディレクトリとuid gidを合わせないと書き込みできない
+# 回避する為には QEMUをrootで実行する
+# もしくは以下ユーザを作成してuid gidを合わせる (busyboxの場合)
+# touch /etc/group
+# touch /etc/passwd
+# addgroup -g 1001 testgroup
+# mkdir -p /home/testuser
+# adduser -D -u 1001 -G testgroup -s /bin/sh testuser
+# chown -R testuser:testgroup /home/testuser
+# su - testuser
+
+
+################################
+# diskを追加
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -hda path/to/disk.img
+
+# ただしホストのディスクイメージとuid gidを合わせないと書き込みできない
+# 回避する為には QEMUをrootで実行する
+# もしくはユーザを作成してuid gidを合わせる (上記ファイル共有のメモ参考)
+
+
+################################
+# debootstrap
+# bionicの例 minbase
+sudo debootstrap --variant=minbase --arch=amd64 --include=systemd,systemd-sysv,udev,kmod,init bionic ./tmp_debootstrap http://archive.ubuntu.com/ubuntu/
+
+# debootstrap でrootfs.img作成...
+
+# メモリ多めにしないと initramfs unpack時にoomkillerが発動する
+# -m 512M
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -m 512M
+

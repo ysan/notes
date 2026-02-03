@@ -1,2 +1,6 @@
 rootfs
 rootfs.img
+rootfs_debootstrap
+rootfs_debootstrap.img
+disk
+disk.img

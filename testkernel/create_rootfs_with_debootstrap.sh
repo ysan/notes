@@ -5,8 +5,8 @@ if [ ! "$(id -u)" -eq 0  ]; then
 	exit 1
 fi
 
-WORK_DIR="./rootfs"
-TARGET_IMAGE="./rootfs.img"
+WORK_DIR="./rootfs_debootstrap"
+TARGET_IMAGE="./rootfs_debootstrap.img"
 
 if [ -z "${PREBUILTS_DIR}" ]; then
 	echo "Please set PREBUILTS_DIR."
@@ -37,31 +37,49 @@ fi
 
 set -e
 
-mkdir -p ${WORK_DIR}/{proc,dev,sys,run,etc/init.d,mnt}
 cp -pr "${PREBUILTS_DIR}"/* ${WORK_DIR}
-mknod ${WORK_DIR}/dev/console c 5 1
-mknod ${WORK_DIR}/dev/null c 1 3
-mknod ${WORK_DIR}/dev/ram b 1 0
-mknod ${WORK_DIR}/dev/zero c 1 5
-mknod ${WORK_DIR}/dev/urandom c 1 9
-mknod ${WORK_DIR}/dev/ttyS0 c 4 64
-echo "append directories -- done"
+mount --bind /dev ${WORK_DIR}/dev
+mount --bind /proc ${WORK_DIR}/proc
+mount --bind /sys ${WORK_DIR}/sys
+mount --bind /dev/pts ${WORK_DIR}/dev/pts
 
-cat <<EOF > ${WORK_DIR}/etc/init.d/rcS
-#!/bin/sh
-mount -t proc none /proc
-mount -t sysfs none /sys
-mount -t tmpfs none /run
-mount -t debugfs none /sys/kernel/debug
-mount -t tmpfs cgroup /sys/fs/cgroup
-mkdir /sys/fs/cgroup/cpu
-mkdir /sys/fs/cgroup/devices
-mount -t cgroup -o cpu cgroup /sys/fs/cgroup/cpu
-mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices
-/sbin/mdev -s
+chroot ${WORK_DIR} /bin/bash <<'CHROOT_EOF'
+apt-get update
+apt-get install -y locales
+locale-gen en_US.UTF-8
+update-locale LANG=en_US.UTF-8
+
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+echo "Asia/Tokyo" > /etc/timezone
+
+cat > /etc/hosts <<EOF
+127.0.0.1   localhost
 EOF
-chmod 755 ${WORK_DIR}/etc/init.d/rcS
-echo "create ${WORK_DIR}/etc/init.d/rcS -- done"
+
+echo "root:root" | chpasswd
+
+apt-get install -y \
+	iproute2 \
+	iputils-ping \
+	net-tools \
+	vim-tiny \
+	less \
+	curl \
+	ca-certificates
+
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+
+rm -rf /tmp/*
+
+CHROOT_EOF
+
+echo "chroot settings -- done"
+
+umount ${WORK_DIR}/dev/pts
+umount ${WORK_DIR}/dev
+umount ${WORK_DIR}/proc
+umount ${WORK_DIR}/sys
 
 cd ${WORK_DIR}
 find . | cpio -o -H newc | gzip > ../${TARGET_IMAGE}
