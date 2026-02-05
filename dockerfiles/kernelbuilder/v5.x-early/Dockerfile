@@ -62,6 +62,9 @@ CMD /bin/bash
 # make defconfig
 # time make -j $(nproc)
 
+# mkdir modules_output
+# make modules_install INSTALL_MOD_PATH=./modules_output
+
 # --- build busybox ---
 # cd busybox
 # make defconfig

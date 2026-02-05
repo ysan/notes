@@ -68,6 +68,9 @@ CMD /bin/bash
 # time make -j $(nproc)
 # make V=1 > build_log.txt  # or create buildlog
 
+# mkdir modules_output
+# make modules_install INSTALL_MOD_PATH=./modules_output
+
 # --- build busybox ---
 # cd busybox
 # make defconfig
