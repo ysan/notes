@@ -19,16 +19,27 @@ if [ ! -d "${PREBUILTS_DIR}" ]; then
 	exit 1
 fi
 
+if [ ! -z "${MODULES_DIR}"  ]; then
+	if [ ! -d "${MODULES_DIR}" ]; then
+		echo "Not found modules directory... [${MODULES_DIR}]"
+		exit 1
+	fi
+fi
+
 echo "PREBUILTS_DIR: ${PREBUILTS_DIR}"
+if [ -z "${MODULES_DIR}"  ]; then
+	echo "MODULES_DIR: none"
+else
+	echo "MODULES_DIR: ${MODULES_DIR}"
+fi
 echo "WORK_DIR: ${WORK_DIR}"
 echo "TARGET_IMAGE: ${TARGET_IMAGE}"
 
-mkdir -p ${WORK_DIR}
 if [ -d "${WORK_DIR}" ]; then
-	echo "rm ${WORK_DIR}"
+	echo "rm -rf ${WORK_DIR}"
 	rm -rf ${WORK_DIR}
-	mkdir -p ${WORK_DIR}
 fi
+mkdir -p ${WORK_DIR}
 
 if [ -e "${TARGET_IMAGE}" ]; then
 	echo "rm ${TARGET_IMAGE}"
@@ -39,6 +50,9 @@ set -e
 
 mkdir -p ${WORK_DIR}/{proc,dev,sys,run,etc/init.d,mnt}
 cp -pr "${PREBUILTS_DIR}"/* ${WORK_DIR}
+if [ ! -z "${MODULES_DIR}"  ]; then
+	cp -pr "${MODULES_DIR}/lib" ${WORK_DIR}
+fi
 mknod ${WORK_DIR}/dev/console c 5 1
 mknod ${WORK_DIR}/dev/null c 1 3
 mknod ${WORK_DIR}/dev/ram b 1 0
