@@ -44,32 +44,71 @@ mount --bind /sys ${WORK_DIR}/sys
 mount --bind /dev/pts ${WORK_DIR}/dev/pts
 
 chroot ${WORK_DIR} /bin/bash <<'CHROOT_EOF'
+. /etc/os-release && echo "VERSION_CODENAME:${VERSION_CODENAME}"
+
+cat <<EOF > /etc/apt/sources.list
+deb http://archive.ubuntu.com/ubuntu/ ${VERSION_CODENAME} main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ ${VERSION_CODENAME}-updates main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ ${VERSION_CODENAME}-security main restricted universe multiverse
+EOF
+
 apt-get update
-apt-get install -y locales
+
+apt-get install -y \
+	locales \
+	iproute2 \
+	iputils-ping \
+	net-tools \
+	dnsutils \
+	traceroute \
+	vim \
+	less \
+	curl \
+	wget \
+	sudo \
+	tmux \
+	netcat-openbsd \
+	telnet \
+	pciutils \
+	usbutils \
+	openssh-server \
+	openssh-client \
+	git \
+	xterm \
+	strace \
+	ca-certificates
+
 locale-gen en_US.UTF-8
 update-locale LANG=en_US.UTF-8
 
 ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 echo "Asia/Tokyo" > /etc/timezone
 
+echo "debootstrap" > /etc/hostname
+
 cat > /etc/hosts <<EOF
 127.0.0.1   localhost
+127.0.0.1   debootstrap
+EOF
+
+# echo "nameserver 8.8.8.8" > /etc/resolv.conf
+cat > /etc/systemd/resolved.conf << 'EOF'
+[Resolve]
+DNS=8.8.8.8 8.8.4.4 172.25.1.199 172.16.3.199
+#                   ^^^^^ inernal DNS ^^^^^
 EOF
 
 echo "root:root" | chpasswd
 
-apt-get install -y \
-	iproute2 \
-	iputils-ping \
-	net-tools \
-	vim-tiny \
-	less \
-	curl \
-	ca-certificates
+mkdir -p /etc/systemd/system/serial-getty@ttyS0.service.d
+cat > /etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf << 'EOF'
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
+EOF
 
 apt-get clean
 rm -rf /var/lib/apt/lists/*
-
 rm -rf /tmp/*
 
 CHROOT_EOF

@@ -1,13 +1,20 @@
 ################################
-# eduデバイスを追加
+# ターミナルサイズとqemuゲストのコンソールサイズを合わせるには
+# xtermパッケージの resizeコマンドで
+
+
+################################
+# edu pciデバイスを追加
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu
+
+# pciドライバ実験など
 
 
 ################################
 # GDBでカーネルをステップ実行
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu -gdb tcp::12345 -S
 
-# 事前にゲストkernelをデバッグ情報付きビルドする必要がある (kernel v5.x)
+# 事前にゲストkernelをデバッグ情報付きビルドする必要がある (以下 kernel v5.x 例)
 # cd linux
 # make defconfig
 # make menuconfig
@@ -20,7 +27,7 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 #                                  [ ] Build a relocatable kernel
 # time make -j $(nproc)
 
-# gdb
+# gdb 例
 # (gdb) target remote localhost:12345
 # (gdb) symbol-file path/to/linux/vmlinux
 # (gdb) directory path/to/linux
@@ -77,6 +84,7 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 # CONFIG_NET_9P_VIRTIO=y
 # CONFIG_9P_FS=y
 # CONFIG_9P_FS_POSIX_ACL=y
+# CONFIG_VIRTIO=y
 # CONFIG_VIRTIO_PCI=y
 
 # ゲストでマウント
@@ -85,18 +93,31 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 
 # ただしホストのディレクトリとuid gidを合わせないと書き込みできない
 # 回避する為には QEMUをrootで実行する
-# もしくは以下ユーザを作成してuid gidを合わせる (busyboxの場合)
-# touch /etc/group
-# touch /etc/passwd
-# addgroup -g 1001 testgroup
-# mkdir -p /home/testuser
-# adduser -D -u 1001 -G testgroup -s /bin/sh testuser
-# chown -R testuser:testgroup /home/testuser
-# su - testuser
+# もしくは以下ユーザを作成してuid gidを合わせる
+XUID=1001
+XGID=1001
+UNAME=testuser
+GNAME=testuser
+
+# (busyboxの場合)
+touch /etc/group
+touch /etc/passwd
+addgroup -g ${XGID} ${GNAME}
+mkdir -p /home/W${UNAME}
+adduser -D -u ${XUID} -G ${GNAME} -s /bin/sh ${UNAME}
+chown -R ${UNAME}:${GNAME} /home/${UNAME}
+su - ${UNAME}
+
+# (ディストリビューションの場合)
+groupadd -g ${XGID} ${GNAME}
+useradd -m -s /bin/bash -u ${XUID} -g ${XGID} -G sudo ${UNAME}
+echo ${UNAME}:${GNAME} | chpasswd
+su - ${UNAME}
 
 
 ################################
 # diskを追加
+#  -hda disk.img
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -hda path/to/disk.img
 
 # ただしホストのディスクイメージとuid gidを合わせないと書き込みできない
@@ -105,13 +126,45 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 
 
 ################################
-# debootstrap
-# bionicの例 minbase
-sudo debootstrap --variant=minbase --arch=amd64 --include=systemd,systemd-sysv,udev,kmod,init bionic ./tmp_debootstrap http://archive.ubuntu.com/ubuntu/
+# デフォルトネットワークについて
+# https://wiki.qemu.org/Documentation/Networking
+# https://www.qemu.org/docs/master/system/devices/net.html
 
-# debootstrap でrootfs.img作成...
+# デフォルトではゲートウェイからDHCPでアドレスが割り当てられる
+# (ゲストでDHCPサーバーやネットワーク設定がされている場合)
+# ip      10.0.2.15
+# subnet  255.255.255.0
+# gateway 10.0.2.2
+
+# ゲストでDHCPしない場合の設定例
+NIC="eth0"
+ip addr add 10.0.2.200/24 dev ${NIC}
+ip link set ${NIC} up
+ip route add default via 10.0.2.2
+
+# ゲストからping(ICMP)を出すには以下をホストでセットする (制限効いていると UDP port7で出ていく)
+sudo sysctl -w net.ipv4.ping_group_range="0 2147483647"  # 全てのGIDを許可 (再起動で消える)
+
+
+################################
+# virtio net pciを追加
+#  -device virtio-net-pci,netdev=net0  ゲストから見える仮想デバイス
+#  -netdev user,id=net0                qemuバックエンド (仮想デバイスからホストへ繋ぐ)
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -netdev user,id=net0 -device virtio-net-pci,netdev=net0
+
+# 事前にゲストkernelのビルドでVIRTIOを有効にする
+# CONFIG_VIRTIO=y
+# CONFIG_VIRTIO_PCI=y
+# CONFIG_VIRTIO_NET=y
+
+
+################################
+# debootstrap bionicの例 minbase
+sudo debootstrap --variant=minbase --arch=amd64 --include=systemd,systemd-sysv,udev,kmod,init bionic /tmp/debootstrap_bionic http://archive.ubuntu.com/ubuntu/
+
+# rootfs.img作成...
 
 # メモリ多めにしないと initramfs unpack時にoomkillerが発動する
-# -m 512M
+# -m 512M or -m 1G
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -m 512M
 
