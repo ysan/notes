@@ -51,7 +51,7 @@ set -e
 mkdir -p ${WORK_DIR}/{proc,dev,sys,run,etc/init.d,mnt}
 cp -pr "${PREBUILTS_DIR}"/* ${WORK_DIR}
 if [ ! -z "${MODULES_DIR}"  ]; then
-	cp -pr "${MODULES_DIR}/lib" ${WORK_DIR}
+	cp -pr "${MODULES_DIR}"/* ${WORK_DIR}
 fi
 mknod ${WORK_DIR}/dev/console c 5 1
 mknod ${WORK_DIR}/dev/null c 1 3

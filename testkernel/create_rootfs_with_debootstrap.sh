@@ -55,7 +55,7 @@ set -e
 
 cp -pr "${PREBUILTS_DIR}"/* ${WORK_DIR}
 if [ ! -z "${MODULES_DIR}"  ]; then
-	cp -pr "${MODULES_DIR}/lib" ${WORK_DIR}
+	cp -pr "${MODULES_DIR}"/* ${WORK_DIR}
 fi
 
 mount --bind /dev ${WORK_DIR}/dev

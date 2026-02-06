@@ -12,9 +12,8 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 
 ################################
 # GDBでカーネルをステップ実行
-qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu -gdb tcp::12345 -S
 
-# 事前にゲストkernelをデバッグ情報付きビルドする必要がある (以下 kernel v5.x 例)
+# 事前にゲストkernelをデバッグ情報付きビルドする (以下 kernel v5.x 例)
 # cd linux
 # make defconfig
 # make menuconfig
@@ -26,6 +25,8 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 #   Processor type and features -> [ ] EFI runtime service support
 #                                  [ ] Build a relocatable kernel
 # time make -j $(nproc)
+
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu -gdb tcp::12345 -S
 
 # gdb 例
 # (gdb) target remote localhost:12345
@@ -69,13 +70,6 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 
 ################################
 # ホストとゲスト間でファイル共有
-#  -virtfs
-#    local                      ホストのローカルファイルシステムを共有
-#    path=/tmp/shared           ホスト側の共有ディレクトリ
-#    mount_tag=shared           ゲスト側でマウントする際のタグ名
-#    security_model=passthrough ホストの権限をそのまま使う
-#    id=shared                  この共有の識別子
-qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr noapic" -nographic -virtfs local,path=/tmp/shared,mount_tag=shared,security_model=passthrough,id=shared
 
 # 事前にゲストkernelのビルドでP9を有効にする ここを参照
 # https://wiki.qemu.org/Documentation/9psetup
@@ -86,6 +80,14 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 # CONFIG_9P_FS_POSIX_ACL=y
 # CONFIG_VIRTIO=y
 # CONFIG_VIRTIO_PCI=y
+
+# -virtfs
+#   local                      ホストのローカルファイルシステムを共有
+#   path=/tmp/shared           ホスト側の共有ディレクトリ
+#   mount_tag=shared           ゲスト側でマウントする際のタグ名
+#   security_model=passthrough ホストの権限をそのまま使う
+#   id=shared                  この共有の識別子
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr noapic" -nographic -virtfs local,path=/tmp/shared,mount_tag=shared,security_model=passthrough,id=shared
 
 # ゲストでマウント
 # mkdir -p /mnt/shared
@@ -116,13 +118,19 @@ su - ${UNAME}
 
 
 ################################
-# diskを追加
-#  -hda disk.img
+# initrdからブートして diskを追加
+
+# 事前に ext4 イメージ作成
+dd if=/dev/zero of=disk.img bs=1M count=10  # 10Mbytes
+mkfs.ext4 disk.img
+
+# -hda disk.img  追加のストレージとしてイメージを第1ドライブ（/dev/sda）として接続
+# 詳細に設定するなら -drive で
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -hda path/to/disk.img
 
-# ただしホストのディスクイメージとuid gidを合わせないと書き込みできない
-# 回避する為には QEMUをrootで実行する
-# もしくはユーザを作成してuid gidを合わせる (上記ファイル共有のメモ参考)
+# ゲストでマウント
+mkdir -p /mnt/disk
+mount -t ext4 /dev/sda /mnt/disk
 
 
 ################################
@@ -148,14 +156,15 @@ sudo sysctl -w net.ipv4.ping_group_range="0 2147483647"  # 全てのGIDを許可
 
 ################################
 # virtio net pciを追加
-#  -device virtio-net-pci,netdev=net0  ゲストから見える仮想デバイス
-#  -netdev user,id=net0                qemuバックエンド (仮想デバイスからホストへ繋ぐ)
-qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -netdev user,id=net0 -device virtio-net-pci,netdev=net0
 
 # 事前にゲストkernelのビルドでVIRTIOを有効にする
 # CONFIG_VIRTIO=y
 # CONFIG_VIRTIO_PCI=y
 # CONFIG_VIRTIO_NET=y
+
+#  -device virtio-net-pci,netdev=net0  ゲストから見える仮想デバイス
+#  -netdev user,id=net0                qemuバックエンド (仮想デバイスからホストへ繋ぐ)
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -netdev user,id=net0 -device virtio-net-pci,netdev=net0
 
 
 ################################
@@ -168,3 +177,37 @@ sudo debootstrap --variant=minbase --arch=amd64 --include=systemd,systemd-sysv,u
 # -m 512M or -m 1G
 qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -m 512M
 
+
+################################
+# 作成した rootfs.img(initramfs CPIO形式) をdiskとして接続する
+
+# 事前に CPIO を ext4 イメージに変換
+dd if=/dev/zero of=disk.img bs=1M count=1024  # 1Gbytes
+mkfs.ext4 disk.img
+mkdir ./disk
+sudo mount -t ext4 disk.img ./disk
+cd disk
+# rootfs.img(CPIO) は1つ上のディレクトリに置いてある前提
+zcat ../rootfs.img | sudo cpio -idmv
+cd ..
+sudo umount disk
+
+# -disk
+#   file=path/to/disk.img  イメージのパス
+#   format=raw             非圧縮の生ディスクイメージ形式
+# kernel command
+#   root=/dev/sda
+qemu-system-x86_64 -kernel path/to/bzImage -drive file=path/to/disk.img,format=raw -append "console=ttyS0 root=/dev/sda rw nokaslr" -nographic
+
+## virtio-blk で接続する ##
+
+# 事前にゲストkernelを以下コンフィグを追加してビルド
+CONFIG_VIRTIO_BLK=y
+
+# -disk
+#   file=path/to/disk.img  イメージのパス
+#   format=raw             非圧縮の生ディスクイメージ形式
+#   if=virtio              virtioで接続
+# kerenl command
+#   root=/dev/vda
+qemu-system-x86_64 -kernel path/to/bzImage -drive file=path/to/disk.img,format=raw,if=virtio -append "console=ttyS0 root=/dev/vda rw nokaslr" -nographic
