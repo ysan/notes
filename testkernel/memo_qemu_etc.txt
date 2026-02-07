@@ -1,13 +1,25 @@
 ################################
-# ターミナルサイズとqemuゲストのコンソールサイズを合わせるには
-# xtermパッケージの resizeコマンドで
+# kvm有効化
+#   -enable-kvm
+#   エミュレーションでなくネイティブ実行する
+#   使用できる環境では有効化すべき
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -enable-kvm
+
+# Intel VT-x または AMD-V があること
+grep -E '(vmx|svm)' /proc/cpuinfo
+
+# ホストでkvmモジュールをロード済みであること
+lsmod | grep kvm
+
+ls -l /dev/kvm
+# crw-rw----+ 1 root kvm 10, 232 Feb  7 12:34 /dev/kvm
+# 権限がなければ
+sudo chmod 666 /dev/kvm
 
 
 ################################
-# edu pciデバイスを追加
-qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu
-
-# pciドライバ実験など
+# ターミナルサイズとqemuゲストのコンソールサイズを合わせるには
+# ゲストでxtermパッケージの resizeコマンドで
 
 
 ################################
@@ -26,7 +38,7 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 #                                  [ ] Build a relocatable kernel
 # time make -j $(nproc)
 
-qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu -gdb tcp::12345 -S
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -gdb tcp::12345 -S
 
 # gdb 例
 # (gdb) target remote localhost:12345
@@ -35,6 +47,14 @@ qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "c
 # (gdb) b start_kernel
 # (gdb) layout split
 # (gdb) c
+
+
+################################
+# edu pciデバイスを追加
+#   -device edu
+qemu-system-x86_64 -kernel path/to/bzImage -initrd path/to/rootfs.img -append "console=ttyS0 root=/dev/ram rdinit=/sbin/init nokaslr" -nographic -device edu
+
+# pciドライバ実験など
 
 
 ################################
@@ -134,7 +154,7 @@ mount -t ext4 /dev/sda /mnt/disk
 
 
 ################################
-# デフォルトネットワークについて
+# qemuデフォルトネットワークについて
 # https://wiki.qemu.org/Documentation/Networking
 # https://www.qemu.org/docs/master/system/devices/net.html
 
@@ -155,7 +175,7 @@ sudo sysctl -w net.ipv4.ping_group_range="0 2147483647"  # 全てのGIDを許可
 
 
 ################################
-# virtio net pciを追加
+# virtio net を追加
 
 # 事前にゲストkernelのビルドでVIRTIOを有効にする
 # CONFIG_VIRTIO=y
@@ -199,8 +219,7 @@ sudo umount disk
 #   root=/dev/sda
 qemu-system-x86_64 -kernel path/to/bzImage -drive file=path/to/disk.img,format=raw -append "console=ttyS0 root=/dev/sda rw nokaslr" -nographic
 
-## virtio-blk で接続する ##
-
+## virtio-blk で接続する場合 ##
 # 事前にゲストkernelを以下コンフィグを追加してビルド
 CONFIG_VIRTIO_BLK=y
 
