@@ -1,0 +1,45 @@
+# https://docs.kernel.org/usb/usbip_protocol.html
+
+##### USBデバイスエミュレート usbipサンプル
+# https://github.com/lcgamboa/USBIP-Virtual-USB-Device
+# ホストでサーバーとして立ち上げる
+
+
+# 事前にゲストkernelを以下コンフィグを追加してビルド
+CONFIG_USBIP_CORE=y or m
+CONFIG_USBIP_VHCI_HCD=y or m
+
+# qemu例
+qemu-system-x86_64 -kernel path/to/bzImage -drive file=path/to/disk.img,format=raw -append "console=ttyS0 root=/dev/sda rw nokaslr" -nographic -m 2G -smp 2 -enable-kvm
+
+
+##### ゲストでusbipコマンドをビルド
+# ビルド用依存パッケージをダウンロード
+grep '^deb ' /etc/apt/sources.list | sed 's/^deb/deb-src/g' > /etc/apt/sources.list.d/deb-src.list
+apt update
+apt build-dep -y linux
+
+apt install hwdata
+
+# usbipコマンドは kernelソースに含まれるので ゲストkernelバージョンと同じものを落とす
+# 以下urlから例えばv5.4.302を落とす 
+# https://www.kernel.org/pub/linux/kernel/v5.x/
+curl -LOk https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.302.tar.gz
+tar xvf linux-5.4.302.tar.gz linux-5.4.302/tools/usb/usbip
+cd linux-5.4.302/tools/usb/usbip
+./autogen.sh
+./configure
+make
+make install
+ldconfig
+
+
+# remarks
+# siano mobile usb driver
+CONFIG_MEDIA_SUPPORT=y
+CONFIG_MEDIA_USB_SUPPORT=y
+CONFIG_MEDIA_DIGITAL_TV_SUPPORT=y
+CONFIG_DVB_CORE=y
+CONFIG_SMS_USB_DRV=y
+CONFIG_SMS_SIANO_MDTV=y
+
