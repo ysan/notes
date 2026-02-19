@@ -120,5 +120,8 @@
     "json",
     "python",
     "graphql"
-  ]
+  ],
+  "list.normalMappings": {
+    "v": "action:vsplit"
+  }
 }
