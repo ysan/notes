@@ -49,24 +49,27 @@ CMD /bin/bash
 
 
 # -----------------------------------------------------------------------------
-# KNAME=kernel-2.6.32-754.35.1.el6
-# curl -LOk http://vault.centos.org/6.10/updates/Source/SPackages/${KNAME}.src.rpm
-# mkdir ${KNAME} && cd ${KNAME}
-# rpm2cpio ../${KNAME}.src.rpm | cpio -idmv
+# KERNEL_VERSION=kernel-2.6.32-754.35.1.el6
+# curl -LOk http://vault.centos.org/6.10/updates/Source/SPackages/${KERNEL_VERSION}.src.rpm
+# mkdir ${KERNEL_VERSION}
+# cd ${KERNEL_VERSION}
+# rpm2cpio ../${KERNEL_VERSION}.src.rpm | cpio -idmv
 # mkdir -p ./rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 # mv *.spec ./rpmbuild/SPECS/
 # mv * ./rpmbuild/SOURCES/
 
 # --- docker build ---
-# docker build -t kbuilder-centos6 --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
+# IMAGE_NAME="kbuilder-centos6"
+# docker build -t ${IMAGE_NAME} --build-arg UID=$(id -u) --build-arg GID=$(id -g) .
 
 # --- run daemon mode ---
-# docker run -it -d --name kbuilder-centos6_con \
-#   --mount type=bind,src=/path/to/rpmbuild,dst=/home/builder/rpmbuild \
-#   kbuilder-centos6
+# CONTAINER_NAME="${IMAGE_NAME}-dev"
+# docker run -it -d --name ${CONTAINER_NAME} \
+#   --mount type=bind,src=$(realpath ${KERNEL_VERSION})/rpmbuild,dst=/home/builder/rpmbuild \
+#   ${IMAGE_NAME}
 
-# docker exec -it kbuilder-centos6_con /bin/bash
-# docker exec -it -u builder -w /home/builder kbuilder-centos6_con /bin/bash
+# docker exec -it ${CONTAINER_NAME} /bin/bash
+# docker exec -it -u builder -w /home/builder ${CONTAINER_NAME} /bin/bash
 
 # --- build kernel ---
 # cd rpmbuild/SPEC
@@ -93,5 +96,4 @@ CMD /bin/bash
 # --- create compile_commands.json at host ---
 # pip3 install compiledb
 # compiledb -p build_log.txt
-# sed -i -e 's/\/home\/builder\/rpmbuild/\/home\/user\/path\/to\/rpmbuild/g' compile_commands.json
-
+# sed -i "s|/home/builder/rpmbuild|$(realpath .)|g" compile_commands.json
