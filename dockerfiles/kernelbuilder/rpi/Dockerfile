@@ -64,6 +64,10 @@ CMD /bin/bash
 # make bcm2709_defconfig
 # time make -j $(nproc)
 
+# for unicam code reading
+# time make -j $(nproc) zImage
+# time make -j $(nproc) drivers/media/
+
 # mkdir modules_output
 # make modules_install INSTALL_MOD_PATH=./modules_output
 
