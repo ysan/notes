@@ -39,6 +39,9 @@ CMD /bin/bash
 # KERNEL_VERSION="v5.15-stm32mp"
 # git clone -b ${KERNEL_VERSION} --depth=1 https://github.com/STMicroelectronics/linux linux-${KERNEL_VERSION}
 
+# META_VERSION="langdale"
+# git clone -b ${META_VERSION} --depth=1 https://github.com/STMicroelectronics/meta-st-stm32mp meta-st-stm32mp-${META_VERSION}
+
 # BUSYBOX_VERSION="1_36_1"
 # git clone -b ${BUSYBOX_VERSION} --depth=1 https://github.com/mirror/busybox busybox-${BUSYBOX_VERSION}
 
@@ -50,6 +53,7 @@ CMD /bin/bash
 # CONTAINER_NAME="${IMAGE_NAME}-dev"
 # docker run -it -d --name ${CONTAINER_NAME} \
 #   --mount type=bind,src=$(realpath linux-${KERNEL_VERSION}),dst=/home/builder/linux \
+#   --mount type=bind,src=$(realpath meta-st-stm32mp-${META_VERSION}),dst=/home/builder/meta-st-stm32mp \
 #   --mount type=bind,src=$(realpath busybox-${BUSYBOX_VERSION}),dst=/home/builder/busybox \
 #   ${IMAGE_NAME}
 
@@ -61,11 +65,25 @@ CMD /bin/bash
 # export ARCH=arm
 # export CROSS_COMPILE=arm-linux-gnueabihf-
 # make mrproper
-# make stm32_defconfig
-# time make -j $(nproc)
 
-# mkdir modules_output
-# make modules_install INSTALL_MOD_PATH=./modules_output
+# ベースdefconfig
+# make multi_v7_defconfig
+
+# fragment-01/02: カーネルソース側(ST patchで追加済み)
+# scripts/kconfig/merge_config.sh -m -r .config arch/arm/configs/fragment-01-multiv7_cleanup.config
+# scripts/kconfig/merge_config.sh -m -r .config arch/arm/configs/fragment-02-multiv7_addons.config
+
+# fragment-03〜06: meta-st-stm32mp側(systemd/modules/signature/smp)
+# META=../meta-st-stm32mp/recipes-kernel/linux/linux-stm32mp/5.15
+# scripts/kconfig/merge_config.sh -m -r .config ${META}/fragment-03-systemd.config
+# scripts/kconfig/merge_config.sh -m -r .config ${META}/fragment-04-modules.config
+# scripts/kconfig/merge_config.sh -m -r .config ${META}/fragment-05-signature.config
+# scripts/kconfig/merge_config.sh -m -r .config ${META}/fragment-06-smp.config  ## stm32mp157の場合dualコアなのでこのパッチは不要
+
+# 依存関係の解決
+# yes '' | make ARCH=arm oldconfig
+
+# time make -j $(nproc)
 
 # --- build busybox ---
 # cd busybox
