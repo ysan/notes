@@ -1,0 +1,9 @@
+TF-A-*/
+optee-*/
+u-boot-*/
+linux-*/
+meta-st-stm32mp-*/
+busybox-*/
+bootfs.ext4
+rootfs.ext4
+test.*
