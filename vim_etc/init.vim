@@ -80,6 +80,8 @@ if has('nvim')
   Plug 'morhetz/gruvbox'
   Plug 'sainnhe/edge'
   Plug 'junegunn/seoul256.vim'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
+  Plug 'junegunn/fzf.vim'
   call plug#end()
 else
   silent! call plug#begin()
@@ -92,6 +94,8 @@ else
   Plug 'morhetz/gruvbox'
   Plug 'sainnhe/edge'
   Plug 'junegunn/seoul256.vim'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
+  Plug 'junegunn/fzf.vim'
   call plug#end()
 endif
 
