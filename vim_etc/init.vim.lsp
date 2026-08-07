@@ -150,6 +150,11 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
 " Add coc-git config
+nmap [c <Plug>(coc-git-prevchunk)
+nmap ]c <Plug>(coc-git-nextchunk)
+nmap [C <Plug>(coc-git-prevconflict)
+nmap ]C <Plug>(coc-git-nextconflict)
+
 function! s:set_coc_git_linehl() abort
 sign define CocGitAdded   linehl=DiffAdd
 sign define CocGitChanged linehl=DiffChange
