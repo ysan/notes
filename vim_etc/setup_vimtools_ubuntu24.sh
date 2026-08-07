@@ -98,6 +98,7 @@ VIMLSP=yes ${LOCAL_DIR}/bin/nvim +'CocInstall -sync coc-tsserver@2.3.1' +qa
 VIMLSP=yes ${LOCAL_DIR}/bin/nvim +'CocInstall -sync coc-html@1.8.0' +qa
 VIMLSP=yes ${LOCAL_DIR}/bin/nvim +'CocInstall -sync coc-css@2.1.0' +qa
 VIMLSP=yes ${LOCAL_DIR}/bin/nvim +'CocInstall -sync coc-explorer@0.27.3' +qa
+VIMLSP=yes ${LOCAL_DIR}/bin/nvim +'CocInstall -sync coc-git@2.7.7' +qa
 
 # download coc-settings.json
 COC_SETTINGS_URL="https://raw.githubusercontent.com/ysan/notes/master/vim_etc/coc-settings.json"

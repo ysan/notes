@@ -148,3 +148,11 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+" Add coc-git config
+function! s:set_coc_git_linehl() abort
+sign define CocGitAdded   linehl=DiffAdd
+sign define CocGitChanged linehl=DiffChange
+sign define CocGitRemoved linehl=DiffDelete
+endfunction
+autocmd VimEnter,ColorScheme * call s:set_coc_git_linehl()
