@@ -1,0 +1,7 @@
+pico-sdk-*/
+picotool-*/
+freertos-kernel-*/
+build/
+compile_commands.json
+pico_sdk_import.cmake
+FreeRTOS_Kernel_import.cmake
