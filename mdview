@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# mdview: MarkdownをpandocでHTMLに変換し、専用のChromeで開く。
+# Chromeのウィンドウを閉じると、変換したHTMLと一時プロファイルを削除する。
+#
+# 使い方: mdview README.md
+# 必要: pandoc (sudo dnf install pandoc)、google-chrome
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "使い方: mdview FILE.md" >&2
+  exit 1
+fi
+if ! command -v pandoc >/dev/null; then
+  echo "pandocがありません: sudo dnf install pandoc" >&2
+  exit 1
+fi
+
+src=$(realpath "$1")
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# <base> で、元のファイルからの相対リンクや画像を解決する
+cat > "$tmp/head.html" <<EOF
+<base href="file://$(dirname "$src")/">
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 860px; margin: 2em auto; padding: 0 16px; line-height: 1.7;
+         font-family: system-ui, "Noto Sans CJK JP", sans-serif; }
+  pre, code { font-family: ui-monospace, "Noto Sans Mono CJK JP", monospace; }
+  pre { padding: 12px; overflow-x: auto; background: rgba(127,127,127,.15); border-radius: 6px; }
+  code { background: rgba(127,127,127,.15); padding: 0 .25em; border-radius: 3px; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid rgba(127,127,127,.5); padding: 4px 10px; }
+  img { max-width: 100%; }
+</style>
+EOF
+
+pandoc -f gfm -t html5 -s \
+  --metadata pagetitle="$(basename "$src")" \
+  -H "$tmp/head.html" "$src" -o "$tmp/view.html"
+
+# 専用のプロファイルで起動すると、既存のChromeに引き継がれず、
+# このウィンドウを閉じるまでコマンドが終了しない。
+google-chrome \
+  --user-data-dir="$tmp/profile" \
+  --no-first-run --no-default-browser-check \
+  --new-window "file://$tmp/view.html" >/dev/null 2>&1
