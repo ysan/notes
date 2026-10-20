@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # mdview: MarkdownをpandocでHTMLに変換し、専用のChromeで開く。
 # Chromeのウィンドウを閉じると、変換したHTMLと一時プロファイルを削除する。
+# 表示中に元のファイルを書き換えると、裏でHTMLを作り直すので、
+# Chromeでリロード (F5) すれば最新の内容になる。
 #
 # 使い方: mdview README.md
 # 必要: pandoc (sudo dnf install pandoc)、google-chrome
@@ -21,7 +23,8 @@ fi
 
 src=$(realpath "$1")
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
+watcher=""
+trap '[ -n "$watcher" ] && kill "$watcher" 2>/dev/null; rm -rf "$tmp"' EXIT
 
 # <base> で、元のファイルからの相対リンクや画像を解決する
 cat > "$tmp/head.html" <<EOF
@@ -59,9 +62,27 @@ cat > "$tmp/head.html" <<EOF
 </script>
 EOF
 
-pandoc -f gfm -t html5 -s \
-  --metadata pagetitle="$(basename "$src")" \
-  -H "$tmp/head.html" "$src" -o "$tmp/view.html"
+# HTMLに変換する。書きかけのHTMLを読まれないよう、別名で作ってから置き換える。
+render() {
+  pandoc -f gfm -t html5 -s \
+    --metadata pagetitle="$(basename "$src")" \
+    -H "$tmp/head.html" "$src" -o "$tmp/view.html.new" &&
+    mv -f "$tmp/view.html.new" "$tmp/view.html"
+}
+render
+
+# 元のファイルを1秒ごとに見張り、更新時刻が変わったら作り直す
+(
+  last=$(stat -c %y "$src")
+  while sleep 1; do
+    now=$(stat -c %y "$src" 2>/dev/null) || continue
+    if [ "$now" != "$last" ]; then
+      last=$now
+      render 2>/dev/null || true
+    fi
+  done
+) &
+watcher=$!
 
 # 専用のプロファイルで起動すると、既存のChromeに引き継がれず、
 # このウィンドウを閉じるまでコマンドが終了しない。
