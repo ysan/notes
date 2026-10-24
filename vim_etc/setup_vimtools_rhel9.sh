@@ -12,6 +12,20 @@ export GIT_SSL_NO_VERIFY=1
 mkdir -p "${LOCAL_DIR}"
 mkdir -p "${SETUP_DIR}"
 
+# add ~/.local/bin to PATH (this script and ~/.bashrc)
+mkdir -p "${LOCAL_DIR}/bin"
+export PATH="${HOME}/.local/bin:${PATH}"
+if ! grep -q '# setup_vimtools: local bin' "${HOME}/.bashrc" 2>/dev/null; then
+  cat >> "${HOME}/.bashrc" <<'EOS'
+
+# setup_vimtools: local bin
+case ":${PATH}:" in
+  *":${HOME}/.local/bin:"*) ;;
+  *) export PATH="${HOME}/.local/bin:${PATH}" ;;
+esac
+EOS
+fi
+
 sudo dnf config-manager --set-enabled crb || true
 sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 sudo dnf install -y \
@@ -99,3 +113,5 @@ mkdir -p "${NVIMCONF_DIR}"
 cd "${NVIMCONF_DIR}"
 curl -LOk ${COC_SETTINGS_URL}
 
+echo
+echo "done. run 'source ~/.bashrc' (or open a new shell) to use ~/.local/bin tools."
