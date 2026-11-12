@@ -1,34 +1,47 @@
 #!/usr/bin/env bash
 # mdview: MarkdownをpandocでHTMLに変換し、専用のChromeで開く。
 # Chromeのウィンドウを閉じると、変換したHTMLと一時プロファイルを削除する。
-# 表示中に元のファイルを書き換えると、裏でHTMLを作り直すので、
-# Chromeでリロード (F5) すれば最新の内容になる。
+#
+# - 同じ git リポジトリの中の .md を全部 HTML に変換しておき、.md へのリンクを
+#   変換済みの .html へのリンクに書き換える。リンクをたどって、ほかの資料も読める。
+#   (git の外のファイルなら、そのファイルのあるフォルダの .md だけが対象)
+# - 表示中に .md を書き換えると、裏でそのファイルの HTML を作り直すので、
+#   Chromeでリロード (F5) すれば最新の内容になる。
 #
 # 使い方: mdview README.md
-# 必要: pandoc (sudo dnf install pandoc)、google-chrome
+# 必要: pandoc (sudo dnf install pandoc)、google-chrome、python3
 set -euo pipefail
 
 if [ $# -ne 1 ]; then
   echo "使い方: mdview FILE.md" >&2
   exit 1
 fi
-if ! command -v pandoc >/dev/null; then
-  echo "pandocがありません: sudo dnf install pandoc" >&2
-  exit 1
-fi
-if ! command -v google-chrome >/dev/null; then
-  echo "google-chromeがありません" >&2
-  exit 1
-fi
+for cmd in pandoc google-chrome python3; do
+  if ! command -v "$cmd" >/dev/null; then
+    case $cmd in
+      pandoc) echo "pandocがありません: sudo dnf install pandoc" >&2 ;;
+      *)      echo "${cmd}がありません" >&2 ;;
+    esac
+    exit 1
+  fi
+done
 
 src=$(realpath "$1")
+root=$(git -C "$(dirname "$src")" rev-parse --show-toplevel 2>/dev/null || dirname "$src")
+case $src in
+  "$root"/*) ;;
+  *) root=$(dirname "$src") ;;
+esac
+
 tmp=$(mktemp -d)
+site="$tmp/site"        # 変換した HTML を、元と同じフォルダ構成で置く
 watcher=""
 trap '[ -n "$watcher" ] && kill "$watcher" 2>/dev/null; rm -rf "$tmp"' EXIT
 
-# <base> で、元のファイルからの相対リンクや画像を解決する
-cat > "$tmp/head.html" <<EOF
-<base href="file://$(dirname "$src")/">
+# ---------------------------------------------------------------- 共通の <head>
+# BASE_DIR は、ファイルごとに元のフォルダに置き換える (画像などの相対パスを解決するため)
+cat > "$tmp/head.tmpl" <<'EOF'
+<base href="file://BASE_DIR/">
 <style>
   :root { color-scheme: light dark; }
   body { max-width: 860px; margin: 2em auto; padding: 0 16px; line-height: 1.7;
@@ -62,31 +75,88 @@ cat > "$tmp/head.html" <<EOF
 </script>
 EOF
 
-# HTMLに変換する。書きかけのHTMLを読まれないよう、別名で作ってから置き換える。
-render() {
-  pandoc -f gfm -t html5 -s \
-    --metadata pagetitle="$(basename "$src")" \
-    -H "$tmp/head.html" "$src" -o "$tmp/view.html.new" &&
-    mv -f "$tmp/view.html.new" "$tmp/view.html"
-}
-render
+# ---------------------------------------------------------------- リンクの書き換え
+# .md への相対リンクを、変換済みの .html への file:// リンクに書き換える。
+# 引数: HTML、元の .md、root、site
+cat > "$tmp/fixlinks.py" <<'EOF'
+import os, re, sys
+from urllib.parse import unquote
+html, src, root, site = sys.argv[1:5]
+src_dir = os.path.dirname(src)
 
-# 元のファイルを1秒ごとに見張り、更新時刻が変わったら作り直す
+def fix(m):
+    href = m.group(2)
+    if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", href) or href.startswith("#"):
+        return m.group(0)                  # http:、file:、mailto: やページ内のリンクはそのまま
+    path, sep, anchor = href.partition("#")
+    if not path.endswith(".md"):
+        return m.group(0)
+    target = os.path.normpath(os.path.join(src_dir, unquote(path)))
+    if not target.startswith(root + os.sep) or not os.path.exists(target):
+        return m.group(0)
+    rel = os.path.relpath(target, root)[:-3] + ".html"
+    return m.group(1) + "file://" + os.path.join(site, rel) + sep + anchor + m.group(3)
+
+with open(html, encoding="utf-8") as f:
+    text = f.read()
+text = re.sub(r'(href=")([^"]*)(")', fix, text)
+with open(html, "w", encoding="utf-8") as f:
+    f.write(text)
+EOF
+
+# ---------------------------------------------------------------- 変換
+# 1つの .md を HTML に変換する。書きかけを読まれないよう、別名で作ってから置き換える。
+render_one() {
+  local md=$1 rel out dir
+  rel=${md#"$root"/}
+  out="$site/${rel%.md}.html"
+  dir=$(dirname "$md")
+  mkdir -p "$(dirname "$out")"
+  sed "s|BASE_DIR|$dir|" "$tmp/head.tmpl" > "$tmp/head.html"
+  pandoc -f gfm -t html5 -s \
+    --metadata pagetitle="$(basename "$md")" \
+    -H "$tmp/head.html" "$md" -o "$out.new" &&
+    python3 "$tmp/fixlinks.py" "$out.new" "$md" "$root" "$site" &&
+    mv -f "$out.new" "$out"
+}
+
+# root の中の .md の一覧 (.git などは除く)
+list_md() {
+  find "$root" \( -name .git -o -name node_modules \) -prune -o -type f -name '*.md' -print
+}
+
+count=$(list_md | wc -l)
+if [ "$count" -gt 300 ]; then
+  echo ".md が多すぎます ($count 個)。開いたファイルのフォルダだけを対象にします" >&2
+  root=$(dirname "$src")
+fi
+
+while IFS= read -r md; do
+  render_one "$md" 2>/dev/null || echo "変換に失敗: $md" >&2
+done < <(list_md)
+
+# ---------------------------------------------------------------- 見張り
+# 1秒ごとに .md の更新時刻を確かめ、変わったファイル (と新しいファイル) だけ作り直す
 (
-  last=$(stat -c %y "$src")
+  declare -A last
+  while IFS= read -r md; do last[$md]=$(stat -c %y "$md"); done < <(list_md)
   while sleep 1; do
-    now=$(stat -c %y "$src" 2>/dev/null) || continue
-    if [ "$now" != "$last" ]; then
-      last=$now
-      render 2>/dev/null || true
-    fi
+    while IFS= read -r md; do
+      now=$(stat -c %y "$md" 2>/dev/null) || continue
+      if [ "${last[$md]:-}" != "$now" ]; then
+        last[$md]=$now
+        render_one "$md" 2>/dev/null || true
+      fi
+    done < <(list_md)
   done
 ) &
 watcher=$!
 
+# ---------------------------------------------------------------- 表示
 # 専用のプロファイルで起動すると、既存のChromeに引き継がれず、
 # このウィンドウを閉じるまでコマンドが終了しない。
+rel=${src#"$root"/}
 google-chrome \
   --user-data-dir="$tmp/profile" \
   --no-first-run --no-default-browser-check \
-  --new-window "file://$tmp/view.html" >/dev/null 2>&1
+  --new-window "file://$site/${rel%.md}.html" >/dev/null 2>&1
