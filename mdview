@@ -5,10 +5,17 @@
 # - 同じ git リポジトリの中の .md を全部 HTML に変換しておき、.md へのリンクを
 #   変換済みの .html へのリンクに書き換える。リンクをたどって、ほかの資料も読める。
 #   (git の外のファイルなら、そのファイルのあるフォルダの .md だけが対象)
-# - 表示中に .md を書き換えると、裏でそのファイルの HTML を作り直すので、
-#   Chromeでリロード (F5) すれば最新の内容になる。
+# - 表示中に .md を書き換えると、裏でそのファイルの HTML を作り直し、
+#   開いているページも自動で再読み込みする (スクロール位置はそのまま)。
+# - git の管理下なら、HEAD から変わったところに色を付ける。
+#     薄緑 = 追加・書き換えた行 (左の線: 緑 = 追加、青緑 = 書き換え)、
+#     赤い枠 = 消した行 (元の Markdown を表示)。
+#     色分けをオフにすると、消した行と左の線を隠し、薄緑だけ残す。
+#   右上のパネルで、次の変更へ移動 (キー n / N)、色分けのオン・オフ (キー d)、
+#   差分全体の表示ができる。コミットすると色分けも作り直す。
 #
 # 使い方: mdview README.md
+#         MDVIEW_BASE=origin/master mdview README.md   (HEAD 以外と比べるとき)
 # 必要: pandoc (sudo dnf install pandoc)、google-chrome、python3
 set -euo pipefail
 
@@ -33,6 +40,15 @@ case $src in
   *) root=$(dirname "$src") ;;
 esac
 
+# 比較元。git の外や、まだコミットのないリポジトリなら空 (色分けしない)
+base=""
+want=${MDVIEW_BASE:-HEAD}
+if git -C "$root" rev-parse -q --verify "$want^{commit}" >/dev/null 2>&1; then
+  base=$want
+elif [ -n "${MDVIEW_BASE:-}" ]; then
+  echo "比較元が見つかりません: $MDVIEW_BASE (色分けなしで開きます)" >&2
+fi
+
 tmp=$(mktemp -d)
 site="$tmp/site"        # 変換した HTML を、元と同じフォルダ構成で置く
 watcher=""
@@ -40,48 +56,250 @@ trap '[ -n "$watcher" ] && kill "$watcher" 2>/dev/null; rm -rf "$tmp"' EXIT
 
 # ---------------------------------------------------------------- 共通の <head>
 # BASE_DIR は、ファイルごとに元のフォルダに置き換える (画像などの相対パスを解決するため)
-cat > "$tmp/head.tmpl" <<'EOF'
+cat > "$tmp/head.html" <<'EOF'
 <base href="file://BASE_DIR/">
 <style>
-  :root { color-scheme: light dark; }
+  /* pandoc が入れる CSS でページは常にライトの配色になるので、ライトにそろえる。
+     差分の色は Claude Code の差分表示 (ライト) をもとにしている */
+  :root { color-scheme: light;
+          --add-bg: rgb(208,248,211);  --add-bar: rgb(47,157,68);   --add-word: rgb(105,219,124);
+          --mod-bg: rgb(208,248,211);  --mod-bar: rgb(26,127,110);
+          --del-bg: rgb(254,228,232);  --del-bar: rgb(209,69,75); }
   body { max-width: 860px; margin: 2em auto; padding: 0 16px; line-height: 1.7;
          font-family: system-ui, "Noto Sans CJK JP", sans-serif; }
   pre, code { font-family: ui-monospace, "Noto Sans Mono CJK JP", monospace; }
-  pre { padding: 12px; overflow-x: auto; background: rgba(127,127,127,.15); border-radius: 6px; }
+  /* pandoc の CSS の .sourceCode { background-color: transparent } に負けないよう pre.sourceCode も書く */
+  pre, pre.sourceCode { padding: 12px; overflow-x: auto; background: rgba(127,127,127,.15); border-radius: 6px; }
   code { background: rgba(127,127,127,.15); padding: 0 .25em; border-radius: 3px; }
   pre code { background: none; padding: 0; }
   table { border-collapse: collapse; }
   th, td { border: 1px solid rgba(127,127,127,.5); padding: 4px 10px; }
   img { max-width: 100%; }
   div.mermaid { margin: 1em 0; }
+
+  /* 差分の色分け */
+  .mdv-add { background: var(--add-bg); box-shadow: -8px 0 0 var(--add-bar); }
+  .mdv-mod { background: var(--mod-bg); box-shadow: -8px 0 0 var(--mod-bar); }
+  .mdv-add pre, .mdv-mod pre { background: none; }   /* 色を付けたコードブロックは緑だけにする */
+  tr.mdv-add, tr.mdv-mod { box-shadow: none; background: none; }   /* 色はセルに付ける */
+  tr.mdv-add > * { background: var(--add-bg); }
+  tr.mdv-mod > * { background: var(--mod-bg); }
+  .mdv-line { background: var(--add-word); }
+  .mdv-del { margin: .5em 0; padding: 4px 10px; border-left: 4px solid var(--del-bar);
+             background: var(--del-bg); border-radius: 0 6px 6px 0; font-size: .85em; }
+  .mdv-del pre { margin: 0; padding: 0; background: none; white-space: pre-wrap; }
+  .mdv-del .mdv-cap { font-size: .85em; opacity: .7; }
+  .mdv-focus { outline: 2px solid var(--mod-bar); outline-offset: 4px; }
+  /* 色分けオフ: 消した行と左の線を隠す。新しい内容の薄緑は残す */
+  body.mdv-off .mdv-add, body.mdv-off .mdv-mod { box-shadow: none; }
+  body.mdv-off .mdv-del { display: none; }
+  body.mdv-off .mdv-focus { outline: none; }
+
+  #mdv-panel { position: fixed; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px;
+               align-items: center; padding: 4px 8px; font-size: 12px; border-radius: 6px;
+               background: Canvas; color: CanvasText; border: 1px solid rgba(127,127,127,.4);
+               box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+  #mdv-panel button { font: inherit; padding: 1px 6px; cursor: pointer; }
+  #mdv-panel .p { color: var(--add-bar); } #mdv-panel .m { color: var(--del-bar); }
+  #mdv-full { margin: 0 0 2em; font-size: .85em; }
+  #mdv-full span { display: block; }
+  #mdv-full .a { background: var(--add-bg); } #mdv-full .r { background: var(--del-bg); }
+  #mdv-full .h { opacity: .6; }
 </style>
 <!-- Mermaid: pandoc は mermaid のコードブロックを pre.mermaid に変換するので、
      中のテキストを取り出して図に描き直す。CDN から読み込むためネット接続が必要。 -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 <script>
+(function () {
+  var MDV = window.MDV || {};
+  var page = location.pathname;
+  function load(k) { try { return sessionStorage.getItem(k + page); } catch (e) { return null; } }
+  function save(k, v) { try { sessionStorage.setItem(k + page, v); } catch (e) {} }
+
+  // ---- 自動再読み込み: 同じ名前の .stamp.js が書き換わったら reload する
+  var stampUrl = "file://" + page.replace(/\.html$/, ".stamp.js");
+  setInterval(function () {
+    var s = document.createElement("script");
+    s.src = stampUrl + "?" + Date.now();
+    s.onload = s.onerror = function () {
+      s.remove();
+      if (window.MDV_STAMP && window.MDV_STAMP !== MDV.stamp) {
+        save("mdvY:", String(window.scrollY));
+        location.reload();
+      }
+    };
+    document.head.appendChild(s);
+  }, 1000);
+  function restoreScroll() {
+    var y = load("mdvY:");
+    if (y !== null) window.scrollTo(0, +y);
+  }
+
+  // ---- 差分の色分け
+  // data-pos="file.md@3:1-5:1;..." から [最初の行, 最後の行] を取り出す
+  function range(pos) {
+    var r = null;
+    pos.split(";").forEach(function (p) {
+      var m = /(\d+):(\d+)-(\d+):(\d+)$/.exec(p);
+      if (!m) return;
+      var s = +m[1], e = +m[3];
+      if (+m[4] === 1 && e > s) e--;          // 「次の行の1文字目まで」は前の行まで
+      if (!r) r = [s, e]; else { r[0] = Math.min(r[0], s); r[1] = Math.max(r[1], e); }
+    });
+    return r;
+  }
+
+  function markDiff() {
+    var D = MDV.diff;
+    if (!D) return [];
+    var items = [];
+    document.querySelectorAll("[data-pos]").forEach(function (el) {
+      var r = range(el.getAttribute("data-pos"));
+      if (r) items.push({ el: el, s: r[0], e: r[1], span: el.tagName === "SPAN" });
+    });
+    // L 行目を表示している要素。行番号が正確な単語単位の span を優先し、
+    // なければ (コードブロックなど) L を含むブロックのうち、始まりが一番遅く一番内側のもの
+    function target(L) {
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        if (it.span && it.s <= L && L <= it.e)
+          return it.el.closest("p,h1,h2,h3,h4,h5,h6,tr,dt,dd,div[data-pos],li") || it.el.parentElement;
+      }
+      var best = null;
+      items.forEach(function (it) {
+        if (!it.span && it.s <= L && L <= it.e &&
+            (!best || it.s > best.s || (it.s === best.s && best.el.contains(it.el)))) best = it;
+      });
+      return best && { el: best.el, s: best.s };
+    }
+    function elOf(t) { return t && (t.el || t); }
+
+    var marks = [];
+    D.hunks.forEach(function (h) {
+      var cls = h.old.length ? "mdv-mod" : "mdv-add", first = null;
+      h.lines.forEach(function (L) {
+        var t = target(L), el = elOf(t);
+        if (!el) return;
+        el.classList.add(cls);
+        if (!first) first = el;
+        // ハイライトつきのコードブロックなら、変わった行にも色を付ける
+        if (t.el && el.classList.contains("sourceCode")) {
+          var line = el.querySelector('code > span[id$="-' + (L - t.s) + '"]');
+          if (line) line.classList.add("mdv-line");
+        }
+      });
+      if (first) marks.push(first);
+      if (!h.old.length) return;
+
+      // 消した行: 変更のあった要素の前、なければ次の行を表示している要素の前に置く
+      var anchor = first;
+      for (var L = h.start; !anchor && L <= D.lastLine; L++) anchor = elOf(target(L));
+      var box = document.createElement("div");
+      box.className = "mdv-del";
+      box.innerHTML = '<div class="mdv-cap"></div><pre></pre>';
+      box.firstChild.textContent = "消した行 (" + D.base + " にあった内容)";
+      box.lastChild.textContent = h.old.join("\n");
+      if (!anchor) document.body.appendChild(box);
+      else {
+        if (anchor.tagName === "TR") anchor = anchor.closest("table");
+        if (anchor.tagName === "LI") anchor.insertBefore(box, anchor.firstChild);
+        else anchor.parentNode.insertBefore(box, anchor);
+      }
+      if (!first) marks.push(box);
+    });
+    marks.sort(function (a, b) {
+      return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+    });
+    return marks;
+  }
+
+  function panel(marks) {
+    var D = MDV.diff;
+    if (!D) return;
+    var p = document.createElement("div");
+    p.id = "mdv-panel";
+    function btn(label, fn) {
+      var b = document.createElement("button");
+      b.textContent = label; b.onclick = fn; p.appendChild(b); return b;
+    }
+    var info = document.createElement("span");
+    p.appendChild(info);
+    if (D.untracked) { info.textContent = "git にまだ追加していないファイル"; }
+    else if (D.added) { info.textContent = D.base + " にないファイル (全体が追加)"; }
+    else if (!D.hunks.length) { info.textContent = D.base + " から変更なし"; }
+    else {
+      info.innerHTML = D.base + ' との差分 <span class="p"></span> <span class="m"></span>';
+      info.children[0].textContent = "+" + D.plus;
+      info.children[1].textContent = "−" + D.minus;
+      var i = -1;
+      var go = function (d) {
+        if (!marks.length) return;
+        if (i >= 0) marks[i].classList.remove("mdv-focus");
+        i = (i + d + marks.length) % marks.length;
+        marks[i].classList.add("mdv-focus");
+        marks[i].scrollIntoView({ block: "center", behavior: "smooth" });
+      };
+      btn("次の変更 (n)", function () { go(1); });
+      var tog = btn("", function () { toggle(); });
+      var toggle = function () {
+        var off = document.body.classList.toggle("mdv-off");
+        tog.textContent = off ? "色分け: オフ (d)" : "色分け: オン (d)";
+        save("mdvOff:", off ? "1" : "");
+      };
+      if (load("mdvOff:")) document.body.classList.add("mdv-off");
+      tog.textContent = document.body.classList.contains("mdv-off") ? "色分け: オフ (d)" : "色分け: オン (d)";
+      btn("差分全体", function () {
+        var f = document.getElementById("mdv-full");
+        if (f) { f.remove(); return; }
+        f = document.createElement("pre");
+        f.id = "mdv-full";
+        D.full.split("\n").forEach(function (l) {
+          var s = document.createElement("span");
+          s.className = /^@@/.test(l) ? "h" : /^\+/.test(l) ? "a" : /^-/.test(l) ? "r" : "";
+          s.textContent = l || " ";               // 1行ずつ block で並べる (空行も高さを保つ)
+          f.appendChild(s);
+        });
+        document.body.insertBefore(f, document.body.firstChild);
+        window.scrollTo(0, 0);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        if (e.key === "n") go(1);
+        else if (e.key === "N") go(-1);
+        else if (e.key === "d") toggle();
+      });
+    }
+    document.body.appendChild(p);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    panel(markDiff());
     document.querySelectorAll("pre.mermaid").forEach(function (pre) {
       var div = document.createElement("div");
-      div.className = "mermaid";
+      div.className = pre.className;              // mermaid と差分の色分けのクラスを引き継ぐ
       div.textContent = pre.textContent;
       pre.replaceWith(div);
     });
+    restoreScroll();
     if (window.mermaid) {
-      var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
-      mermaid.run({ querySelector: "div.mermaid" });
+      mermaid.initialize({ startOnLoad: false, theme: "default" });   // ページがライトなので
+      mermaid.run({ querySelector: "div.mermaid" }).then(restoreScroll, restoreScroll);
     }
   });
+})();
 </script>
 EOF
 
-# ---------------------------------------------------------------- リンクの書き換え
-# .md への相対リンクを、変換済みの .html への file:// リンクに書き換える。
-# 引数: HTML、元の .md、root、site
-cat > "$tmp/fixlinks.py" <<'EOF'
-import os, re, sys
-from urllib.parse import unquote
-html, src, root, site = sys.argv[1:5]
+# ---------------------------------------------------------------- 後処理
+# pandoc の出力 (OUT.new) に手を入れて OUT に置き換え、OUT.stamp.js を書き換える。
+#  - BASE_DIR を元の .md のフォルダにする
+#  - .md への相対リンクを、変換済みの .html への file:// リンクに書き換える
+#  - 比較元 BASE との差分を window.MDV.diff として埋め込む
+# 引数: OUT、元の .md、root、site、BASE (空なら差分なし)
+cat > "$tmp/post.py" <<'EOF'
+import json, os, re, subprocess, sys, time
+from urllib.parse import quote, unquote
+out, src, root, site, base = sys.argv[1:6]
 src_dir = os.path.dirname(src)
 
 def fix(m):
@@ -95,34 +313,104 @@ def fix(m):
     if not target.startswith(root + os.sep) or not os.path.exists(target):
         return m.group(0)
     rel = os.path.relpath(target, root)[:-3] + ".html"
-    return m.group(1) + "file://" + os.path.join(site, rel) + sep + anchor + m.group(3)
+    return m.group(1) + "file://" + quote(os.path.join(site, rel)) + sep + anchor + m.group(3)
 
-with open(html, encoding="utf-8") as f:
+def git(*args):
+    r = subprocess.run(["git", "-C", src_dir, *args], capture_output=True)
+    return r.returncode, r.stdout.decode("utf-8", "replace")
+
+def diff_info():
+    name = os.path.basename(src)
+    _, full = git("diff", "--no-color", "--no-ext-diff", "--no-renames", "-U3", base, "--", name)
+    info = {"base": base, "hunks": [], "plus": 0, "minus": 0, "full": full}
+    if not full:
+        if git("ls-files", "--error-unmatch", "--", name)[0]:
+            info["untracked"] = True
+        return info
+    if re.search(r"^new file mode", full, re.M):
+        info["added"] = True
+        return info
+    with open(src, encoding="utf-8", errors="replace") as f:
+        new = f.read().split("\n")
+    info["lastLine"] = len(new)
+    # 続いている +/- の行を1つの変更にまとめる。
+    # start は、変更のあった (または消した行のすぐ後の) 新しいファイルでの行番号
+    cur, n, in_hunk = None, 0, False
+    for line in full.split("\n"):
+        m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@", line)
+        if m:
+            n, cur, in_hunk = int(m.group(1)), None, True
+            continue
+        if not in_hunk or not line:
+            continue
+        kind = line[0]
+        if kind == " ":
+            n, cur = n + 1, None
+        elif kind in "+-":
+            if cur is None:
+                cur = {"start": n, "lines": [], "old": []}
+                info["hunks"].append(cur)
+            if kind == "+":
+                if line[1:].strip():          # 空行は色を付ける先がないので数えるだけ
+                    cur["lines"].append(n)
+                n += 1
+                info["plus"] += 1
+            else:
+                cur["old"].append(line[1:])
+                info["minus"] += 1
+    for h in info["hunks"]:
+        if not any(s.strip() for s in h["old"]):
+            h["old"] = []
+    info["hunks"] = [h for h in info["hunks"] if h["lines"] or h["old"]]
+    return info
+
+with open(out + ".new", encoding="utf-8") as f:
     text = f.read()
+text = text.replace("file://BASE_DIR/", "file://" + quote(src_dir) + "/", 1)
 text = re.sub(r'(href=")([^"]*)(")', fix, text)
-with open(html, "w", encoding="utf-8") as f:
+stamp = str(time.time_ns())
+data = {"stamp": stamp, "diff": diff_info() if base else None}
+script = "<script>window.MDV = %s;</script>\n" % json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
+text = text.replace("<head>", "<head>\n" + script, 1)   # 共通のスクリプトより前に置く
+with open(out + ".new", "w", encoding="utf-8") as f:
     f.write(text)
+os.replace(out + ".new", out)
+with open(out[:-5] + ".stamp.js", "w", encoding="utf-8") as f:
+    f.write('window.MDV_STAMP = "%s";\n' % stamp)
 EOF
 
 # ---------------------------------------------------------------- 変換
 # 1つの .md を HTML に変換する。書きかけを読まれないよう、別名で作ってから置き換える。
+# +sourcepos で、HTML の要素に元の行番号 (data-pos) を付ける。差分の色分けに使う。
 render_one() {
-  local md=$1 rel out dir
+  local md=$1 rel out
   rel=${md#"$root"/}
   out="$site/${rel%.md}.html"
-  dir=$(dirname "$md")
   mkdir -p "$(dirname "$out")"
-  sed "s|BASE_DIR|$dir|" "$tmp/head.tmpl" > "$tmp/head.html"
-  pandoc -f gfm -t html5 -s \
+  pandoc -f gfm+sourcepos -t html5 -s \
     --metadata pagetitle="$(basename "$md")" \
     -H "$tmp/head.html" "$md" -o "$out.new" &&
-    python3 "$tmp/fixlinks.py" "$out.new" "$md" "$root" "$site" &&
-    mv -f "$out.new" "$out"
+    python3 "$tmp/post.py" "$out" "$md" "$root" "$site" "$base"
 }
 
-# root の中の .md の一覧 (.git などは除く)
-list_md() {
-  find "$root" \( -name .git -o -name node_modules \) -prune -o -type f -name '*.md' -print
+# root の中の .md の一覧。
+# git の管理下なら、管理しているものと、まだ追加していない (無視されていない) もの。
+# .gitignore で無視しているもの (SDK や rootfs など) は対象にしない。
+# git の外なら find で探す。読めないフォルダがあっても止まらないよう、エラーは無視する。
+if git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  list_md() {
+    git -C "$root" -c core.quotepath=off ls-files -co --exclude-standard -- '*.md' 2>/dev/null |
+      while IFS= read -r f; do [ -f "$root/$f" ] && printf '%s\n' "$root/$f"; done || true
+  }
+else
+  list_md() {
+    find "$root" \( -name .git -o -name node_modules \) -prune -o -type f -name '*.md' -print 2>/dev/null || true
+  }
+fi
+
+# 比較元のコミット。変わったら (コミットしたら) 全部作り直す
+base_commit() {
+  [ -n "$base" ] && git -C "$root" rev-parse -q --verify "$base^{commit}" 2>/dev/null || true
 }
 
 count=$(list_md | wc -l)
@@ -131,19 +419,30 @@ if [ "$count" -gt 300 ]; then
   root=$(dirname "$src")
 fi
 
-while IFS= read -r md; do
-  render_one "$md" 2>/dev/null || echo "変換に失敗: $md" >&2
-done < <(list_md)
+# 変換を始める前に更新時刻を覚えておく (変換中に書き換えられても見逃さないように)
+declare -A last
+while IFS= read -r md; do last[$md]=$(stat -c %y "$md"); done < <(list_md)
+last_base=$(base_commit)
 
-# ---------------------------------------------------------------- 見張り
-# 1秒ごとに .md の更新時刻を確かめ、変わったファイル (と新しいファイル) だけ作り直す
+# 開いたファイルだけ先に変換して、すぐ表示できるようにする
+render_one "$src" 2>/dev/null || { echo "変換に失敗: $src" >&2; exit 1; }
+
+# ---------------------------------------------------------------- 裏で変換・見張り
+# ほかの .md は裏で変換する (リンク先は少し待てば開ける)。
+# そのあと1秒ごとに .md の更新時刻を確かめ、変わったファイル (と新しいファイル) だけ作り直す
 (
-  declare -A last
-  while IFS= read -r md; do last[$md]=$(stat -c %y "$md"); done < <(list_md)
+  while IFS= read -r md; do
+    [ "$md" = "$src" ] && continue
+    render_one "$md" 2>/dev/null || echo "変換に失敗: $md" >&2
+  done < <(list_md)
+
   while sleep 1; do
+    now_base=$(base_commit)
+    all=0
+    if [ "$now_base" != "$last_base" ]; then last_base=$now_base; all=1; fi
     while IFS= read -r md; do
       now=$(stat -c %y "$md" 2>/dev/null) || continue
-      if [ "${last[$md]:-}" != "$now" ]; then
+      if [ "$all" = 1 ] || [ "${last[$md]:-}" != "$now" ]; then
         last[$md]=$now
         render_one "$md" 2>/dev/null || true
       fi
