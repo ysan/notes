@@ -72,6 +72,8 @@ cat > "$tmp/head.html" <<'EOF'
   pre, pre.sourceCode { padding: 12px; overflow-x: auto; background: rgba(127,127,127,.15); border-radius: 6px; }
   code { background: rgba(127,127,127,.15); padding: 0 .25em; border-radius: 3px; }
   pre code { background: none; padding: 0; }
+  /* pandoc の CSS の code { white-space: pre-wrap } で長い行が折り返されるのを止め、pre の横スクロールに任せる */
+  pre code { white-space: pre; }
   table { border-collapse: collapse; }
   th, td { border: 1px solid rgba(127,127,127,.5); padding: 4px 10px; }
   img { max-width: 100%; }
